@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioTailr AI — Entry</title>
+  <link rel="icon" type="image/png" href="../assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      position: relative;
+    }
+    /* Subtle background ambient mesh */
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(0, 180, 159, 0.05) 0%, transparent 60%),
+        linear-gradient(to right, rgba(30, 27, 120, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 27, 120, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 48px 48px, 48px 48px;
+      pointer-events: none;
+    }
+    .entry-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 340px;
+      height: 340px;
+    }
+    /* Ambient glow behind the logo */
+    .entry-glow {
+      position: absolute;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 180, 159, 0.16) 0%, rgba(30, 27, 120, 0.05) 45%, transparent 70%);
+      animation: ambientGlow 2.5s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    /* Logo mark only - no text, no button */
+    .entry-logo-img {
+      position: relative;
+      max-width: 260px;
+      max-height: 260px;
+      object-fit: contain;
+      filter: drop-shadow(0 14px 28px rgba(30, 27, 120, 0.09));
+      animation: logoEnter 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      cursor: pointer;
+    }
+    @keyframes logoEnter {
+      0% {
+        opacity: 0;
+        transform: scale(0.82) translateY(16px);
+      }
+      60% {
+        opacity: 1;
+        transform: scale(1.02) translateY(-2px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    @keyframes ambientGlow {
+      0% {
+        transform: scale(0.92);
+        opacity: 0.6;
+      }
+      100% {
+        transform: scale(1.12);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="entry-container">
+    <div class="entry-glow"></div>
+    <img class="entry-logo-img" src="../assets/logo_mark.png" alt="BioTailr AI Logo" onclick="window.location.href='../index.html'">
+  </div>
+</body>
+</html>

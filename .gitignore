@@ -1,0 +1,19 @@
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Node Dependencies
+node_modules/
+npm-debug.log*
+
+# OS & Temp Files
+.DS_Store
+Thumbs.db
+*.log
+
+# Scratch / Test files
+test-*.cjs
+test-*.html
+test_out.png
+ui/test_*.png

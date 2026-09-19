@@ -1,0 +1,188 @@
+/* =========================================================
+   BioTailr AI - Official Brand Color System & Base Styles
+   Palette extracted directly from official logo:
+   Primary Navy: #1e1b78 | Accent Teal: #00b49f | Pure White: #ffffff
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* Official Brand Palette from Logo */
+  --brand-navy: #1e1b78;
+  --brand-navy-dark: #131154;
+  --brand-navy-light: #f0effe;
+  --brand-navy-border: #d4d2f8;
+  
+  --brand-teal: #00b49f;
+  --brand-teal-dark: #009382;
+  --brand-teal-light: #e6f8f5;
+  --brand-teal-border: #a3e8df;
+
+  /* Neutrals & Surfaces */
+  --bg-page: #ffffff;
+  --bg-subtle: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+
+  --text-main: #1e1b78;
+  --text-body: #334155;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+
+  --border-color: #e2e8f0;
+  --border-card: #cbd5e1;
+
+  /* Typography */
+  --font-brand: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 3px rgba(30, 27, 120, 0.05);
+  --shadow-md: 0 4px 14px rgba(30, 27, 120, 0.08);
+  --shadow-lg: 0 12px 32px -8px rgba(30, 27, 120, 0.12);
+  --shadow-dial: 0 0 25px rgba(0, 180, 159, 0.25);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  
+  --transition: 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  background-color: var(--bg-page);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Base Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.4rem;
+  font-family: var(--font-brand);
+  font-weight: 600;
+  font-size: 0.92rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  user-select: none;
+}
+
+.btn-primary {
+  background: var(--brand-navy);
+  color: #ffffff;
+  border-color: var(--brand-navy-dark);
+  box-shadow: 0 2px 6px rgba(30, 27, 120, 0.25);
+}
+
+.btn-primary:hover {
+  background: var(--brand-navy-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30, 27, 120, 0.35);
+}
+
+.btn-teal {
+  background: var(--brand-teal);
+  color: #ffffff;
+  border-color: var(--brand-teal-dark);
+  box-shadow: 0 2px 6px rgba(0, 180, 159, 0.3);
+}
+
+.btn-teal:hover {
+  background: var(--brand-teal-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 180, 159, 0.4);
+}
+
+.btn-outline {
+  background: #ffffff;
+  color: var(--brand-navy);
+  border-color: var(--border-color);
+}
+
+.btn-outline:hover {
+  background: var(--brand-navy-light);
+  border-color: var(--brand-navy-border);
+}
+
+.btn-lg {
+  padding: 0.9rem 2.2rem;
+  font-size: 1.05rem;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-brand);
+  letter-spacing: 0.02em;
+}
+
+.badge-navy {
+  background: var(--brand-navy-light);
+  color: var(--brand-navy);
+  border: 1px solid var(--brand-navy-border);
+}
+
+.badge-teal {
+  background: var(--brand-teal-light);
+  color: var(--brand-teal-dark);
+  border: 1px solid var(--brand-teal-border);
+}
+
+/* Background Subtle Canvas */
+.bg-canvas-grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    radial-gradient(circle at 50% 20%, rgba(0, 180, 159, 0.03), transparent 60%),
+    radial-gradient(circle at 85% 80%, rgba(30, 27, 120, 0.02), transparent 50%),
+    #ffffff;
+  background-image: 
+    linear-gradient(to right, #f8fafc 1px, transparent 1px),
+    linear-gradient(to bottom, #f8fafc 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Views Management */
+.view-screen {
+  display: none;
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+.view-screen.active {
+  display: flex;
+  flex-direction: column;
+}
