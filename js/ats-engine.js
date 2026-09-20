@@ -136,17 +136,18 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
         optimized.skillCategories['Frameworks & Libraries'] = 'ASP.NET Core, RESTful APIs, Microservices Architecture, TDD / BDD, React.js, Node.js';
       }
     }
-    // Also clean education of any coursework strings
-    if (optimized.education) {
-      optimized.education.forEach(edu => {
-        if (edu.details && edu.details.includes('Coursework')) {
-          edu.details = edu.details.replace(/•\s*Relevant Coursework:.*$/i, '').trim();
-        }
-      });
-    }
   }
 
-  // Enforce Axodian location is strictly Bangalore, KA (On-Site)
+  // Universal Rule: Clean education of any coursework strings across ALL archetypes
+  if (optimized.education) {
+    optimized.education.forEach(edu => {
+      if (edu.details && /Coursework/i.test(edu.details)) {
+        edu.details = edu.details.replace(/•?\s*Relevant Coursework:.*$/i, '').trim();
+      }
+    });
+  }
+
+  // Universal Rule: Enforce Axodian location is strictly Bangalore, KA (On-Site)
   if (optimized.experience) {
     optimized.experience.forEach(exp => {
       if (exp.company && exp.company.toLowerCase().includes('axodian')) {

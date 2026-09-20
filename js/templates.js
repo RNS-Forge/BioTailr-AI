@@ -131,121 +131,6 @@ export const RESUME_ARCHETYPES = {
     }
   },
 
-  // 1B. Dedicated Software Development Engineer Archetype (Calibrated for SDE / Backend / WEX)
-  sde: {
-    id: 'sde',
-    name: 'Software Development Engineer',
-    category: 'Software Engineering / Microservices / C# & Python',
-    description: 'Specialized in C#, Python, ASP.NET Core RESTful APIs, Microservices, RDBMS (PostgreSQL, MySQL, MS SQL), React.js, Docker, CI/CD, and TDD.',
-    defaultRole: 'Software Development Engineer',
-    baseFile: 'Developer Resume.html',
-    profile: {
-      fullName: 'SANJAY N',
-      title: 'Software Development Engineer',
-      email: '2005sanjaynrs@gmail.com',
-      phone: '+91 93615 99018',
-      location: 'Coimbatore, Tamil Nadu',
-      portfolio: 'https://rns-forge.github.io/RNS_Professional_Profile/',
-      github: 'https://github.com/RNS-Forge',
-      linkedin: 'www.linkedin.com/in/sanjay--n',
-      summary: 'Results-driven Software Development Engineer with experience in architecting scalable microservices, RESTful APIs, and enterprise web solutions using C#, Python, and modern RDBMS (PostgreSQL, MySQL, MS SQL). Proven track record across Axodian, Nexus Horizon, and SNS Square in engineering multi-service integrations, enforcing Test-Driven Development (TDD), optimizing database queries, and cutting API error rates by 30%. Adept at collaborating with cross-functional product and engineering teams to deliver high-availability, maintainable software systems.',
-      skills: [
-        'C#', 'Python', 'SQL', 'JavaScript', 'TypeScript', 'ASP.NET Core',
-        'RESTful APIs', 'Microservices', 'PostgreSQL', 'MySQL', 'MS SQL',
-        'React.js', 'Node.js', 'Docker', 'Git', 'GitHub Actions', 'CI/CD',
-        'TDD / BDD', 'Azure', 'Object-Oriented Design'
-      ],
-      skillCategories: {
-        'Programming Languages': 'C#, Python, SQL, JavaScript, TypeScript, HTML/CSS',
-        'Frameworks & Architecture': 'ASP.NET Core, RESTful APIs, Microservices Architecture, TDD / BDD, React.js, Node.js',
-        'Databases & Cloud': 'MS SQL Server, PostgreSQL, MySQL, Docker, Azure, Git, GitHub Actions (CI/CD)',
-        'Core Competencies': 'Object-Oriented Design (OOD), API Design & Integration, Database Optimization, Agile / Scrum'
-      },
-      experience: [
-        {
-          id: 'sde_exp_1',
-          role: 'Software Engineer Intern',
-          company: 'Axodian',
-          project: 'OneDoc, OneCompliance',
-          companyUrl: 'https://axodian.com/',
-          period: 'June 2026 - Present',
-          location: 'Bangalore, KA (On-Site)',
-          relevant: true,
-          highlights: [
-            'Architected enterprise trade finance microservices and secure REST APIs with the IBDIC ecosystem, processing 10,000+ financial transactions with 99.8% compliance accuracy.',
-            'Architected multi-service architecture integrating EDPMS, IDPMS, real-time banking connectivity, SAP, and Tally, reducing manual transaction reconciliation cycle times by 40%.',
-            'Implemented automated data verification engines and relational database schemas (SQL/PostgreSQL), accelerating transaction clearance throughput by 35%.',
-            'Enforced Test-Driven Development (TDD) and CI/CD pipelines with GitHub Actions, maintaining 90%+ automated test coverage and zero critical defect escapes.'
-          ]
-        },
-        {
-          id: 'sde_exp_2',
-          role: 'Front-end Developer Intern',
-          company: 'Nexus Horizon',
-          project: 'Faculties.ai',
-          companyUrl: 'https://nexushorizon.ltd/#about',
-          period: 'Sep 2025 - Apr 2026',
-          location: 'Remote',
-          relevant: true,
-          highlights: [
-            'Architected scalable, responsive web interfaces for enterprise academic workflows at Faculties.ai, serving 5,000+ active faculty members and students.',
-            'Engineered robust frontend client components and integrated them with backend microservices via REST APIs, reducing API response handling errors by 30% and decreasing latency by 25%.',
-            'Developed responsive, accessible UI modules using React and TypeScript, achieving 95+ Google Lighthouse performance scores across all device viewports.'
-          ]
-        },
-        {
-          id: 'sde_exp_3',
-          role: 'Software Developer Intern',
-          company: 'SNS Square',
-          project: 'Evaluation Suite, Assessment Platform, Aggregator',
-          companyUrl: 'https://www.snssquare.com/',
-          period: 'Aug 2024 - Sep 2025',
-          location: 'Coimbatore, TN (On-Site)',
-          relevant: true,
-          highlights: [
-            'Engineered full-stack modules and implemented core backend processing logic across 3 enterprise assessment platforms (Evaluation Suite, Assessment Platform, Aggregator).',
-            'Designed, tested, and analyzed requirements for automated evaluation platforms, validating over 15,000+ test submissions.',
-            'Increased database query throughput and system reliability by 15%, improving project delivery milestone velocity by 10% through end-to-end automated testing.'
-          ]
-        }
-      ],
-      projects: [
-        {
-          name: 'Loan Eligibility Evaluation System',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
-          tech: 'Python, C#, REST APIs, SQL Database, Scikit-learn',
-          description: 'Automated credit evaluation system that reduced manual verification by 12% and improved applicant screening accuracy by 15% across 2,000+ applicant records.'
-        },
-        {
-          name: 'DocuMirror Enterprise Document Processing Platform',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
-          tech: 'Python, RESTful APIs, PostgreSQL, Document Engine',
-          description: 'Scalable document management platform with REST API endpoints, image-to-HTML conversion, and structured PDF generation with 99.2% extraction precision.'
-        },
-        {
-          name: 'AgriBridge B2B Marketplace Platform',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
-          tech: 'Full-Stack Web, Node.js, Express, MongoDB, REST APIs',
-          description: 'Global commercial marketplace platform connecting 500+ agricultural suppliers, exporters, and enterprise buyers with real-time order processing.'
-        }
-      ],
-      education: [
-        {
-          degree: 'B.Tech in Artificial Intelligence & Machine Learning',
-          institution: 'SNS College of Technology',
-          year: 'Nov 2022 - Apr 2026',
-          location: 'Coimbatore, Tamil Nadu',
-          details: 'CGPA: 8.38 / 10'
-        }
-      ],
-      certifications: [
-        'Oracle Certified Foundations Associate completed with 92% and Postman API Student Expert certified.',
-        'NPTEL Industry 4.0 Certification, NASSCOM Digital Edge completed with an honors score of 81%.',
-        'Salesforce Certified Associate completed with scores above 80%.'
-      ]
-    }
-  },
-
   // 2. Full Stack Developer Archetype (from FSD Resume.html)
   fsd: {
     id: 'fsd',
@@ -378,7 +263,7 @@ export const RESUME_ARCHETYPES = {
     name: 'Business Analyst & Client Handling',
     category: 'Business Analysis / Client Relations / Operations',
     description: 'Specialized in client acquisition, requirement gathering, functional specifications, stakeholder management, and cross-functional coordination.',
-    defaultRole: 'Business Analyst & Client Relations Specialist',
+    defaultRole: 'Business Analyst | Client Handling',
     baseFile: 'Communication Resume.html',
     profile: {
       fullName: 'SANJAY N',
@@ -388,7 +273,7 @@ export const RESUME_ARCHETYPES = {
       location: 'Coimbatore, Tamil Nadu',
       portfolio: 'https://rns-forge.github.io/RNS_Professional_Profile/',
       linkedin: 'www.linkedin.com/in/sanjay--n',
-      summary: 'Customer-focused and detail-oriented Business Analyst with proven experience in client communication, stakeholder management, requirement engineering, and cross-functional coordination at SNS Square. Skilled in translating complex enterprise business requirements into clear functional specifications, facilitating technical team alignment, resolving queries under 4 hours, and maintaining a 98% client satisfaction rating.',
+      summary: 'Customer-focused and detail-oriented professional with experience in client communication, requirement gathering, and business analysis. Skilled in managing client relationships, understanding business needs, and coordinating with technical teams to deliver effective solutions. Strong ability to handle queries, resolve issues, and ensure customer satisfaction in fast-paced environments.',
       skills: [
         'Client Acquisition', 'Requirement Gathering', 'Functional Specifications', 'Client Handling',
         'Active Listening & Problem Solving', 'Relationship Management', 'Market Analysis',
@@ -396,7 +281,7 @@ export const RESUME_ARCHETYPES = {
       ],
       skillCategories: {
         'Tools & Technologies': 'MS Office (Excel, Word, PowerPoint), Basic CRM Tools, Email & Chat Support Systems, Internet & Data Handling',
-        'Key Competencies': 'Client Acquisition, Active Listening & Problem Solving, Communication, Client Handling, Time Management, Relationship Management, Market Analysis'
+        'Key Skills': 'Client Acquisition, Active Listening & Problem Solving, Communication, Client Handling, Problem-Solving, Time Management, Relationship Management, Market Analysis'
       },
       experience: [
         {
@@ -407,34 +292,33 @@ export const RESUME_ARCHETYPES = {
           location: 'Coimbatore, TN',
           relevant: true,
           highlights: [
-            'Orchestrated client relationships as primary point of contact across 12+ enterprise accounts, maintaining a 98% client satisfaction rating.',
-            'Gathered and analyzed complex business requirements, authoring 25+ detailed functional specification documents for cross-functional engineering teams.',
-            'Coordinated daily sprint standups with developers to ensure 100% on-time milestone delivery and alignment with client business objectives.',
-            'Resolved 150+ client technical and workflow queries with an average turnaround time under 4 hours, cutting issue escalation rates by 28%.'
+            'Managed client relationships by acting as a primary point of contact for communication and support.',
+            'Gathered and analyzed client requirements and translated them into clear functional specifications.',
+            'Coordinated with developers and technical teams to ensure accurate implementation of client needs.',
+            'Handled client queries, provided timely updates, and ensured smooth project communication.'
           ]
         }
       ],
       education: [
         {
-          degree: 'B.Tech in Artificial Intelligence & Machine Learning',
-          institution: 'SNS College of Technology',
+          degree: 'UG - B.Tech (AIML)',
+          institution: 'SNS COLLEGE OF TECHNOLOGY',
           year: 'Nov 2022 - Jun 2026',
           location: 'Coimbatore, Tamil Nadu',
-          details: 'CGPA: 8.38 / 10'
+          details: 'Final CGPA: 8.38'
         },
         {
-          degree: 'HSC & SSLC Schooling',
+          degree: 'Schooling (HSC & SSLC)',
           institution: 'S.R.C Memorial Matric Higher Secondary School',
           year: 'Jun 2020 - May 2022',
           location: 'Coimbatore, Tamil Nadu',
-          details: 'HSC (Computer Science): 79% • SSLC: 60%'
+          details: 'HSC (CS): 79% • SSLC: 60%'
         }
       ],
       languages: 'English (Fluent) • Tamil (Native)',
       certifications: [
-        'Salesforce AI Associate & Agentforce Specialist',
-        'Oracle AI Foundations Associate (92%)',
-        'NASSCOM Digital Edge Certification (81%)'
+        'NPTEL IoT 4.0 Certification, NASSCOM Digital edge completed with a score of 81%.',
+        'Completed Effective Communication Certification from Tata Consultancy Services (TCS iON).'
       ]
     }
   },
@@ -445,7 +329,7 @@ export const RESUME_ARCHETYPES = {
     name: 'Quality Checker & Inspection',
     category: 'Quality Assurance / ISO 9001:2015 / Manufacturing',
     description: 'Specialized in incoming, in-process, and final inspection of CNC-turned components, close-tolerance metrology, Cpk monitoring, and PPAP documentation.',
-    defaultRole: 'Quality Inspector / Quality Control Specialist',
+    defaultRole: 'Quality Checker | Quality Control & Inspection',
     baseFile: 'Manufacturing.html',
     profile: {
       fullName: 'SANJAY N',
@@ -455,7 +339,7 @@ export const RESUME_ARCHETYPES = {
       location: 'Coimbatore, Tamil Nadu',
       portfolio: 'https://rns-forge.github.io/RNS_Professional_Profile/',
       linkedin: 'www.linkedin.com/in/sanjay--n',
-      summary: 'Detail-oriented Quality Checker with 6 months of hands-on precision metrology experience in incoming, in-process, patrol, and final inspection of CNC-turned steel bar components at Anvil Automation (ISO 9001:2015 certified unit running 3 shifts). Skilled in using digital/dial vernier calipers, micrometers, height gauges, bore gauges, and digital air gauges to verify close tolerances, monitoring Cpk capability against 1.66+ plant targets, and executing PPAP/NCR quality documentation.',
+      summary: 'Detail-oriented Quality Checker with 6 months of hands-on experience in incoming, in-process, patrol and final inspection of CNC-turned steel bar components at Anvil Automation, an ISO 9001:2015 precision manufacturing unit running 3 shifts. Skilled in using vernier calipers, micrometers, height gauges, bore gauges and air gauges to verify close-tolerance dimensions, and in recording defects, supporting corrective actions and maintaining quality documentation. B.Tech graduate in Artificial Intelligence & Machine Learning (CGPA 8.38). Seeking a Quality Inspector / Quality Control role in a precision manufacturing company.',
       skills: [
         'Incoming & In-Process Inspection', 'Final Outgoing Inspection', 'Vernier Calipers (Digital & Dial)',
         'Micrometers', 'Height Gauges', 'Bore Gauge Sets', 'Digital Air Gauges',
@@ -464,10 +348,9 @@ export const RESUME_ARCHETYPES = {
         'CNC Turning Inspection', 'MS Excel & Quality Logs'
       ],
       skillCategories: {
-        'Inspection Types': 'Incoming material inspection, in-process inspection, patrol inspection, final outgoing inspection',
-        'Instruments': 'Vernier caliper (digital & dial), micrometer, height gauge (digital & dial), bore gauge set, digital air gauge',
-        'Quality Tools & Systems': 'ISO 9001:2015, PPAP documentation support, process capability (Cpk) monitoring, non-conformance reporting, root cause analysis, internal audits',
-        'Manufacturing Knowledge': 'CNC turning (turning, grooving, threading, boring, facing), steel bar stock, close-tolerance machining, blueprint reading'
+        'Inspection & Quality Skills': 'Incoming material inspection, in-process inspection, patrol inspection, final outgoing inspection, Vernier caliper, micrometer, height gauge, bore gauge set, digital air gauge, ISO 9001:2015, PPAP documentation, Cpk monitoring, non-conformance reporting, root cause analysis',
+        'Manufacturing Knowledge': 'CNC turning (turning, grooving, threading, boring, facing), steel bar stock, close-tolerance machining, blueprint / drawing reading',
+        'Professional & Software': 'Attention to detail, accuracy, communication, teamwork, problem solving, time management, shift-based working, MS Excel, MS Word, MS PowerPoint'
       },
       experience: [
         {
@@ -479,26 +362,27 @@ export const RESUME_ARCHETYPES = {
           location: 'Coimbatore, TN',
           relevant: true,
           highlights: [
-            'Spearheaded incoming inspection of steel bar stock for size, length, and surface integrity against technical drawings prior to CNC turning release.',
-            'Verified critical close-tolerance dimensions, grooves, threads, and surface finishes on CNC-turned components across 3 continuous shifts.',
-            'Conducted rigorous final outgoing quality audits on finished steel bar lots, certifying 100% conforming batches for client dispatch.',
-            'Operated precision vernier calipers, micrometers, height gauges, bore gauges, and digital air gauges calibrated to NABL standards.',
-            'Monitored process capability (Cpk) against plant quality benchmarks (minimum 1.66, target 1.70), reducing dimension drift by 22%.',
-            'Identified and quarantined non-conforming parts, logged defects in NCR registers, and executed 8D root cause corrective actions.',
-            'Maintained comprehensive inspection logs and defect tracking registers in MS Excel; supported PPAP documentation and ISO 9001:2015 internal audits.'
+            'Incoming inspection: checked steel bar stock for size, length and condition against specification before release to the CNC turning section.',
+            'In-process and patrol inspection: verified critical dimensions, grooves, threads, bores, facing and surface finish on CNC-turned steel bar components across 3 working shifts.',
+            'Final inspection: performed final outgoing quality checks on finished steel bar components, releasing only conforming lots for dispatch.',
+            'Measuring instruments: used digital and dial vernier calipers, micrometers, digital and dial height gauges, bore gauge sets and digital air gauge units for close-tolerance checks; worked with instruments maintained to NABL-accredited calibration standards.',
+            'Process capability: monitored inspection data and Cpk trends against the plant\'s quality targets (minimum 1.66, target 1.70) and flagged drift to the production team.',
+            'Non-conformance handling: identified, tagged and segregated rejected parts, documented defects, and coordinated with CNC operators and supervisors on containment and corrective action.',
+            'Documentation: maintained inspection reports, checklists and defect logs in MS Excel and Word; supported PPAP documentation and internal quality audits.',
+            'Quality system: followed ISO 9001:2015 procedures, SOPs, 5S and shop-floor safety practices.'
           ]
         }
       ],
       education: [
         {
-          degree: 'B.Tech in Artificial Intelligence & Machine Learning',
+          degree: 'B.Tech, Artificial Intelligence & Machine Learning',
           institution: 'SNS College of Technology',
           year: 'Nov 2022 - Jun 2026',
           location: 'Coimbatore, Tamil Nadu',
           details: 'CGPA: 8.38 / 10'
         },
         {
-          degree: 'HSC & SSLC Schooling',
+          degree: 'Schooling (HSC & SSLC)',
           institution: 'S.R.C Memorial Matric Higher Secondary School',
           year: 'Jun 2020 - May 2022',
           location: 'Coimbatore, Tamil Nadu',

@@ -13,9 +13,9 @@ import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml } from './
 const state = {
   currentView: 'entry',
   targetRole: 'Software Development Engineer',
-  selectedArchetypeId: 'sde',
+  selectedArchetypeId: 'developer',
   currentProfile: null,
-  activeModelName: 'Google Gemini Flash',
+  activeModelName: 'BioTailr Dynamic AI Engine',
   atsData: null,
   liveEdit: false
 };
@@ -34,7 +34,7 @@ function initApp() {
   initStudioSplitter();
 
   // Pre-initialize default profile & ATS data so Studio is never blank
-  state.selectedArchetypeId = 'sde';
+  state.selectedArchetypeId = 'developer';
   state.targetRole = 'Software Development Engineer';
   state.viewMode = 'tailored';
   const baseProfile = RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
@@ -1057,9 +1057,11 @@ function setResumeViewMode(mode) {
     if (headingEl) headingEl.textContent = '100% ATS Verified';
     if (descEl) descEl.textContent = 'Resume meets all 6 primary ATS parsing criteria for this position.';
 
-    // Ensure profile is optimized for current archetype
-    const baseProfile = RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
-    state.currentProfile = optimizeProfileFor100Ats(baseProfile, state.targetRole, state.selectedArchetypeId);
+    // Preserve existing tailored profile or optimize from base if none exists yet
+    if (!state.currentProfile) {
+      const baseProfile = RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
+      state.currentProfile = optimizeProfileFor100Ats(baseProfile, state.targetRole, state.selectedArchetypeId);
+    }
     state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
     renderAtsChecklist();
 

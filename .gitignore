@@ -16,4 +16,4 @@ Thumbs.db
 test-*.cjs
 test-*.html
 test_out.png
-ui/test_*.png
+ui/
