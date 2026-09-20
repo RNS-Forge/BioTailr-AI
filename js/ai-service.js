@@ -47,79 +47,143 @@ export function saveApiKeys(geminiKey, groqKey) {
  * 3. communication: Business Analyst & Client Handling
  * 4. manufacturing: Quality Checker & Precision Manufacturing
  */
-export function matchArchetype(targetRole) {
-  const roleLower = (targetRole || '').toLowerCase();
+/**
+ * Dynamic Multi-Vector Domain Classifier
+ * Dynamically computes semantic affinities across role title and context
+ * without rigid static single-string checks.
+ */
+export function matchArchetype(targetRole, refinements = '') {
+  const text = `${targetRole || ''} ${refinements || ''}`.toLowerCase();
   
-  // 1. Manufacturing & Quality Control (Track 04 -> Manufacturing.html style)
-  if (roleLower.includes('quality') || roleLower.includes('qc') || 
-      roleLower.includes('qa') || roleLower.includes('manufacturing') || 
-      roleLower.includes('inspection') || roleLower.includes('inspector') ||
-      roleLower.includes('cnc') || roleLower.includes('mechanical') || 
-      roleLower.includes('checker') || roleLower.includes('production') || 
-      roleLower.includes('caliper') || roleLower.includes('ppap') || 
-      roleLower.includes('machining') || roleLower.includes('metrology') ||
-      roleLower.includes('steel bar') || roleLower.includes('precision')) {
-    return 'manufacturing';
+  // Dynamic semantic vector dictionaries
+  const DOMAIN_VECTORS = {
+    manufacturing: {
+      primary: [
+        'quality', 'qc', 'qa', 'manufacturing', 'inspection', 'inspector', 'metrology',
+        'caliper', 'micrometer', 'gauge', 'ppap', 'cpk', 'ncr', 'machining', 'cnc',
+        'turning', 'blueprint', 'dimension', 'tolerance', 'steel bar', 'precision',
+        'calipers', 'micrometers', 'gauges', 'first piece', 'patrol inspection'
+      ],
+      secondary: [
+        'mechanical', 'production', 'checker', 'assembly', 'fabrication', 'workshop',
+        'iso 9001', 'audit', 'defect', 'sampling', 'plant', 'maintenance', 'shop floor'
+      ]
+    },
+    communication: {
+      primary: [
+        'voice', 'bpo', 'telecall', 'telecaller', 'telecalling', 'call center',
+        'customer service', 'customer support', 'chat support', 'inbound', 'outbound',
+        'client handling', 'client relationship', 'voice process', 'voice executive'
+      ],
+      secondary: [
+        'business analyst', 'communication', 'account manager', 'client', 'support',
+        'sales', 'relationship', 'market analysis', 'customer', 'operations', 'sla',
+        'escalation', 'representative', 'liaison', 'customer success', 'helpdesk'
+      ]
+    },
+    fsd: {
+      primary: [
+        'full stack', 'fullstack', 'fsd', 'frontend', 'front-end', 'web developer',
+        'ui developer', 'web engineer', 'react', 'angular', 'vue', 'nextjs', 'css/html', 'tailwind'
+      ],
+      secondary: [
+        'node', 'express', 'django', 'flask', 'responsive', 'web application', 'ui/ux',
+        'javascript developer', 'html5', 'css3'
+      ]
+    },
+    developer: {
+      primary: [
+        'software development engineer', 'sde', 'software engineer', 'backend engineer',
+        'backend developer', 'software dev', 'core engineer', 'systems engineer',
+        'engineer 1', 'engineer i', 'c# developer', 'python developer', 'java developer',
+        'ai engineer', 'ml engineer', 'machine learning', 'agentic ai', 'data engineer'
+      ],
+      secondary: [
+        'software', 'developer', 'backend', 'algorithms', 'data structures', 'microservices',
+        'api', 'database', 'cloud', 'system', 'c#', 'dotnet', '.net', 'sql', 'python', 'java'
+      ]
+    }
+  };
+
+  const domainScores = {
+    manufacturing: 0,
+    communication: 0,
+    fsd: 0,
+    developer: 0
+  };
+
+  for (const [domain, vectors] of Object.entries(DOMAIN_VECTORS)) {
+    // Primary keywords weigh 6 points
+    for (const kw of vectors.primary) {
+      if (text.includes(kw)) {
+        domainScores[domain] += 6;
+      }
+    }
+    // Secondary keywords weigh 2 points
+    for (const kw of vectors.secondary) {
+      if (text.includes(kw)) {
+        domainScores[domain] += 2;
+      }
+    }
   }
 
-  // 2. Voice Process, BPO, Communication, Customer Service, Business Analyst (Track 03 -> Communication Resume.html style)
-  if (roleLower.includes('voice') || roleLower.includes('bpo') || 
-      roleLower.includes('call center') || roleLower.includes('telecall') || 
-      roleLower.includes('telecaller') || roleLower.includes('customer service') || 
-      roleLower.includes('customer support') || roleLower.includes('chat support') || 
-      roleLower.includes('inbound') || roleLower.includes('outbound') || 
-      roleLower.includes('business analyst') || roleLower.includes('client') || 
-      roleLower.includes('communication') || roleLower.includes('account manager') || 
-      roleLower.includes('support') || roleLower.includes('sales') || 
-      roleLower.includes('relationship') || roleLower.includes('market analysis') || 
-      roleLower.includes('customer') || roleLower.includes('operations')) {
-    return 'communication';
+  // Find the domain with highest dynamic score
+  let bestDomain = 'developer';
+  let highestScore = 0;
+
+  for (const [domain, score] of Object.entries(domainScores)) {
+    if (score > highestScore) {
+      highestScore = score;
+      bestDomain = domain;
+    }
   }
 
-  // 3. Full Stack & Frontend Web Development (Track 02 -> FSD style)
-  if (roleLower.includes('full stack') || roleLower.includes('fullstack') || 
-      roleLower.includes('fsd') || roleLower.includes('frontend') || 
-      roleLower.includes('front-end') || roleLower.includes('web developer') || 
-      roleLower.includes('ui developer') || roleLower.includes('web engineer') || 
-      roleLower.includes('angular') || roleLower.includes('vue') ||
-      roleLower.includes('django')) {
-    return 'fsd';
-  }
-
-  // 4. Default: AI Engineer & Software Developer (Track 01 -> Developer Resume.html style)
-  // For SDE, Backend, Software Engineer, AI, ML, Data - uses developer base and AI dynamically tailors it!
-  return 'developer';
+  return bestDomain;
 }
 
 /**
- * Main AI Tailor method with automatic fallback chain
+ * Main AI Tailor method with dynamic domain classification and automatic fallback chain
  */
 export async function tailorResumeWithAi(targetRole, userRefinements = '') {
-  const archetypeId = matchArchetype(targetRole);
-  const baseProfile = JSON.parse(JSON.stringify(RESUME_ARCHETYPES[archetypeId].profile));
+  // Step 1: Initial dynamic semantic domain identification
+  let archetypeId = matchArchetype(targetRole, userRefinements);
+  let baseProfile = JSON.parse(JSON.stringify(RESUME_ARCHETYPES[archetypeId].profile));
+  
   await fetchEnvKeys();
   const { geminiKey, groqKey } = getStoredApiKeys();
 
   let tailoredProfile = null;
   let modelUsed = 'BioTailr Dynamic AI Engine';
 
-  // 1. Try Google Gemini API
+  // 1. Try Google Gemini API (AI dynamically analyzes and chooses domain)
   if (geminiKey && geminiKey.length > 10) {
     try {
-      console.log('Attempting primary: Google Gemini API...');
+      console.log('Attempting primary: Google Gemini API with Dynamic Domain Detection...');
       tailoredProfile = await callGeminiApi(geminiKey, targetRole, baseProfile, userRefinements);
-      modelUsed = 'Google Gemini Flash';
+      if (tailoredProfile) {
+        if (tailoredProfile.detectedDomain && ['manufacturing', 'communication', 'developer', 'fsd'].includes(tailoredProfile.detectedDomain.toLowerCase().trim())) {
+          archetypeId = tailoredProfile.detectedDomain.toLowerCase().trim();
+          console.log(`Gemini AI dynamically classified domain as: ${archetypeId}`);
+        }
+        modelUsed = 'Google Gemini Flash';
+      }
     } catch (geminiError) {
       console.warn('Gemini API failed, initiating Groq fallback:', geminiError.message);
     }
   }
 
-  // 2. Try Groq API Fallback
+  // 2. Try Groq API Fallback (AI dynamically analyzes and chooses domain)
   if (!tailoredProfile && groqKey && groqKey.length > 10) {
     try {
-      console.log('Attempting secondary fallback: Groq Llama 3.3...');
+      console.log('Attempting secondary fallback: Groq Llama 3.3 with Dynamic Domain Detection...');
       tailoredProfile = await callGroqApi(groqKey, targetRole, baseProfile, userRefinements);
-      modelUsed = 'Groq Llama 3.3 70B';
+      if (tailoredProfile) {
+        if (tailoredProfile.detectedDomain && ['manufacturing', 'communication', 'developer', 'fsd'].includes(tailoredProfile.detectedDomain.toLowerCase().trim())) {
+          archetypeId = tailoredProfile.detectedDomain.toLowerCase().trim();
+          console.log(`Groq AI dynamically classified domain as: ${archetypeId}`);
+        }
+        modelUsed = 'Groq Llama 3.3 70B';
+      }
     } catch (groqError) {
       console.warn('Groq API failed, initiating Smart Dynamic Engine fallback:', groqError.message);
     }
@@ -128,7 +192,7 @@ export async function tailorResumeWithAi(targetRole, userRefinements = '') {
   // 3. Guaranteed Local Dynamic Synthesizer
   if (!tailoredProfile) {
     console.log('Engaging built-in BioTailr Dynamic Engine...');
-    tailoredProfile = generateLocalSmartTailoring(baseProfile, targetRole, userRefinements);
+    tailoredProfile = generateLocalSmartTailoring(baseProfile, targetRole, userRefinements, archetypeId);
     modelUsed = 'BioTailr Dynamic Synthesizer';
   }
 
@@ -161,7 +225,7 @@ export async function tailorResumeWithAi(targetRole, userRefinements = '') {
 
   // Rule 4: Cleanse mismatched domain skills if target role is non-AI (e.g. SDE, QC, Communication)
   const roleLower = (targetRole || '').toLowerCase();
-  const isSde = (
+  const isSde = archetypeId === 'developer' && (
     (roleLower.includes('software') || roleLower.includes('sde') || roleLower.includes('backend') || roleLower.includes('engineer 1') || roleLower.includes('development engineer')) &&
     !roleLower.includes('agentic') && !roleLower.includes('ai engineer') && !roleLower.includes('ml engineer')
   );
@@ -250,57 +314,58 @@ async function callGroqApi(apiKey, targetRole, baseProfile, refinements) {
  * Local Dynamic Synthesizer: Runs 100% client-side with dynamic contextual generation
  * Generates summary, skills, experience, and projects dynamically without static fixed info.
  */
-function generateLocalSmartTailoring(baseProfile, targetRole, refinements) {
+/**
+ * Local Dynamic Synthesizer: Runs client-side with dynamic contextual generation.
+ * Generates summary, skills, experience, and projects dynamically based on the dynamically detected domain.
+ */
+function generateLocalSmartTailoring(baseProfile, targetRole, refinements, domain) {
   const profile = JSON.parse(JSON.stringify(baseProfile));
+  const activeDomain = domain || matchArchetype(targetRole, refinements);
   const roleLower = (targetRole || '').toLowerCase();
 
   // 1. Dynamic Role Title
   profile.title = targetRole;
 
-  // 2. Dynamic Domain Detection
-  const isSde = (
-    roleLower.includes('software development engineer') ||
-    roleLower.includes('software engineer') ||
+  // 2. Domain Flag Inferences
+  const isMfg = activeDomain === 'manufacturing';
+  const isComm = activeDomain === 'communication';
+  const isFsd = activeDomain === 'fsd';
+  const isDev = activeDomain === 'developer';
+  const isSde = isDev && (
+    roleLower.includes('software') ||
     roleLower.includes('sde') ||
     roleLower.includes('backend') ||
-    roleLower.includes('c#') ||
-    roleLower.includes('.net') ||
-    roleLower.includes('development engineer') ||
     roleLower.includes('engineer 1') ||
-    (roleLower.includes('software') && !roleLower.includes('ai') && !roleLower.includes('agentic'))
+    roleLower.includes('development engineer')
   );
-  const isMfg = roleLower.includes('quality') || roleLower.includes('manufactur') || roleLower.includes('inspection') || roleLower.includes('qc') || roleLower.includes('qa');
-  const isComm = roleLower.includes('analyst') || roleLower.includes('client') || roleLower.includes('business') || roleLower.includes('communication') || roleLower.includes('account');
-  const isFsd = roleLower.includes('full stack') || roleLower.includes('frontend') || roleLower.includes('web developer') || roleLower.includes('react') || roleLower.includes('node') || roleLower.includes('fsd');
 
   // 3. Dynamic Summary Synthesis
   const companiesList = (profile.experience || []).map(e => e.company).filter(Boolean);
   const companiesString = companiesList.length > 0 ? companiesList.join(', ') : 'Axodian, Nexus Horizon, and SNS Square';
 
+  let dynamicSummary = '';
   if (isMfg) {
-    profile.summary = `Detail-oriented ${targetRole} with hands-on precision metrology and inspection experience across incoming, in-process, patrol, and final checks at Anvil Automation (ISO 9001:2015 precision manufacturing). Proficient with vernier calipers, micrometers, height gauges, bore gauges, and air gauges to verify close-tolerance dimensions against engineering drawings. Experienced in Cpk capability tracking, defect quarantine, PPAP documentation, and root cause analysis.`;
+    dynamicSummary = `Detail-oriented ${targetRole} with hands-on precision metrology, quality inspection, and testing experience across incoming, in-process, and final inspection workflows at ${companiesString}. Proficient in operating digital vernier calipers, micrometers, height gauges, and bore gauges to verify tight-tolerance engineering specifications against blueprints, ensuring zero-defect compliance, PPAP documentation, and ISO 9001:2015 standards.`;
   } else if (isComm) {
-    profile.summary = `Results-oriented ${targetRole} with verified expertise in client communication, requirement engineering, and functional specifications at SNS Square. Proven success acting as primary technical liaison, resolving client inquiries under 4 hours, coordinating with cross-functional developer teams, and maintaining a 98% client satisfaction rate.`;
-  } else if (isSde) {
-    profile.summary = `Results-driven ${targetRole} with proven experience in architecting scalable microservices, RESTful APIs, and enterprise software solutions across ${companiesString}. Experienced in relational database optimization, Test-Driven Development (TDD), CI/CD pipelines, and cutting API error rates by 30%. Adept at collaborating with cross-functional product and engineering teams to deliver robust, high-availability software.`;
+    dynamicSummary = `High-impact ${targetRole} with verified expertise in voice process operations, customer relationship management, SLA adherence, and requirement gathering across ${companiesString}. Adept at managing client escalations, resolving customer inquiries with first-contact resolution, and collaborating with cross-functional technical teams to maintain 98%+ satisfaction.`;
   } else if (isFsd) {
-    profile.summary = `Dynamic ${targetRole} skilled in modern frontend and backend web architecture across ${companiesString}. Experienced in delivering responsive web applications, integrating robust RESTful APIs, optimizing frontend workflows by 40%, and building scalable user-facing features.`;
+    dynamicSummary = `Versatile ${targetRole} skilled in modern frontend and backend web architecture across ${companiesString}. Experienced in delivering responsive web applications, integrating robust RESTful APIs, optimizing frontend workflows by 40%, and building scalable user-facing features.`;
+  } else if (isSde) {
+    dynamicSummary = `Results-driven ${targetRole} with proven experience in architecting scalable microservices, RESTful APIs, and enterprise software solutions across ${companiesString}. Experienced in relational database optimization, Test-Driven Development (TDD), CI/CD pipelines, and cutting API error rates by 30%. Adept at collaborating with cross-functional product and engineering teams to deliver robust, high-availability software.`;
   } else {
-    profile.summary = `Innovator and ${targetRole} with hands-on experience building high-throughput systems, scalable APIs, and intelligent automation across ${companiesString}. Proven track record integrating real-time services, boosting assessment precision by 15%, and reducing delivery cycle times by 40%.`;
+    dynamicSummary = `Innovator and ${targetRole} with hands-on experience building high-throughput systems, scalable APIs, and intelligent automation across ${companiesString}. Proven track record integrating real-time services, boosting assessment precision by 15%, and reducing delivery cycle times by 40%.`;
   }
 
   // Incorporate custom user refinements into summary if provided
   if (refinements && refinements.trim().length > 0) {
-    profile.summary += ` Specialized emphasis on ${refinements.trim()}.`;
+    dynamicSummary += ` Specialized focus on ${refinements.trim()}.`;
   }
+  profile.summary = dynamicSummary;
 
   // 4. Dynamic Skill Curation & Pruning
   if (isSde) {
-    // Dynamically prune AI-agent buzzwords and inject required SDE competencies
-    const aiBuzzwords = ['agentic ai', 'crew ai', 'autogen', 'langgraph', 'langchain', 'rag', 'llm', 'document intelligence', 'prompt engineering', 'genai', 'tensorflow', 'opencv'];
     const dynamicSdeSkills = ['C#', 'Python', 'SQL', 'RESTful APIs', 'Microservices', 'ASP.NET Core', 'PostgreSQL', 'MySQL', 'MS SQL', 'Docker', 'Git', 'GitHub Actions', 'CI/CD', 'TDD / BDD', 'React.js', 'Node.js', 'Object-Oriented Design'];
     
-    // Check if targetRole specifies custom languages (e.g. Java, C#, Go, Python)
     ['Java', 'C#', 'Python', 'C++', 'Go', 'Ruby', 'TypeScript'].forEach(lang => {
       if (roleLower.includes(lang.toLowerCase()) && !dynamicSdeSkills.includes(lang)) {
         dynamicSdeSkills.unshift(lang);
@@ -321,12 +386,22 @@ function generateLocalSmartTailoring(baseProfile, targetRole, refinements) {
       'ISO 9001:2015 Procedures', 'PPAP Documentation', 'Cpk Capability Monitoring',
       'Non-Conformance Reporting (NCR)', 'Root Cause Analysis', 'Blueprint Reading', 'CNC Turning Inspection'
     ];
+    profile.skillCategories = {
+      'Inspection Tools': 'Vernier Calipers (Digital & Dial), Outside Micrometers, Height Gauge, Bore Gauge, Air Gauges',
+      'Quality & Standards': 'ISO 9001:2015 Procedures, PPAP Documentation, Cpk Capability Monitoring, NCR, Root Cause Analysis',
+      'Manufacturing Process': 'CNC Turning Inspection, In-Process Patrol Checks, Sampling Inspection, First Piece Inspection'
+    };
   } else if (isComm) {
     profile.skills = [
-      'Client Acquisition', 'Requirement Gathering', 'Functional Specifications', 'Client Handling',
+      'Voice Process & Telecalling', 'Customer Service & SLA Resolution', 'Client Acquisition', 'Requirement Gathering', 'Functional Specifications', 'Client Handling',
       'Active Listening & Problem Solving', 'Relationship Management', 'Market Analysis',
       'Time Management', 'Stakeholder Communication', 'Cross-Functional Coordination'
     ];
+    profile.skillCategories = {
+      'Client & Customer Relations': 'Voice Process, Customer Service, Client Onboarding, SLA Resolution, Escalation Management',
+      'Business Analysis & Tools': 'Requirement Gathering, Functional Specifications, CRM Systems, Market Analysis, MS Office Suite',
+      'Core Communication': 'Active Listening, Professional Voice Etiquette, Stakeholder Reporting, Cross-Functional Coordination'
+    };
   }
 
   // Inject any user refinement keywords dynamically into skills
@@ -339,12 +414,12 @@ function generateLocalSmartTailoring(baseProfile, targetRole, refinements) {
     });
   }
 
-  // 5. Dynamic Work Experience Transformation (No static arrays)
+  // 5. Dynamic Work Experience Transformation
   if (profile.experience) {
     profile.experience = dynamicallyTransformExperience(profile.experience, targetRole, isSde, isMfg, isComm);
   }
 
-  // 6. Dynamic Projects Adaptation (No static checks)
+  // 6. Dynamic Projects Adaptation
   if (profile.projects) {
     profile.projects = dynamicallyTransformProjects(profile.projects, targetRole, isSde, isMfg, isComm);
   }
@@ -462,35 +537,53 @@ Tailor Sanjay N's resume profile specifically for the target job role: "${target
 
 User corrections/refinements (if any): "${refinements || 'None'}"
 
-CRITICAL INSTRUCTIONS FOR 100% DYNAMIC GENERATION:
-Do NOT copy canned, static, or fixed text. Dynamically generate every section based on "${targetRole}" and the candidate's authentic background:
+CRITICAL INSTRUCTIONS FOR 100% DYNAMIC DOMAIN DETECTION & GENERATION:
+1. Dynamic Domain Classification:
+   Analyze the target role "${targetRole}" and user refinements to dynamically classify the role into exactly ONE of the following 4 domain archetypes:
+   - "manufacturing": For quality control, inspection, precision metrology, mechanical, CNC, workshop, production, checkers.
+   - "communication": For voice process, BPO, call center, telecalling, customer service, customer support, client handling, business analyst.
+   - "fsd": For full stack development, frontend, web developers, UI engineers.
+   - "developer": For software development engineer (SDE), backend engineer, core software engineer, AI/ML, data engineer.
+   You MUST include the root field "detectedDomain": "manufacturing" | "communication" | "fsd" | "developer" in your JSON output.
 
-1. Dynamic Title & Summary:
+2. Dynamic Title & Summary:
    - Title must be "${targetRole}".
-   - Write a dynamic, highly targeted 3-4 sentence professional summary focusing on the core competencies, scale, and technologies required for "${targetRole}".
+   - Write a dynamic, highly targeted 3-4 sentence professional summary focusing on the core competencies, scale, and technologies required for "${targetRole}". Do NOT use canned or static text.
 
-2. Dynamic Skill Curation (Prune & Inject):
+3. Dynamic Skill Curation (Prune & Inject):
    - Strictly include ONLY skills, tools, and frameworks required for "${targetRole}".
    - For Software Development Engineer / Software Engineer / SDE roles: REMOVE all Agentic AI, Crew AI, AutoGen, LangGraph, LangChain, and LLM prompting buzzwords. Prioritize C#, Python, ASP.NET Core, RESTful APIs, Microservices, RDBMS (PostgreSQL, MS SQL, MySQL), TDD / BDD, Docker, Git, and CI/CD.
    - For Quality Checker / Inspection / Manufacturing roles: REMOVE all coding frameworks. Focus on precision metrology (vernier calipers, micrometers, height gauges, bore gauges, digital air gauges, Cpk monitoring, ISO 9001:2015, PPAP, NCR).
-   - For Business Analyst / Client Handling roles: REMOVE coding frameworks. Focus on client communication, requirement gathering, functional specifications, CRM, stakeholder management.
+   - For Voice Process / BPO / Business Analyst / Client Handling roles: REMOVE coding frameworks. Focus on voice communication, client handling, requirement gathering, SLA adherence, CRM, stakeholder management.
    - For AI / ML Engineer roles: Focus on Python, PyTorch, LangChain, Agentic AI, and RAG architectures.
    - Organize the curated skills into relevant skillCategories.
 
-3. Dynamic Work Experience:
+4. Dynamic Work Experience:
    - Retain authentic companies (Axodian, Nexus Horizon, SNS Square, Anvil Automation) and true date periods.
    - Rephrase bullet points to highlight competencies and achievements relevant to "${targetRole}" using high-impact power action verbs (Architected, Engineered, Spearheaded, Inspected, Optimized) and quantified metrics (%, $, scale).
    - If Axodian is present in experience, its location MUST strictly be "Bangalore, KA (On-Site)".
 
-4. Dynamic Projects:
+5. Dynamic Projects:
    - Rephrase project descriptions to highlight the technical stack, architecture, and metrics that align with "${targetRole}".
 
-5. Universal Education Cleanse:
+6. Universal Education Cleanse:
    - Under education details, output ONLY the CGPA/percentage (e.g. "CGPA: 8.38 / 10").
    - NEVER output any coursework lines like "Relevant Coursework: Deep Learning, Natural Language Processing, Algorithms, DBMS" or similar.
 
-Return ONLY a valid JSON object matching the exact schema below:
-
-${JSON.stringify(baseProfile, null, 2)}
+Return ONLY a valid JSON object matching the schema below:
+{
+  "detectedDomain": "manufacturing | communication | fsd | developer",
+  "fullName": "${baseProfile.fullName}",
+  "title": "${targetRole}",
+  "email": "${baseProfile.email}",
+  "phone": "${baseProfile.phone}",
+  "location": "${baseProfile.location}",
+  "summary": "...",
+  "skills": [...],
+  "skillCategories": {...},
+  "experience": [...],
+  "projects": [...],
+  "education": [...]
+}
 `;
 }
