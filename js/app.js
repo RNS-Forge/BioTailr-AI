@@ -462,12 +462,30 @@ function bindStudioEvents() {
   // 4 Raw Resumes Menu Dropdown Trigger & Actions
   const btnRawMenu = document.getElementById('btn-raw-resumes-menu');
   const panelRaw = document.getElementById('raw-resumes-panel');
+  const navScrollWrap = document.getElementById('studio-nav-scroll-wrap') || document.querySelector('.studio-header');
+
+  function updateRawPanelPosition() {
+    if (!panelRaw || !btnRawMenu || !panelRaw.classList.contains('active')) return;
+    const rect = btnRawMenu.getBoundingClientRect();
+    panelRaw.style.position = 'fixed';
+    panelRaw.style.top = `${rect.bottom + 8}px`;
+    const panelWidth = Math.min(450, window.innerWidth - 32);
+    let left = rect.left;
+    if (left + panelWidth > window.innerWidth - 16) {
+      left = Math.max(16, window.innerWidth - panelWidth - 16);
+    }
+    panelRaw.style.left = `${left}px`;
+    panelRaw.style.maxWidth = `${window.innerWidth - 32}px`;
+  }
 
   if (btnRawMenu && panelRaw) {
     btnRawMenu.addEventListener('click', (e) => {
       e.stopPropagation();
-      panelRaw.classList.toggle('active');
-      btnRawMenu.classList.toggle('active');
+      const isActive = panelRaw.classList.toggle('active');
+      btnRawMenu.classList.toggle('active', isActive);
+      if (isActive) {
+        updateRawPanelPosition();
+      }
     });
 
     document.addEventListener('click', (e) => {
@@ -475,6 +493,25 @@ function bindStudioEvents() {
         panelRaw.classList.remove('active');
         btnRawMenu.classList.remove('active');
       }
+    });
+
+    window.addEventListener('resize', updateRawPanelPosition);
+  }
+
+  // Smooth mousewheel horizontal scrolling on studio navbar controls for laptops and desktops
+  if (navScrollWrap) {
+    navScrollWrap.addEventListener('wheel', (e) => {
+      if (navScrollWrap.scrollWidth > navScrollWrap.clientWidth) {
+        if (e.deltaY !== 0 && Math.abs(e.deltaX) < Math.abs(e.deltaY)) {
+          e.preventDefault();
+          navScrollWrap.scrollLeft += e.deltaY;
+          updateRawPanelPosition();
+        }
+      }
+    }, { passive: false });
+
+    navScrollWrap.addEventListener('scroll', () => {
+      updateRawPanelPosition();
     });
   }
 

@@ -337,8 +337,8 @@
     <!-- Header Bar -->
     <!-- Unified Executive Studio Navbar -->
     <header class="studio-header">
-      <!-- Left: Brand, Target Role, & 4 Raw Resumes Menu -->
-      <div class="studio-nav-left">
+      <!-- Static Pinned Brand Logo (Never Scrolls) -->
+      <div class="studio-brand-fixed">
         <a href="#" class="brand-link btn-home-nav">
           <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
           <div class="brand-text-logo">
@@ -346,166 +346,172 @@
           </div>
         </a>
         <div class="nav-v-divider"></div>
-        <button class="role-switch-badge" id="btn-change-role" title="Click to Change Target Job Role">
-          <span class="role-badge-prefix">Role:</span>
-          <strong id="studio-role-badge">AI Engineer &amp; Software Developer</strong>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
+      </div>
 
-        <div class="nav-v-divider"></div>
-
-        <!-- 4 Raw Resumes Dropdown in Nav -->
-        <div class="raw-resumes-dropdown-wrap">
-          <button class="raw-nav-trigger" id="btn-raw-resumes-menu" title="View & Download 4 Raw Authentic Resumes">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-            <span>4 Raw Resumes</span>
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      <!-- Horizontally Scrollable Navbar Controls -->
+      <div class="studio-nav-scroll-wrap" id="studio-nav-scroll-wrap">
+        <div class="studio-nav-left">
+          <button class="role-switch-badge" id="btn-change-role" title="Click to Change Target Job Role">
+            <span class="role-badge-prefix">Role:</span>
+            <strong id="studio-role-badge">AI Engineer &amp; Software Developer</strong>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
           </button>
 
-          <!-- Dropdown Panel -->
-          <div class="raw-resumes-dropdown-panel" id="raw-resumes-panel">
-            <div class="raw-dropdown-header">
-              <h4>Authentic Base Resumes (Sanjay N)</h4>
-              <p>Unedited source files with direct view &amp; download</p>
-            </div>
-            
-            <div class="raw-dropdown-list">
-              <!-- Resume 1: Developer -->
-              <div class="raw-resume-row">
-                <div class="raw-row-info">
-                  <div class="raw-row-title">
-                    <span class="raw-badge">TRACK 01</span>
-                    <strong>Developer Resume (AI &amp; Software)</strong>
-                  </div>
-                  <span class="raw-filename">resume html/Developer Resume.html</span>
-                </div>
-                <div class="raw-row-actions">
-                  <button class="btn-raw-action btn-raw-view" data-archetype="developer" title="View Raw in Studio">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    <span>View</span>
-                  </button>
-                  <a href="resume html/Developer Resume.html" download="Sanjay_N_Developer_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    <span>HTML</span>
-                  </a>
-                  <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="developer" title="Download Raw as PDF">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    <span>PDF</span>
-                  </button>
-                </div>
-              </div>
+          <div class="nav-v-divider"></div>
 
-              <!-- Resume 2: FSD -->
-              <div class="raw-resume-row">
-                <div class="raw-row-info">
-                  <div class="raw-row-title">
-                    <span class="raw-badge">TRACK 02</span>
-                    <strong>Full Stack Web Developer</strong>
-                  </div>
-                  <span class="raw-filename">resume html/FSD Resume.html</span>
-                </div>
-                <div class="raw-row-actions">
-                  <button class="btn-raw-action btn-raw-view" data-archetype="fsd" title="View Raw in Studio">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    <span>View</span>
-                  </button>
-                  <a href="resume html/FSD Resume.html" download="Sanjay_N_FSD_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    <span>HTML</span>
-                  </a>
-                  <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="fsd" title="Download Raw as PDF">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    <span>PDF</span>
-                  </button>
-                </div>
-              </div>
+          <!-- 4 Raw Resumes Dropdown in Nav -->
+          <div class="raw-resumes-dropdown-wrap">
+            <button class="raw-nav-trigger" id="btn-raw-resumes-menu" title="View & Download 4 Raw Authentic Resumes">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              <span>4 Raw Resumes</span>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
 
-              <!-- Resume 3: Communication -->
-              <div class="raw-resume-row">
-                <div class="raw-row-info">
-                  <div class="raw-row-title">
-                    <span class="raw-badge">TRACK 03</span>
-                    <strong>Communication &amp; BA Resume</strong>
-                  </div>
-                  <span class="raw-filename">resume html/Communication Resume.html</span>
-                </div>
-                <div class="raw-row-actions">
-                  <button class="btn-raw-action btn-raw-view" data-archetype="communication" title="View Raw in Studio">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    <span>View</span>
-                  </button>
-                  <a href="resume html/Communication Resume.html" download="Sanjay_N_Communication_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    <span>HTML</span>
-                  </a>
-                  <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="communication" title="Download Raw as PDF">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    <span>PDF</span>
-                  </button>
-                </div>
+            <!-- Dropdown Panel -->
+            <div class="raw-resumes-dropdown-panel" id="raw-resumes-panel">
+              <div class="raw-dropdown-header">
+                <h4>Authentic Base Resumes (Sanjay N)</h4>
+                <p>Unedited source files with direct view &amp; download</p>
               </div>
-
-              <!-- Resume 4: Manufacturing -->
-              <div class="raw-resume-row">
-                <div class="raw-row-info">
-                  <div class="raw-row-title">
-                    <span class="raw-badge">TRACK 04</span>
-                    <strong>Manufacturing &amp; QC Resume</strong>
+              
+              <div class="raw-dropdown-list">
+                <!-- Resume 1: Developer -->
+                <div class="raw-resume-row">
+                  <div class="raw-row-info">
+                    <div class="raw-row-title">
+                      <span class="raw-badge">TRACK 01</span>
+                      <strong>Developer Resume (AI &amp; Software)</strong>
+                    </div>
+                    <span class="raw-filename">resume html/Developer Resume.html</span>
                   </div>
-                  <span class="raw-filename">resume html/Manufacturing.html</span>
+                  <div class="raw-row-actions">
+                    <button class="btn-raw-action btn-raw-view" data-archetype="developer" title="View Raw in Studio">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <span>View</span>
+                    </button>
+                    <a href="resume html/Developer Resume.html" download="Sanjay_N_Developer_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      <span>HTML</span>
+                    </a>
+                    <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="developer" title="Download Raw as PDF">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                      <span>PDF</span>
+                    </button>
+                  </div>
                 </div>
-                <div class="raw-row-actions">
-                  <button class="btn-raw-action btn-raw-view" data-archetype="manufacturing" title="View Raw in Studio">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    <span>View</span>
-                  </button>
-                  <a href="resume html/Manufacturing.html" download="Sanjay_N_Manufacturing_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    <span>HTML</span>
-                  </a>
-                  <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="manufacturing" title="Download Raw as PDF">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                    <span>PDF</span>
-                  </button>
+
+                <!-- Resume 2: FSD -->
+                <div class="raw-resume-row">
+                  <div class="raw-row-info">
+                    <div class="raw-row-title">
+                      <span class="raw-badge">TRACK 02</span>
+                      <strong>Full Stack Web Developer</strong>
+                    </div>
+                    <span class="raw-filename">resume html/FSD Resume.html</span>
+                  </div>
+                  <div class="raw-row-actions">
+                    <button class="btn-raw-action btn-raw-view" data-archetype="fsd" title="View Raw in Studio">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <span>View</span>
+                    </button>
+                    <a href="resume html/FSD Resume.html" download="Sanjay_N_FSD_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      <span>HTML</span>
+                    </a>
+                    <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="fsd" title="Download Raw as PDF">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                      <span>PDF</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Resume 3: Communication -->
+                <div class="raw-resume-row">
+                  <div class="raw-row-info">
+                    <div class="raw-row-title">
+                      <span class="raw-badge">TRACK 03</span>
+                      <strong>Communication &amp; BA Resume</strong>
+                    </div>
+                    <span class="raw-filename">resume html/Communication Resume.html</span>
+                  </div>
+                  <div class="raw-row-actions">
+                    <button class="btn-raw-action btn-raw-view" data-archetype="communication" title="View Raw in Studio">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <span>View</span>
+                    </button>
+                    <a href="resume html/Communication Resume.html" download="Sanjay_N_Communication_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      <span>HTML</span>
+                    </a>
+                    <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="communication" title="Download Raw as PDF">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                      <span>PDF</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Resume 4: Manufacturing -->
+                <div class="raw-resume-row">
+                  <div class="raw-row-info">
+                    <div class="raw-row-title">
+                      <span class="raw-badge">TRACK 04</span>
+                      <strong>Manufacturing &amp; QC Resume</strong>
+                    </div>
+                    <span class="raw-filename">resume html/Manufacturing.html</span>
+                  </div>
+                  <div class="raw-row-actions">
+                    <button class="btn-raw-action btn-raw-view" data-archetype="manufacturing" title="View Raw in Studio">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      <span>View</span>
+                    </button>
+                    <a href="resume html/Manufacturing.html" download="Sanjay_N_Manufacturing_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                      <span>HTML</span>
+                    </a>
+                    <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="manufacturing" title="Download Raw as PDF">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                      <span>PDF</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Center: Mode Toggle (100% ATS Tailored vs Original Raw Resume) -->
-      <div class="studio-nav-center">
-        <div class="mode-segmented-bar">
-          <button class="seg-btn active" id="btn-mode-tailored" title="View 100% ATS Tailored Resume">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            <span>100% ATS Tailored</span>
+        <!-- Center: Mode Toggle (100% ATS Tailored vs Original Raw Resume) -->
+        <div class="studio-nav-center">
+          <div class="mode-segmented-bar">
+            <button class="seg-btn active" id="btn-mode-tailored" title="View 100% ATS Tailored Resume">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>100% ATS Tailored</span>
+            </button>
+            <button class="seg-btn" id="btn-mode-raw" title="View Original Untouched Source Resume">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              <span>Original Raw Resume</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: Model Indicator & Export Actions -->
+        <div class="studio-nav-right">
+          <button class="btn btn-outline btn-sm" id="btn-toggle-live-edit" title="Toggle Direct On-Page Live Editing">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            <span id="live-edit-btn-text">Live Edit: OFF</span>
           </button>
-          <button class="seg-btn" id="btn-mode-raw" title="View Original Untouched Source Resume">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-            <span>Original Raw Resume</span>
+          <button class="btn btn-outline btn-sm" id="btn-download-html" title="Download Clean ATS HTML Source">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <span>Download HTML</span>
+          </button>
+          <button class="btn btn-outline btn-sm" id="btn-print-native" title="Print Directly">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            <span>Print</span>
+          </button>
+          <button class="btn btn-teal btn-sm" id="btn-download-pdf" title="Download Accurate 100% ATS PDF">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Download PDF</span>
           </button>
         </div>
-      </div>
-
-      <!-- Right: Model Indicator & Export Actions -->
-      <div class="studio-nav-right">
-        <button class="btn btn-outline btn-sm" id="btn-toggle-live-edit" title="Toggle Direct On-Page Live Editing">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-          <span id="live-edit-btn-text">Live Edit: OFF</span>
-        </button>
-        <button class="btn btn-outline btn-sm" id="btn-download-html" title="Download Clean ATS HTML Source">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          <span>Download HTML</span>
-        </button>
-        <button class="btn btn-outline btn-sm" id="btn-print-native" title="Print Directly">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-          <span>Print</span>
-        </button>
-        <button class="btn btn-teal btn-sm" id="btn-download-pdf" title="Download Accurate 100% ATS PDF">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-          <span>Download PDF</span>
-        </button>
       </div>
     </header>
 
