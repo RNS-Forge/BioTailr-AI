@@ -8,10 +8,10 @@ export const RESUME_ARCHETYPES = {
   // 1. AI Engineer & Software Engineer Archetype (from Developer Resume.html)
   developer: {
     id: 'developer',
-    name: 'AI Engineer & Software Engineer',
-    category: 'AI / Machine Learning / Agentic Systems',
-    description: 'Specialized in Agentic AI, LLMs, RAG pipelines, document intelligence, Python, LangChain, PyTorch, and distributed software systems.',
-    defaultRole: 'AI Engineer / Software Engineer',
+    name: 'Software Development Engineer & AI Engineer',
+    category: 'Software Engineering / SDE / Backend Engineering / Microservices / Systems / AI / Machine Learning',
+    description: 'Specialized in Software Development Engineering (SDE), backend architecture, scalable microservices, RESTful APIs, distributed software systems, database optimization, C#, Python, SQL, CI/CD, and enterprise architecture.',
+    defaultRole: 'Software Development Engineer | AI Engineer',
     baseFile: 'Developer Resume.html',
     profile: {
       fullName: 'SANJAY N',
@@ -257,13 +257,13 @@ export const RESUME_ARCHETYPES = {
     }
   },
 
-  // 3. Business Analyst & Client Handling Archetype (from Communication Resume.html)
+  // 3. Voice Process, BPO, Client Relations & Business Analyst Archetype (from Communication Resume.html)
   communication: {
     id: 'communication',
-    name: 'Business Analyst & Client Handling',
-    category: 'Business Analysis / Client Relations / Operations',
-    description: 'Specialized in client acquisition, requirement gathering, functional specifications, stakeholder management, and cross-functional coordination.',
-    defaultRole: 'Business Analyst | Client Handling',
+    name: 'Voice Process, BPO & Client Relations',
+    category: 'Voice Process / BPO / Customer Service / Customer Support / Telecalling / Client Relations / Business Analysis / Operations',
+    description: 'Specialized in voice process operations, BPO, customer support, telecalling, client acquisition, requirement gathering, functional specifications, SLA adherence, stakeholder management, and cross-functional coordination.',
+    defaultRole: 'Voice Process Executive | Client Handling | Business Analyst',
     baseFile: 'Communication Resume.html',
     profile: {
       fullName: 'SANJAY N',
@@ -326,9 +326,9 @@ export const RESUME_ARCHETYPES = {
   // 4. Quality Control & Precision Manufacturing Archetype (from Manufacturing.html)
   manufacturing: {
     id: 'manufacturing',
-    name: 'Quality Checker & Inspection',
-    category: 'Quality Assurance / ISO 9001:2015 / Manufacturing',
-    description: 'Specialized in incoming, in-process, and final inspection of CNC-turned components, close-tolerance metrology, Cpk monitoring, and PPAP documentation.',
+    name: 'Quality Checker & Precision Manufacturing Inspection',
+    category: 'Quality Assurance / Quality Control / Inspection / Precision Metrology / CNC Machining / Manufacturing / ISO 9001:2015',
+    description: 'Specialized in incoming, in-process, patrol, and final inspection of CNC-turned components, close-tolerance metrology, vernier calipers, micrometers, height gauges, bore gauges, air gauges, Cpk monitoring, and PPAP documentation.',
     defaultRole: 'Quality Checker | Quality Control & Inspection',
     baseFile: 'Manufacturing.html',
     profile: {

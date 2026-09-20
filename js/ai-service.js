@@ -48,86 +48,110 @@ export function saveApiKeys(geminiKey, groqKey) {
  * 4. manufacturing: Quality Checker & Precision Manufacturing
  */
 /**
+ * Dynamically constructs domain semantic vectors from the active RESUME_ARCHETYPES at runtime.
+ * Extracts categories, role titles, competencies, technical tools, and highlights
+ * directly from each archetype without static hardcoded lists.
+ */
+export function getDynamicDomainVectors() {
+  const dynamicVectors = {};
+
+  const tokenizeAndStem = (text, targetSet) => {
+    if (!text) return;
+    const clean = text.toLowerCase().replace(/[\(\)\[\]\{\}\/\\,;:\.\+•·|&–—\-_]+/g, ' ');
+    const words = clean.split(/\s+/).filter(w => w.length > 2);
+    words.forEach(w => {
+      targetSet.add(w);
+      if (w.endsWith('ing')) targetSet.add(w.slice(0, -3));
+      if (w.endsWith('ers')) targetSet.add(w.slice(0, -3));
+      if (w.endsWith('er')) targetSet.add(w.slice(0, -2));
+      if (w.endsWith('or')) targetSet.add(w.slice(0, -2));
+      if (w.endsWith('ion')) targetSet.add(w.slice(0, -3));
+      if (w.endsWith('s') && !w.endsWith('ss')) targetSet.add(w.slice(0, -1));
+    });
+    for (let i = 0; i < words.length - 1; i++) {
+      targetSet.add(`${words[i]} ${words[i + 1]}`);
+    }
+  };
+
+  for (const [domainId, archetype] of Object.entries(RESUME_ARCHETYPES)) {
+    const identitySet = new Set();
+    const primarySet = new Set();
+    const secondarySet = new Set();
+
+    // 1. Core Archetype Identity (Title, Category, Default Role)
+    tokenizeAndStem(archetype.name, identitySet);
+    tokenizeAndStem(archetype.category, identitySet);
+    tokenizeAndStem(archetype.defaultRole, identitySet);
+
+    // 2. Profile skills & skillCategories
+    const profile = archetype.profile || {};
+    if (Array.isArray(profile.skills)) {
+      profile.skills.forEach(s => tokenizeAndStem(s, primarySet));
+    }
+
+    if (profile.skillCategories) {
+      Object.entries(profile.skillCategories).forEach(([categoryName, skillString]) => {
+        tokenizeAndStem(categoryName, secondarySet);
+        tokenizeAndStem(skillString, primarySet);
+      });
+    }
+
+    // 3. Experience roles and highlights
+    if (Array.isArray(profile.experience)) {
+      profile.experience.forEach(exp => {
+        tokenizeAndStem(exp.role, primarySet);
+        if (Array.isArray(exp.highlights)) {
+          exp.highlights.forEach(h => tokenizeAndStem(h, secondarySet));
+        }
+      });
+    }
+
+    dynamicVectors[domainId] = {
+      identity: Array.from(identitySet).filter(t => t && t.length > 2),
+      primary: Array.from(primarySet).filter(t => t && t.length > 2),
+      secondary: Array.from(secondarySet).filter(t => t && t.length > 2)
+    };
+  }
+
+  return dynamicVectors;
+}
+
+/**
  * Dynamic Multi-Vector Domain Classifier
- * Dynamically computes semantic affinities across role title and context
- * without rigid static single-string checks.
+ * Dynamically computes semantic affinities using vectors generated at runtime
+ * directly from RESUME_ARCHETYPES — zero static arrays or hardcoded wordlists!
  */
 export function matchArchetype(targetRole, refinements = '') {
   const text = `${targetRole || ''} ${refinements || ''}`.toLowerCase();
-  
-  // Dynamic semantic vector dictionaries
-  const DOMAIN_VECTORS = {
-    manufacturing: {
-      primary: [
-        'quality', 'qc', 'qa', 'manufacturing', 'inspection', 'inspector', 'metrology',
-        'caliper', 'micrometer', 'gauge', 'ppap', 'cpk', 'ncr', 'machining', 'cnc',
-        'turning', 'blueprint', 'dimension', 'tolerance', 'steel bar', 'precision',
-        'calipers', 'micrometers', 'gauges', 'first piece', 'patrol inspection'
-      ],
-      secondary: [
-        'mechanical', 'production', 'checker', 'assembly', 'fabrication', 'workshop',
-        'iso 9001', 'audit', 'defect', 'sampling', 'plant', 'maintenance', 'shop floor'
-      ]
-    },
-    communication: {
-      primary: [
-        'voice', 'bpo', 'telecall', 'telecaller', 'telecalling', 'call center',
-        'customer service', 'customer support', 'chat support', 'inbound', 'outbound',
-        'client handling', 'client relationship', 'voice process', 'voice executive'
-      ],
-      secondary: [
-        'business analyst', 'communication', 'account manager', 'client', 'support',
-        'sales', 'relationship', 'market analysis', 'customer', 'operations', 'sla',
-        'escalation', 'representative', 'liaison', 'customer success', 'helpdesk'
-      ]
-    },
-    fsd: {
-      primary: [
-        'full stack', 'fullstack', 'fsd', 'frontend', 'front-end', 'web developer',
-        'ui developer', 'web engineer', 'react', 'angular', 'vue', 'nextjs', 'css/html', 'tailwind'
-      ],
-      secondary: [
-        'node', 'express', 'django', 'flask', 'responsive', 'web application', 'ui/ux',
-        'javascript developer', 'html5', 'css3'
-      ]
-    },
-    developer: {
-      primary: [
-        'software development engineer', 'sde', 'software engineer', 'backend engineer',
-        'backend developer', 'software dev', 'core engineer', 'systems engineer',
-        'engineer 1', 'engineer i', 'c# developer', 'python developer', 'java developer',
-        'ai engineer', 'ml engineer', 'machine learning', 'agentic ai', 'data engineer'
-      ],
-      secondary: [
-        'software', 'developer', 'backend', 'algorithms', 'data structures', 'microservices',
-        'api', 'database', 'cloud', 'system', 'c#', 'dotnet', '.net', 'sql', 'python', 'java'
-      ]
-    }
-  };
+  const dynamicVectors = getDynamicDomainVectors();
 
-  const domainScores = {
-    manufacturing: 0,
-    communication: 0,
-    fsd: 0,
-    developer: 0
-  };
+  const domainScores = {};
+  for (const domainId of Object.keys(dynamicVectors)) {
+    domainScores[domainId] = 0;
+  }
 
-  for (const [domain, vectors] of Object.entries(DOMAIN_VECTORS)) {
-    // Primary keywords weigh 6 points
-    for (const kw of vectors.primary) {
+  for (const [domain, vectors] of Object.entries(dynamicVectors)) {
+    // Identity keywords (Name, category, defaultRole) weigh 10 points
+    for (const kw of vectors.identity) {
       if (text.includes(kw)) {
-        domainScores[domain] += 6;
+        domainScores[domain] += 10;
       }
     }
-    // Secondary keywords weigh 2 points
+    // Primary keywords dynamically extracted from skills and categories weigh 4 points
+    for (const kw of vectors.primary) {
+      if (text.includes(kw)) {
+        domainScores[domain] += 4;
+      }
+    }
+    // Secondary keywords dynamically extracted from descriptions and highlights weigh 1 point
     for (const kw of vectors.secondary) {
       if (text.includes(kw)) {
-        domainScores[domain] += 2;
+        domainScores[domain] += 1;
       }
     }
   }
 
-  // Find the domain with highest dynamic score
+  // Find domain with highest dynamic score
   let bestDomain = 'developer';
   let highestScore = 0;
 
