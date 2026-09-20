@@ -50,18 +50,25 @@ export function saveApiKeys(geminiKey, groqKey) {
 export function matchArchetype(targetRole) {
   const roleLower = (targetRole || '').toLowerCase();
   
-  // 1. Manufacturing & Quality Control (Track 04)
+  // 1. Manufacturing & Quality Control (Track 04 -> Manufacturing.html style)
   if (roleLower.includes('quality') || roleLower.includes('qc') || 
       roleLower.includes('qa') || roleLower.includes('manufacturing') || 
-      roleLower.includes('inspection') || roleLower.includes('cnc') || 
-      roleLower.includes('mechanical') || roleLower.includes('checker') || 
-      roleLower.includes('production') || roleLower.includes('caliper') ||
-      roleLower.includes('ppap') || roleLower.includes('machining')) {
+      roleLower.includes('inspection') || roleLower.includes('inspector') ||
+      roleLower.includes('cnc') || roleLower.includes('mechanical') || 
+      roleLower.includes('checker') || roleLower.includes('production') || 
+      roleLower.includes('caliper') || roleLower.includes('ppap') || 
+      roleLower.includes('machining') || roleLower.includes('metrology') ||
+      roleLower.includes('steel bar') || roleLower.includes('precision')) {
     return 'manufacturing';
   }
 
-  // 2. Business Analyst, Communication & Client Handling (Track 03)
-  if (roleLower.includes('business analyst') || roleLower.includes('client') || 
+  // 2. Voice Process, BPO, Communication, Customer Service, Business Analyst (Track 03 -> Communication Resume.html style)
+  if (roleLower.includes('voice') || roleLower.includes('bpo') || 
+      roleLower.includes('call center') || roleLower.includes('telecall') || 
+      roleLower.includes('telecaller') || roleLower.includes('customer service') || 
+      roleLower.includes('customer support') || roleLower.includes('chat support') || 
+      roleLower.includes('inbound') || roleLower.includes('outbound') || 
+      roleLower.includes('business analyst') || roleLower.includes('client') || 
       roleLower.includes('communication') || roleLower.includes('account manager') || 
       roleLower.includes('support') || roleLower.includes('sales') || 
       roleLower.includes('relationship') || roleLower.includes('market analysis') || 
@@ -69,7 +76,7 @@ export function matchArchetype(targetRole) {
     return 'communication';
   }
 
-  // 3. Full Stack & Frontend Web Development (Track 02)
+  // 3. Full Stack & Frontend Web Development (Track 02 -> FSD style)
   if (roleLower.includes('full stack') || roleLower.includes('fullstack') || 
       roleLower.includes('fsd') || roleLower.includes('frontend') || 
       roleLower.includes('front-end') || roleLower.includes('web developer') || 
@@ -79,7 +86,7 @@ export function matchArchetype(targetRole) {
     return 'fsd';
   }
 
-  // 4. Default: AI Engineer & Software Developer (Track 01)
+  // 4. Default: AI Engineer & Software Developer (Track 01 -> Developer Resume.html style)
   // For SDE, Backend, Software Engineer, AI, ML, Data - uses developer base and AI dynamically tailors it!
   return 'developer';
 }

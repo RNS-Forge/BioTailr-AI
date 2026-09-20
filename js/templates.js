@@ -395,13 +395,213 @@ export const RESUME_ARCHETYPES = {
 };
 
 /**
- * Render complete, clean, ATS-compliant HTML for Sanjay N's tailored profile
- * Single column, standard semantic hierarchy, zero emojis, exact A4 layout.
- * Enforces pure black ink (#000000) and two-line flex layout for Education & Experience.
+ * Main Dynamic HTML Dispatcher:
+ * Dynamically routes to the exact style chosen for the target role:
+ * 1. Manufacturing roles -> Manufacturing.html visual layout & style
+ * 2. Voice process, BPO, Client handling -> Communication Resume.html visual layout & style
+ * 3. Software, SDE, AI, Full Stack -> Developer Resume.html / FSD Resume.html visual layout & style
  */
 export function generateResumeHtml(profile, archetypeId = 'developer') {
+  if (archetypeId === 'manufacturing') {
+    return generateManufacturingHtml(profile);
+  }
+  if (archetypeId === 'communication') {
+    return generateCommunicationHtml(profile);
+  }
+  return generateDeveloperHtml(profile, archetypeId);
+}
+
+/**
+ * Style 1: Manufacturing.html Visual Style
+ */
+function generateManufacturingHtml(profile) {
   const visibleExperiences = (profile.experience || []).filter(e => e.relevant !== false);
-  const hiddenCount = (profile.experience || []).filter(e => e.relevant === false).length;
+
+  return `
+  <div class="resume-sheet archetype-manufacturing" id="resume-document">
+    <header>
+      <h1 data-editable-field="fullName">${escapeHtml(profile.fullName || 'SANJAY N')}</h1>
+      <p class="role" data-editable-field="title">${escapeHtml(profile.title)}</p>
+      <p class="contact">
+        <span><a href="mailto:${escapeHtml(profile.email || '2005sanjaynrs@gmail.com')}" data-editable-field="email">${escapeHtml(profile.email || '2005sanjaynrs@gmail.com')}</a></span>
+        <span><a href="tel:${escapeHtml(profile.phone || '+91 93615 99018')}" data-editable-field="phone">${escapeHtml(profile.phone || '+91 93615 99018')}</a></span>
+        <span data-editable-field="location">${escapeHtml(profile.location || 'Coimbatore, Tamil Nadu')}</span>
+        <span><a href="https://${escapeHtml(profile.linkedin || 'www.linkedin.com/in/sanjay--n')}" target="_blank">linkedin.com/in/sanjay--n</a></span>
+      </p>
+    </header>
+
+    <section>
+      <h2>Professional Summary</h2>
+      <p class="summary" data-editable-field="summary">${escapeHtml(profile.summary)}</p>
+    </section>
+
+    <section>
+      <h2>Professional Experience</h2>
+      ${visibleExperiences.map((exp, expIdx) => `
+        <div class="exp-entry" data-exp-index="${expIdx}">
+          <div class="row">
+            <span class="title"><b>${escapeHtml(exp.company)}</b> &ndash; ${escapeHtml(exp.role)}</span>
+            <span class="date">${escapeHtml(exp.period)}</span>
+          </div>
+          ${exp.companyNote ? `<p class="company-note">${escapeHtml(exp.companyNote)}</p>` : ''}
+          <ul>
+            ${(exp.highlights || []).map((h, bIdx) => `<li data-bullet-index="${bIdx}">${escapeHtml(h)}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('')}
+    </section>
+
+    <section>
+      <h2>Inspection &amp; Quality Skills</h2>
+      ${profile.skillCategories ? `
+        <ul>
+          ${Object.entries(profile.skillCategories).map(([cat, list]) => `
+            <li><strong>${escapeHtml(cat)}:</strong> ${escapeHtml(list)}</li>
+          `).join('')}
+        </ul>
+      ` : `
+        <ul>
+          ${(profile.skills || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+        </ul>
+      `}
+    </section>
+
+    <section>
+      <h2>Education</h2>
+      ${(profile.education || []).map((edu, eduIdx) => `
+        <div class="edu-entry" data-edu-index="${eduIdx}">
+          <div class="row">
+            <span class="title"><b>${escapeHtml(edu.institution)}</b> &ndash; ${escapeHtml(edu.degree)}</span>
+            <span class="date">${escapeHtml(edu.year)}</span>
+          </div>
+          ${edu.details ? `<p class="edu-detail">${escapeHtml(edu.details)}</p>` : ''}
+        </div>
+      `).join('')}
+    </section>
+
+    ${profile.languages ? `
+    <section>
+      <h2>Languages</h2>
+      <p>${escapeHtml(profile.languages)}</p>
+    </section>
+    ` : ''}
+  </div>
+  `;
+}
+
+/**
+ * Style 2: Communication Resume.html Visual Style (Voice Process, BPO, Client Relations)
+ */
+function generateCommunicationHtml(profile) {
+  const visibleExperiences = (profile.experience || []).filter(e => e.relevant !== false);
+
+  return `
+  <div class="resume-sheet archetype-communication" id="resume-document">
+    <header>
+      <h1 class="name" data-editable-field="fullName">${escapeHtml(profile.fullName || 'SANJAY N')}</h1>
+      <p class="role" data-editable-field="title">${escapeHtml(profile.title)}</p>
+      <div class="rule"></div>
+      <p class="contact">
+        <a href="mailto:${escapeHtml(profile.email || '2005sanjaynrs@gmail.com')}" data-editable-field="email">${escapeHtml(profile.email || '2005sanjaynrs@gmail.com')}</a> | 
+        <a href="tel:${escapeHtml(profile.phone || '+91 93615 99018')}" data-editable-field="phone">${escapeHtml(profile.phone || '+91 93615 99018')}</a> | 
+        <span data-editable-field="location">${escapeHtml(profile.location || 'Coimbatore, Tamil Nadu')}</span>
+      </p>
+    </header>
+
+    <section class="sec s-sum">
+      <h2>SUMMARY</h2>
+      <div class="body">
+        <p class="summary" data-editable-field="summary">${escapeHtml(profile.summary)}</p>
+      </div>
+    </section>
+
+    <section class="sec s-work">
+      <h2>WORK EXPERIENCE</h2>
+      <div class="body">
+        ${visibleExperiences.map((exp, expIdx) => `
+          <div class="exp-entry" data-exp-index="${expIdx}">
+            <div class="row">
+              <span><b>${escapeHtml(exp.company)}</b> - ${escapeHtml(exp.role)}</span>
+              <span>${escapeHtml(exp.period)}</span>
+            </div>
+            <ul>
+              ${(exp.highlights || []).map((h, bIdx) => `<li data-bullet-index="${bIdx}">${escapeHtml(h)}</li>`).join('')}
+            </ul>
+          </div>
+        `).join('')}
+      </div>
+    </section>
+
+    <section class="sec s-tools">
+      <h2>KEY SKILLS &amp; TOOLS</h2>
+      <div class="body">
+        ${profile.skillCategories ? `
+          <div class="cols2">
+            ${Object.entries(profile.skillCategories).map(([cat, list]) => `
+              <div>
+                <b>${escapeHtml(cat)}:</b>
+                <ul>
+                  ${list.split(',').map(item => `<li>${escapeHtml(item.trim())}</li>`).join('')}
+                </ul>
+              </div>
+            `).join('')}
+          </div>
+        ` : `
+          <ul>
+            ${(profile.skills || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+          </ul>
+        `}
+      </div>
+    </section>
+
+    <section class="sec s-edu">
+      <h2>EDUCATION</h2>
+      <div class="body">
+        ${(profile.education || []).map((edu, eduIdx) => `
+          <div class="edu-entry" data-edu-index="${eduIdx}">
+            <div class="row">
+              <span><b>${escapeHtml(edu.institution)}</b></span>
+              <span>${escapeHtml(edu.year)}</span>
+            </div>
+            <div class="plain">${escapeHtml(edu.degree)}</div>
+            ${edu.details ? `
+              <ul>
+                <li>${escapeHtml(edu.details)}</li>
+              </ul>
+            ` : ''}
+          </div>
+        `).join('')}
+      </div>
+    </section>
+
+    ${profile.languages ? `
+    <section class="sec s-lang">
+      <h2>LANGUAGES</h2>
+      <div class="body">
+        <p>${escapeHtml(profile.languages)}</p>
+      </div>
+    </section>
+    ` : ''}
+
+    ${profile.certifications && profile.certifications.length > 0 ? `
+    <section class="sec s-ach">
+      <h2>KEY ACHIEVEMENTS</h2>
+      <div class="body">
+        <ul>
+          ${profile.certifications.map((c, cIdx) => `<li data-cert-index="${cIdx}">${escapeHtml(c)}</li>`).join('')}
+        </ul>
+      </div>
+    </section>
+    ` : ''}
+  </div>
+  `;
+}
+
+/**
+ * Style 3: Developer Resume.html / FSD Resume.html Visual Style (Software, SDE, AI)
+ */
+function generateDeveloperHtml(profile, archetypeId = 'developer') {
+  const visibleExperiences = (profile.experience || []).filter(e => e.relevant !== false);
 
   return `
   <div class="resume-sheet archetype-${archetypeId}" id="resume-document">
@@ -422,13 +622,13 @@ export function generateResumeHtml(profile, archetypeId = 'developer') {
 
     <!-- ===== PROFESSIONAL SUMMARY ===== -->
     <section class="sec-summary">
-      <h2>${archetypeId === 'communication' ? 'SUMMARY' : 'PROFESSIONAL SUMMARY'}</h2>
+      <h2>PROFESSIONAL SUMMARY</h2>
       <p class="summary" data-editable-field="summary">${escapeHtml(profile.summary)}</p>
     </section>
 
     <!-- ===== SKILLS / TOOLS ===== -->
     <section class="sec-skills">
-      <h2>${archetypeId === 'manufacturing' ? 'INSPECTION &amp; QUALITY SKILLS' : (archetypeId === 'communication' ? 'KEY SKILLS &amp; TOOLS' : 'TECHNICAL SKILLS')}</h2>
+      <h2>TECHNICAL SKILLS</h2>
       ${profile.skillCategories ? `
         <ul class="skills-cat-list">
           ${Object.entries(profile.skillCategories).map(([cat, list]) => `
@@ -444,13 +644,7 @@ export function generateResumeHtml(profile, archetypeId = 'developer') {
 
     <!-- ===== PROFESSIONAL EXPERIENCE ===== -->
     <section class="sec-experience">
-      <h2>${archetypeId === 'communication' ? 'WORK EXPERIENCE' : 'PROFESSIONAL EXPERIENCE'}</h2>
-
-      ${hiddenCount > 0 ? `
-        <div class="ats-pruning-notice" data-html2canvas-ignore="true">
-          <span><strong>BioTailr AI Pruning Active:</strong> ${hiddenCount} non-matching position(s) automatically suppressed to guarantee 100% role relevance.</span>
-        </div>
-      ` : ''}
+      <h2>PROFESSIONAL EXPERIENCE</h2>
 
       ${visibleExperiences.map((exp, expIdx) => `
         <div class="exp-entry" data-exp-index="${expIdx}">
@@ -466,7 +660,7 @@ export function generateResumeHtml(profile, archetypeId = 'developer') {
               <span class="exp-project">${exp.project ? `Project: <em>${escapeHtml(exp.project)}</em>` : ''}</span>
               <span class="exp-location">${escapeHtml(
                 (exp.company && exp.company.toLowerCase().includes('axodian'))
-                  ? (exp.location && !exp.location.toLowerCase().includes('coimbatore') ? exp.location : 'Bangalore, KA (On-Site)')
+                  ? 'Bangalore, KA (On-Site)'
                   : (exp.location || 'Coimbatore, TN')
               )}</span>
             </div>

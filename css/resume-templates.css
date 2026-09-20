@@ -27,26 +27,21 @@
   print-color-adjust: exact;
 }
 
-/* Enforce pure black text across ALL resume elements */
-.resume-sheet,
-.resume-sheet *,
-.resume-sheet h1,
-.resume-sheet h2,
-.resume-sheet h3,
-.resume-sheet p,
-.resume-sheet span,
-.resume-sheet div,
-.resume-sheet li,
-.resume-sheet b,
-.resume-sheet strong,
-.resume-sheet em,
-.resume-sheet a {
-  color: #000000 !important;
+/* Enforce pure black text across default developer resume elements */
+.resume-sheet:not(.archetype-manufacturing) {
+  color: #000000;
 }
 
-.resume-sheet a {
-  text-decoration: none;
-  color: #000000 !important;
+.resume-sheet:not(.archetype-manufacturing) h1,
+.resume-sheet:not(.archetype-manufacturing) h2,
+.resume-sheet:not(.archetype-manufacturing) h3,
+.resume-sheet:not(.archetype-manufacturing) p,
+.resume-sheet:not(.archetype-manufacturing) span,
+.resume-sheet:not(.archetype-manufacturing) li,
+.resume-sheet:not(.archetype-manufacturing) b,
+.resume-sheet:not(.archetype-manufacturing) strong,
+.resume-sheet:not(.archetype-manufacturing) a {
+  color: #000000;
 }
 
 .resume-sheet a.u,
@@ -425,3 +420,209 @@
     page-break-after: avoid !important;
   }
 }
+
+/* =========================================================
+   STYLE 1: MANUFACTURING & QUALITY INSPECTION STYLE
+   Mirroring resume html/Manufacturing.html
+   ========================================================= */
+.resume-sheet.archetype-manufacturing {
+  font-family: Calibri, "Segoe UI", Carlito, Arial, sans-serif !important;
+  font-size: 10pt !important;
+  line-height: 1.32 !important;
+  color: #111111 !important;
+  padding: 18pt 28pt !important;
+}
+
+.resume-sheet.archetype-manufacturing header {
+  text-align: center;
+  margin-bottom: 8pt;
+}
+
+.resume-sheet.archetype-manufacturing header h1 {
+  margin: 0;
+  font-size: 24pt;
+  font-weight: 700;
+  color: #1F3A5F !important;
+  letter-spacing: 0.5px;
+}
+
+.resume-sheet.archetype-manufacturing header .role {
+  margin: 2px 0 4px;
+  font-size: 11pt;
+  color: #333333 !important;
+  font-weight: 400;
+}
+
+.resume-sheet.archetype-manufacturing header .contact {
+  margin: 0;
+  font-size: 9.5pt;
+  color: #333333 !important;
+  display: block;
+}
+
+.resume-sheet.archetype-manufacturing header .contact span + span::before {
+  content: "|";
+  margin: 0 8px;
+  color: #666666;
+}
+
+.resume-sheet.archetype-manufacturing section {
+  padding: 3pt 0 4pt !important;
+  border-bottom: none !important;
+}
+
+.resume-sheet.archetype-manufacturing h2 {
+  margin: 8pt 0 4pt !important;
+  padding-bottom: 2px !important;
+  font-size: 11.5pt !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  color: #1F3A5F !important;
+  border-bottom: 2px solid #1F3A5F !important;
+  background: transparent !important;
+}
+
+.resume-sheet.archetype-manufacturing .row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: baseline !important;
+  margin-top: 4pt;
+  font-weight: 700;
+  font-size: 10.5pt;
+  color: #111111 !important;
+}
+
+.resume-sheet.archetype-manufacturing .row .title {
+  font-weight: 700;
+  color: #111111 !important;
+}
+
+.resume-sheet.archetype-manufacturing .row .date {
+  text-align: right;
+  white-space: nowrap;
+  color: #111111 !important;
+}
+
+.resume-sheet.archetype-manufacturing .company-note {
+  margin: 1pt 0 3pt !important;
+  font-style: italic !important;
+  font-size: 9pt !important;
+  color: #444444 !important;
+}
+
+.resume-sheet.archetype-manufacturing ul {
+  margin: 2pt 0 0 !important;
+  padding-left: 18px !important;
+  list-style: disc !important;
+}
+
+.resume-sheet.archetype-manufacturing li {
+  margin-bottom: 2pt !important;
+  line-height: 1.32 !important;
+  color: #111111 !important;
+}
+
+.resume-sheet.archetype-manufacturing .edu-detail {
+  margin: 1pt 0 4pt;
+  font-size: 9.5pt;
+  color: #333333 !important;
+}
+
+/* =========================================================
+   STYLE 2: COMMUNICATION, BPO & VOICE PROCESS STYLE
+   Mirroring resume html/Communication Resume.html
+   ========================================================= */
+.resume-sheet.archetype-communication {
+  font-family: 'DM Sans', 'Segoe UI', Arial, sans-serif !important;
+  font-size: 10.5pt !important;
+  line-height: 1.36 !important;
+  color: #1e1e1e !important;
+  padding: 18pt 28pt !important;
+}
+
+.resume-sheet.archetype-communication header {
+  text-align: center;
+  margin-bottom: 8pt;
+}
+
+.resume-sheet.archetype-communication header h1.name {
+  margin: 0;
+  font-size: 26pt;
+  font-weight: 700;
+  color: #000000 !important;
+}
+
+.resume-sheet.archetype-communication header .role {
+  margin: 2pt 0 4pt;
+  font-size: 12pt;
+  color: #000000 !important;
+  font-weight: 400;
+}
+
+.resume-sheet.archetype-communication header .rule {
+  width: 100%;
+  height: 1.5px;
+  background: #d7e0e7;
+  margin: 6pt 0;
+}
+
+.resume-sheet.archetype-communication header .contact {
+  font-size: 10.5pt;
+  color: #333132 !important;
+  display: block;
+}
+
+.resume-sheet.archetype-communication section {
+  padding: 4pt 0 5pt !important;
+  border-bottom: none !important;
+}
+
+.resume-sheet.archetype-communication h2 {
+  margin: 6pt 0 4pt !important;
+  padding: 4pt 12pt !important;
+  background: #d7e0e7 !important;
+  color: #000000 !important;
+  font-size: 11pt !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  border-bottom: none !important;
+}
+
+.resume-sheet.archetype-communication .body {
+  padding: 2pt 4pt 0;
+}
+
+.resume-sheet.archetype-communication .row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: baseline !important;
+  font-weight: 700;
+  font-size: 10.5pt;
+  color: #000000 !important;
+  margin-top: 3pt;
+}
+
+.resume-sheet.archetype-communication .cols2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12pt;
+}
+
+.resume-sheet.archetype-communication .cols3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8pt;
+}
+
+.resume-sheet.archetype-communication ul {
+  margin: 2pt 0 0 !important;
+  padding-left: 18px !important;
+  list-style: disc !important;
+}
+
+.resume-sheet.archetype-communication li {
+  margin-bottom: 2pt !important;
+  line-height: 1.35 !important;
+  color: #1e1e1e !important;
+}
+
