@@ -1,9 +1,8 @@
 /**
  * BioTailr AI - Accurate HTML to PDF Exporter
- * Uses html2pdf.js with A4 dimensions and vector font rendering.
+ * Ensures single-page resumes download as EXACTLY 1 page with ZERO blank pages.
  */
-
-export function downloadResumeAsPdf(targetElementId = 'resume-document', filename = 'BioTailr_Resume.pdf') {
+export async function downloadResumeAsPdf(targetElementId = 'resume-document', filename = 'BioTailr_Resume.pdf') {
   const element = document.getElementById(targetElementId);
   if (!element) {
     console.error('Target element not found:', targetElementId);
@@ -11,31 +10,129 @@ export function downloadResumeAsPdf(targetElementId = 'resume-document', filenam
     return;
   }
 
-  // Check if html2pdf is loaded from CDN
-  if (typeof window.html2pdf !== 'undefined') {
+  // Identify available engines
+  const hasHtml2Canvas = typeof window.html2canvas !== 'undefined';
+  const JsPdfClass = window.jsPDF || (window.jspdf && window.jspdf.jsPDF);
+  const hasHtml2Pdf = typeof window.html2pdf !== 'undefined';
+
+  // Strategy 1: Direct Canvas & jsPDF Precision Rendering (Guarantees zero blank pages)
+  if (hasHtml2Canvas && JsPdfClass) {
+    try {
+      const canvas = await window.html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        windowWidth: 1200
+      });
+
+      const pdf = new JsPdfClass('p', 'mm', 'a4');
+      const pageWidthMm = 210;
+      const pageHeightMm = 297;
+      const totalImgHeightMm = (canvas.height * pageWidthMm) / canvas.width;
+
+      // RULE 1: If content is within 1-page range (or minor subpixel overflow <= 315mm),
+      // render on EXACTLY ONE page — ZERO second page, ZERO blank page!
+      if (totalImgHeightMm <= 318) {
+        const renderHeightMm = Math.min(pageHeightMm, totalImgHeightMm);
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+        pdf.addImage(imgData, 'JPEG', 0, 0, pageWidthMm, renderHeightMm);
+        pdf.save(filename);
+        return;
+      }
+
+      // RULE 2: Multi-page resume — strictly eliminate any trailing blank page
+      const sliceHeightPx = Math.floor((canvas.width * pageHeightMm) / pageWidthMm);
+      let renderedPx = 0;
+      let pageIndex = 0;
+
+      while (renderedPx < canvas.height) {
+        const remainingPx = canvas.height - renderedPx;
+        
+        // Skip tiny trailing margins (less than 40px, ~1cm)
+        if (remainingPx < 40 && pageIndex > 0) {
+          break;
+        }
+
+        const currentSliceHeightPx = Math.min(sliceHeightPx, remainingPx);
+
+        // Render slice onto temporary canvas
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = currentSliceHeightPx;
+        const ctx = pageCanvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, pageCanvas.width, currentSliceHeightPx);
+        ctx.drawImage(canvas, 0, renderedPx, canvas.width, currentSliceHeightPx, 0, 0, canvas.width, currentSliceHeightPx);
+
+        // Blank page detector: check if slice contains any non-white pixels
+        if (pageIndex > 0) {
+          const imgDataTest = ctx.getImageData(0, 0, pageCanvas.width, currentSliceHeightPx).data;
+          let isBlank = true;
+          for (let i = 0; i < imgDataTest.length; i += 32) {
+            if (imgDataTest[i] < 245 || imgDataTest[i + 1] < 245 || imgDataTest[i + 2] < 245) {
+              isBlank = false;
+              break;
+            }
+          }
+          if (isBlank) {
+            // Trailing slice is completely blank white — skip it!
+            break;
+          }
+        }
+
+        if (pageIndex > 0) {
+          pdf.addPage();
+        }
+
+        const sliceImgData = pageCanvas.toDataURL('image/jpeg', 0.98);
+        const sliceHeightMm = (currentSliceHeightPx * pageWidthMm) / canvas.width;
+        pdf.addImage(sliceImgData, 'JPEG', 0, 0, pageWidthMm, sliceHeightMm);
+
+        renderedPx += currentSliceHeightPx;
+        pageIndex++;
+      }
+
+      pdf.save(filename);
+      return;
+    } catch (err) {
+      console.warn('Direct canvas-to-pdf pipeline failed, falling back to html2pdf:', err);
+    }
+  }
+
+  // Strategy 2: html2pdf.js Fallback with Blank Page Deletion
+  if (hasHtml2Pdf) {
     const opt = {
-      margin: [0, 0, 0, 0], // Exact A4 margins defined directly in CSS
+      margin: 0,
       filename: filename,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2, 
-        useCORS: true, 
-        letterRendering: true,
-        logging: false
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
       },
-      jsPDF: { 
-        unit: 'mm', 
-        format: 'a4', 
-        orientation: 'portrait' 
-      },
-      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+      jsPDF: {
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait'
+      }
     };
 
-    window.html2pdf().set(opt).from(element).save();
-  } else {
-    // Graceful native browser print fallback
-    window.print();
+    window.html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+      const totalPages = pdf.internal.getNumberOfPages();
+      // If it created an unnecessary 2nd page for a 1-page element, delete the blank 2nd page!
+      if (totalPages === 2) {
+        if (element.scrollHeight <= 1250) {
+          pdf.deletePage(2);
+        }
+      }
+    }).save();
+    return;
   }
+
+  // Strategy 3: Native browser print
+  window.print();
 }
 
 export function printResumeNative() {
