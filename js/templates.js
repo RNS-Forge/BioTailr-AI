@@ -120,13 +120,128 @@ export const RESUME_ARCHETYPES = {
           institution: 'SNS College of Technology',
           year: 'Nov 2022 - Apr 2026',
           location: 'Coimbatore, Tamil Nadu',
-          details: 'CGPA: 8.38 / 10 • Relevant Coursework: Deep Learning, Natural Language Processing, Algorithms, DBMS'
+          details: 'CGPA: 8.38 / 10'
         }
       ],
       certifications: [
         'Salesforce AI Associate and Agentforce Specialist, completed with scores above 80%.',
         'Oracle AI Foundations Associate completed with 92% and Postman AI Student Expert certified.',
         'NPTEL IoT 4.0 Certification, NASSCOM Digital Edge completed with a score of 81%.'
+      ]
+    }
+  },
+
+  // 1B. Dedicated Software Development Engineer Archetype (Calibrated for SDE / Backend / WEX)
+  sde: {
+    id: 'sde',
+    name: 'Software Development Engineer',
+    category: 'Software Engineering / Microservices / C# & Python',
+    description: 'Specialized in C#, Python, ASP.NET Core RESTful APIs, Microservices, RDBMS (PostgreSQL, MySQL, MS SQL), React.js, Docker, CI/CD, and TDD.',
+    defaultRole: 'Software Development Engineer',
+    baseFile: 'Developer Resume.html',
+    profile: {
+      fullName: 'SANJAY N',
+      title: 'Software Development Engineer',
+      email: '2005sanjaynrs@gmail.com',
+      phone: '+91 93615 99018',
+      location: 'Coimbatore, Tamil Nadu',
+      portfolio: 'https://rns-forge.github.io/RNS_Professional_Profile/',
+      github: 'https://github.com/RNS-Forge',
+      linkedin: 'www.linkedin.com/in/sanjay--n',
+      summary: 'Results-driven Software Development Engineer with experience in architecting scalable microservices, RESTful APIs, and enterprise web solutions using C#, Python, and modern RDBMS (PostgreSQL, MySQL, MS SQL). Proven track record across Axodian, Nexus Horizon, and SNS Square in engineering multi-service integrations, enforcing Test-Driven Development (TDD), optimizing database queries, and cutting API error rates by 30%. Adept at collaborating with cross-functional product and engineering teams to deliver high-availability, maintainable software systems.',
+      skills: [
+        'C#', 'Python', 'SQL', 'JavaScript', 'TypeScript', 'ASP.NET Core',
+        'RESTful APIs', 'Microservices', 'PostgreSQL', 'MySQL', 'MS SQL',
+        'React.js', 'Node.js', 'Docker', 'Git', 'GitHub Actions', 'CI/CD',
+        'TDD / BDD', 'Azure', 'Object-Oriented Design'
+      ],
+      skillCategories: {
+        'Programming Languages': 'C#, Python, SQL, JavaScript, TypeScript, HTML/CSS',
+        'Frameworks & Architecture': 'ASP.NET Core, RESTful APIs, Microservices Architecture, TDD / BDD, React.js, Node.js',
+        'Databases & Cloud': 'MS SQL Server, PostgreSQL, MySQL, Docker, Azure, Git, GitHub Actions (CI/CD)',
+        'Core Competencies': 'Object-Oriented Design (OOD), API Design & Integration, Database Optimization, Agile / Scrum'
+      },
+      experience: [
+        {
+          id: 'sde_exp_1',
+          role: 'Software Engineer Intern',
+          company: 'Axodian',
+          project: 'OneDoc, OneCompliance',
+          companyUrl: 'https://axodian.com/',
+          period: 'June 2026 - Present',
+          location: 'Coimbatore, TN (On-Site)',
+          relevant: true,
+          highlights: [
+            'Architected enterprise trade finance microservices and secure REST APIs with the IBDIC ecosystem, processing 10,000+ financial transactions with 99.8% compliance accuracy.',
+            'Architected multi-service architecture integrating EDPMS, IDPMS, real-time banking connectivity, SAP, and Tally, reducing manual transaction reconciliation cycle times by 40%.',
+            'Implemented automated data verification engines and relational database schemas (SQL/PostgreSQL), accelerating transaction clearance throughput by 35%.',
+            'Enforced Test-Driven Development (TDD) and CI/CD pipelines with GitHub Actions, maintaining 90%+ automated test coverage and zero critical defect escapes.'
+          ]
+        },
+        {
+          id: 'sde_exp_2',
+          role: 'Front-end Developer Intern',
+          company: 'Nexus Horizon',
+          project: 'Faculties.ai',
+          companyUrl: 'https://nexushorizon.ltd/#about',
+          period: 'Sep 2025 - Apr 2026',
+          location: 'Remote',
+          relevant: true,
+          highlights: [
+            'Architected scalable, responsive web interfaces for enterprise academic workflows at Faculties.ai, serving 5,000+ active faculty members and students.',
+            'Engineered robust frontend client components and integrated them with backend microservices via REST APIs, reducing API response handling errors by 30% and decreasing latency by 25%.',
+            'Developed responsive, accessible UI modules using React and TypeScript, achieving 95+ Google Lighthouse performance scores across all device viewports.'
+          ]
+        },
+        {
+          id: 'sde_exp_3',
+          role: 'Software Developer Intern',
+          company: 'SNS Square',
+          project: 'Evaluation Suite, Assessment Platform, Aggregator',
+          companyUrl: 'https://www.snssquare.com/',
+          period: 'Aug 2024 - Sep 2025',
+          location: 'Coimbatore, TN (On-Site)',
+          relevant: true,
+          highlights: [
+            'Engineered full-stack modules and implemented core backend processing logic across 3 enterprise assessment platforms (Evaluation Suite, Assessment Platform, Aggregator).',
+            'Designed, tested, and analyzed requirements for automated evaluation platforms, validating over 15,000+ test submissions.',
+            'Increased database query throughput and system reliability by 15%, improving project delivery milestone velocity by 10% through end-to-end automated testing.'
+          ]
+        }
+      ],
+      projects: [
+        {
+          name: 'Loan Eligibility Evaluation System',
+          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
+          tech: 'Python, C#, REST APIs, SQL Database, Scikit-learn',
+          description: 'Automated credit evaluation system that reduced manual verification by 12% and improved applicant screening accuracy by 15% across 2,000+ applicant records.'
+        },
+        {
+          name: 'DocuMirror Enterprise Document Processing Platform',
+          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
+          tech: 'Python, RESTful APIs, PostgreSQL, Document Engine',
+          description: 'Scalable document management platform with REST API endpoints, image-to-HTML conversion, and structured PDF generation with 99.2% extraction precision.'
+        },
+        {
+          name: 'AgriBridge B2B Marketplace Platform',
+          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
+          tech: 'Full-Stack Web, Node.js, Express, MongoDB, REST APIs',
+          description: 'Global commercial marketplace platform connecting 500+ agricultural suppliers, exporters, and enterprise buyers with real-time order processing.'
+        }
+      ],
+      education: [
+        {
+          degree: 'B.Tech in Artificial Intelligence & Machine Learning',
+          institution: 'SNS College of Technology',
+          year: 'Nov 2022 - Apr 2026',
+          location: 'Coimbatore, Tamil Nadu',
+          details: 'CGPA: 8.38 / 10'
+        }
+      ],
+      certifications: [
+        'Oracle Certified Foundations Associate completed with 92% and Postman API Student Expert certified.',
+        'NPTEL Industry 4.0 Certification, NASSCOM Digital Edge completed with an honors score of 81%.',
+        'Salesforce Certified Associate completed with scores above 80%.'
       ]
     }
   },

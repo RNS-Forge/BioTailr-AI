@@ -12,8 +12,8 @@ import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml } from './
 // Application State
 const state = {
   currentView: 'entry',
-  targetRole: 'AI Engineer & Software Developer',
-  selectedArchetypeId: 'developer',
+  targetRole: 'Software Development Engineer',
+  selectedArchetypeId: 'sde',
   currentProfile: null,
   activeModelName: 'Google Gemini Flash',
   atsData: null,
@@ -34,8 +34,8 @@ function initApp() {
   initStudioSplitter();
 
   // Pre-initialize default profile & ATS data so Studio is never blank
-  state.selectedArchetypeId = 'developer';
-  state.targetRole = 'AI Engineer & Software Developer';
+  state.selectedArchetypeId = 'sde';
+  state.targetRole = 'Software Development Engineer';
   state.viewMode = 'tailored';
   const baseProfile = RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
   state.currentProfile = optimizeProfileFor100Ats(baseProfile, state.targetRole, state.selectedArchetypeId);

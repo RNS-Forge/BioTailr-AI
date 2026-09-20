@@ -16,6 +16,11 @@ export const POWER_VERBS = [
 
 // Target role keywords dictionary for Sanjay N's 4 career tracks
 export const ROLE_KEYWORD_MAP = {
+  sde: [
+    'C#', 'Python', 'RESTful APIs', 'Microservices', 'SQL', 
+    'PostgreSQL', 'MS SQL', 'MySQL', 'ASP.NET Core', 'Docker', 
+    'CI/CD', 'GitHub Actions', 'TDD / BDD', 'React.js', 'Azure', 'Git'
+  ],
   developer: [
     'Python', 'Agentic AI', 'LangChain', 'RAG', 'LLM', 'TensorFlow', 
     'PyTorch', 'RESTful APIs', 'Document Intelligence', 'MySQL', 'MongoDB', 
@@ -104,8 +109,45 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
   // 1. Ensure Target Role is prominent in headline
   optimized.title = targetRole || optimized.title;
 
+  // Detect if targetRole is an SDE / Software Engineer role or SDE archetype
+  const roleLower = (targetRole || '').toLowerCase();
+  const isSde = archetypeId === 'sde' || (
+    (roleLower.includes('software') || roleLower.includes('sde') || roleLower.includes('backend') || roleLower.includes('engineer 1') || roleLower.includes('development engineer')) &&
+    !roleLower.includes('agentic') && !roleLower.includes('prompt') && !roleLower.includes('ml engineer') && !roleLower.includes('ai engineer')
+  );
+
+  // If SDE role, strip out irrelevant AI-specific terms from skills & categories
+  if (isSde) {
+    const aiTerms = ['agentic ai', 'crew ai', 'autogen', 'langgraph', 'langchain', 'rag pipelines', 'rag architectures', 'rag', 'llm', 'document intelligence', 'genai', 'tensorflow', 'opencv'];
+    if (optimized.skills) {
+      optimized.skills = optimized.skills.filter(s => !aiTerms.some(term => s.toLowerCase().includes(term)));
+    }
+    if (optimized.skillCategories) {
+      Object.keys(optimized.skillCategories).forEach(cat => {
+        const skillsList = optimized.skillCategories[cat].split(',').map(s => s.trim());
+        const cleaned = skillsList.filter(s => !aiTerms.some(term => s.toLowerCase().includes(term)));
+        optimized.skillCategories[cat] = cleaned.join(', ');
+      });
+      // Replace Core Competencies if it contains AI terms
+      if (optimized.skillCategories['Core Competencies'] && optimized.skillCategories['Core Competencies'].toLowerCase().includes('agentic')) {
+        optimized.skillCategories['Core Competencies'] = 'Object-Oriented Design (OOD), RESTful API Design, Microservices, Database Optimization, Agile / Scrum';
+      }
+      if (optimized.skillCategories['Frameworks & Libraries'] && optimized.skillCategories['Frameworks & Libraries'].toLowerCase().includes('crew')) {
+        optimized.skillCategories['Frameworks & Libraries'] = 'ASP.NET Core, RESTful APIs, Microservices Architecture, TDD / BDD, React.js, Node.js';
+      }
+    }
+    // Also clean education of any coursework strings
+    if (optimized.education) {
+      optimized.education.forEach(edu => {
+        if (edu.details && edu.details.includes('Coursework')) {
+          edu.details = edu.details.replace(/•\s*Relevant Coursework:.*$/i, '').trim();
+        }
+      });
+    }
+  }
+
   // 2. Ensure skills include the highest priority keywords
-  const targetKeywords = ROLE_KEYWORD_MAP[archetypeId] || ROLE_KEYWORD_MAP.developer;
+  const targetKeywords = isSde ? ROLE_KEYWORD_MAP.sde : (ROLE_KEYWORD_MAP[archetypeId] || ROLE_KEYWORD_MAP.developer);
   const currentSkills = new Set(optimized.skills || []);
   targetKeywords.slice(0, 6).forEach(kw => currentSkills.add(kw));
   optimized.skills = Array.from(currentSkills);

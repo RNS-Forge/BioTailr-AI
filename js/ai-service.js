@@ -71,14 +71,21 @@ export function matchArchetype(targetRole) {
   if (roleLower.includes('full stack') || roleLower.includes('fullstack') || 
       roleLower.includes('fsd') || roleLower.includes('frontend') || 
       roleLower.includes('front-end') || roleLower.includes('web developer') || 
-      roleLower.includes('react') || roleLower.includes('node') || 
       roleLower.includes('ui developer') || roleLower.includes('web engineer') || 
       roleLower.includes('angular') || roleLower.includes('vue') ||
       roleLower.includes('django')) {
     return 'fsd';
   }
 
-  // 4. Default: AI Engineer & Software Developer
+  // 4. Software Development Engineer / Backend / SDE (e.g. WEX Software Development Engineer)
+  if (roleLower.includes('software development engineer') || roleLower.includes('sde') ||
+      roleLower.includes('software engineer') || roleLower.includes('backend') ||
+      roleLower.includes('c#') || roleLower.includes('.net') || roleLower.includes('java') ||
+      roleLower.includes('engineer 1') || roleLower.includes('development engineer')) {
+    return 'sde';
+  }
+
+  // 5. Default: AI Engineer & Software Developer
   return 'developer';
 }
 
@@ -216,19 +223,60 @@ function generateLocalSmartTailoring(baseProfile, targetRole, refinements) {
   // 1. Update Title to Target Role
   profile.title = targetRole;
 
-  // 2. Synthesize Role-Specific Summary based on Sanjay N's real strengths
+  // 2. Detect role category
   const roleLower = (targetRole || '').toLowerCase();
+  const isSde = (
+    roleLower.includes('software development engineer') ||
+    roleLower.includes('software engineer') ||
+    roleLower.includes('sde') ||
+    roleLower.includes('backend') ||
+    roleLower.includes('c#') ||
+    roleLower.includes('.net') ||
+    roleLower.includes('development engineer') ||
+    roleLower.includes('engineer 1') ||
+    (roleLower.includes('software') && !roleLower.includes('ai') && !roleLower.includes('agentic'))
+  );
+
+  // 3. Synthesize Role-Specific Summary & curated skills based on target role
   if (roleLower.includes('quality') || roleLower.includes('manufactur') || roleLower.includes('inspection') || roleLower.includes('qc') || roleLower.includes('qa')) {
     profile.summary = `Detail-oriented Quality Control & Inspection Specialist with hands-on experience in incoming, in-process, patrol, and final inspection of CNC-turned precision steel bar components at Anvil Automation (ISO 9001:2015 precision unit). Skilled in precision metrology utilizing vernier calipers, micrometers, height gauges, bore gauges, and digital air gauges to verify close-tolerance dimensions. Experienced in Cpk process capability monitoring (1.66+ target), non-conformance containment, PPAP documentation, and internal audits. B.Tech graduate in Artificial Intelligence & Machine Learning (CGPA 8.38/10).`;
   } else if (roleLower.includes('analyst') || roleLower.includes('client') || roleLower.includes('business') || roleLower.includes('communication') || roleLower.includes('account')) {
     profile.summary = `Customer-focused and detail-oriented professional with comprehensive experience in client communication, requirement gathering, and business analysis at SNS Square. Skilled in managing client relationships, understanding business needs, and coordinating with cross-functional technical teams to deliver effective solutions. Strong track record of translating complex client requirements into clear functional specifications, resolving queries, and ensuring high customer satisfaction.`;
+  } else if (isSde) {
+    profile.summary = `Results-driven Software Development Engineer with experience in architecting scalable microservices, RESTful APIs, and enterprise web solutions using C#, Python, and modern RDBMS (PostgreSQL, MySQL, MS SQL). Proven track record across Axodian, Nexus Horizon, and SNS Square in engineering multi-service integrations, enforcing Test-Driven Development (TDD), optimizing database queries, and cutting API error rates by 30%. Adept at collaborating with cross-functional product and engineering teams to deliver high-availability, maintainable software systems.`;
+    profile.skills = [
+      'C#', 'Python', 'SQL', 'JavaScript', 'TypeScript', 'ASP.NET Core',
+      'RESTful APIs', 'Microservices', 'PostgreSQL', 'MySQL', 'MS SQL',
+      'React.js', 'Node.js', 'Docker', 'Git', 'GitHub Actions', 'CI/CD',
+      'TDD / BDD', 'Azure', 'Object-Oriented Design'
+    ];
+    profile.skillCategories = {
+      'Programming Languages': 'C#, Python, SQL, JavaScript, TypeScript, HTML/CSS',
+      'Frameworks & Architecture': 'ASP.NET Core, RESTful APIs, Microservices Architecture, TDD / BDD, React.js, Node.js',
+      'Databases & Cloud': 'MS SQL Server, PostgreSQL, MySQL, Docker, Azure, Git, GitHub Actions (CI/CD)',
+      'Core Competencies': 'Object-Oriented Design (OOD), API Design & Integration, Database Optimization, Agile / Scrum'
+    };
+    if (profile.education) {
+      profile.education.forEach(edu => {
+        edu.details = 'CGPA: 8.38 / 10';
+      });
+    }
   } else if (roleLower.includes('full stack') || roleLower.includes('frontend') || roleLower.includes('web developer') || roleLower.includes('react') || roleLower.includes('node') || roleLower.includes('fsd')) {
     profile.summary = `Full Stack Developer skilled in React.js, Node.js, TypeScript, and Django, building scalable web applications with integrated AI-powered features — from responsive UI to backend architecture. Experienced in delivering enterprise platforms at Axodian and Nexus Horizon, integrating RESTful APIs, optimizing frontend workflows, and reducing API response handling errors by 30%.`;
   } else {
     profile.summary = `AI Engineer & Software Developer specializing in Agentic AI, RAG architectures, LLM automation, document intelligence, and scalable enterprise systems. Experienced in building multi-service platforms across Axodian, Nexus Horizon, and SNS Square, integrating real-time banking APIs and machine learning models to boost assessment accuracy by 15% and reduce development time by 55%.`;
   }
 
-  // 3. If user added custom refinements, incorporate them
+  // Ensure education never contains coursework lines
+  if (profile.education) {
+    profile.education.forEach(edu => {
+      if (edu.details && edu.details.includes('Coursework')) {
+        edu.details = edu.details.replace(/•\s*Relevant Coursework:.*$/i, '').trim();
+      }
+    });
+  }
+
+  // 4. If user added custom refinements, incorporate them
   if (refinements && refinements.trim().length > 0) {
     const keywords = refinements.split(/[,;\n]/).map(k => k.trim()).filter(Boolean);
     keywords.forEach(kw => {
@@ -251,10 +299,13 @@ User corrections/refinements (if any): "${refinements || 'None'}"
 
 Strict Guidelines:
 1. Rephrase the title and summary to directly match the target role "${targetRole}" while reflecting Sanjay N's background.
-2. Prioritize skills and tools relevant to "${targetRole}".
+2. CRITICAL SKILL CURATION: ONLY include skills, frameworks, and tools directly needed for "${targetRole}". Prune and remove any irrelevant technical domains.
+   - For Software Development Engineer / Software Engineer / SDE roles: REMOVE all Agentic AI, Crew AI, AutoGen, LangGraph, LLM prompting buzzwords. Instead prioritize C#, Python, ASP.NET Core, RESTful APIs, Microservices, RDBMS (MS SQL, PostgreSQL, MySQL), TDD / BDD, Docker, Git, and CI/CD.
+   - For AI / Machine Learning roles: Highlight Python, PyTorch, LangChain, RAG, and Agentic AI.
 3. Keep real experience companies (Axodian, Nexus Horizon, SNS Square, Anvil Automation) and education (SNS College of Technology) intact.
-4. Enhance experience bullet points with strong power action verbs (Spearheaded, Architected, Engineered, Inspected, Optimized) and quantified metrics (%, $, scale).
-5. Return ONLY a valid JSON object matching the exact schema below:
+4. EDUCATION REQUIREMENT: Under education details, output ONLY "CGPA: 8.38 / 10". Do NOT include any coursework lines like "Relevant Coursework: ...".
+5. Enhance experience bullet points with strong power action verbs (Spearheaded, Architected, Engineered, Inspected, Optimized) and quantified metrics (%, $, scale).
+6. Return ONLY a valid JSON object matching the exact schema below:
 
 ${JSON.stringify(baseProfile, null, 2)}
 `;
