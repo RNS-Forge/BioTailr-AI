@@ -303,7 +303,7 @@ function renderStudioWorkspace() {
 /**
  * Guarantees the resume is ALWAYS exactly 1 full A4 page (never half page, 75%, or overflow)
  */
-function autoBalanceResumeToOnePage() {
+export function autoBalanceResumeToOnePage() {
   const resumeEl = document.getElementById('resume-document');
   if (!resumeEl) return;
 
@@ -323,32 +323,50 @@ function autoBalanceResumeToOnePage() {
 
   let currentHeight = resumeEl.scrollHeight;
 
-  if (currentHeight > targetA4Px + 3) {
-    // Content exceeds 1 A4 page -> gently scale down font size & line-height to fit 100%
-    let scaleFactor = Math.max(0.85, Math.min(0.98, targetA4Px / currentHeight));
-    resumeEl.style.fontSize = `${(baseFontSize * scaleFactor).toFixed(1)}pt`;
-    resumeEl.style.lineHeight = `${(baseLineHeight * scaleFactor).toFixed(2)}`;
+  // Multi-pass downward convergence to strictly guarantee <= 1 A4 page
+  if (currentHeight > targetA4Px + 2) {
+    let scale = targetA4Px / currentHeight;
+    resumeEl.style.fontSize = `${Math.max(7.5, (baseFontSize * scale)).toFixed(2)}pt`;
+    resumeEl.style.lineHeight = `${Math.max(1.15, (baseLineHeight * scale)).toFixed(2)}`;
     resumeEl.querySelectorAll('section').forEach(s => {
       s.style.paddingTop = '2pt';
       s.style.paddingBottom = '2pt';
     });
 
-    // Secondary micro-tuning pass if still slightly overflowing
-    if (resumeEl.scrollHeight > targetA4Px + 2) {
-      scaleFactor = Math.max(0.82, scaleFactor * (targetA4Px / resumeEl.scrollHeight));
-      resumeEl.style.fontSize = `${(baseFontSize * scaleFactor).toFixed(1)}pt`;
-      resumeEl.style.lineHeight = `${(baseLineHeight * scaleFactor).toFixed(2)}`;
+    // Iterative micro-adjustment passes
+    let passes = 0;
+    while (resumeEl.scrollHeight > targetA4Px && passes < 4) {
+      passes++;
+      scale *= 0.96;
+      resumeEl.style.fontSize = `${Math.max(7.2, (baseFontSize * scale)).toFixed(2)}pt`;
+      resumeEl.style.lineHeight = `${Math.max(1.12, (baseLineHeight * scale)).toFixed(2)}`;
+      resumeEl.querySelectorAll('section').forEach(s => {
+        s.style.paddingTop = `${Math.max(1, 2 * scale).toFixed(1)}pt`;
+        s.style.paddingBottom = `${Math.max(1, 2 * scale).toFixed(1)}pt`;
+      });
     }
-  } else if (currentHeight < targetA4Px - 60) {
-    // Content is sparse -> gracefully expand breathing room so page is 100% full and balanced
-    resumeEl.style.fontSize = `${(baseFontSize * 1.02).toFixed(1)}pt`;
-    resumeEl.style.lineHeight = `${(baseLineHeight * 1.04).toFixed(2)}`;
+  } else if (currentHeight < targetA4Px - 50) {
+    // Content is slightly sparse -> gracefully expand breathing room so page is 100% full
+    resumeEl.style.fontSize = `${(baseFontSize * 1.03).toFixed(1)}pt`;
+    resumeEl.style.lineHeight = `${(baseLineHeight * 1.05).toFixed(2)}`;
     resumeEl.querySelectorAll('section').forEach(s => {
-      s.style.paddingTop = '5.5pt';
-      s.style.paddingBottom = '5.5pt';
+      s.style.paddingTop = '6pt';
+      s.style.paddingBottom = '6pt';
     });
+    // If it expanded past 1 page, step back
+    if (resumeEl.scrollHeight > targetA4Px) {
+      resumeEl.style.fontSize = `${baseFontSize}pt`;
+      resumeEl.style.lineHeight = `${baseLineHeight}`;
+      resumeEl.querySelectorAll('section').forEach(s => {
+        s.style.paddingTop = '4pt';
+        s.style.paddingBottom = '4pt';
+      });
+    }
   }
 }
+
+// Attach to window so exporter and other modules can trigger 1-page balancing
+window.autoBalanceResumeToOnePage = autoBalanceResumeToOnePage;
 
 function renderAtsChecklist() {
   const container = document.getElementById('ats-checklist-items');

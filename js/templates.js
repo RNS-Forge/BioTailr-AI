@@ -273,11 +273,18 @@ export const RESUME_ARCHETYPES = {
       location: 'Coimbatore, Tamil Nadu',
       portfolio: 'https://rns-forge.github.io/RNS_Professional_Profile/',
       linkedin: 'www.linkedin.com/in/sanjay--n',
-      summary: 'Customer-focused and detail-oriented professional with experience in client communication, requirement gathering, and business analysis. Skilled in managing client relationships, understanding business needs, and coordinating with technical teams to deliver effective solutions. Strong ability to handle queries, resolve issues, and ensure customer satisfaction in fast-paced environments.',
+      tools: [
+        'MS Office (Excel, Word, PowerPoint)', 'Basic CRM Tools',
+        'Email & Chat Support Systems', 'Internet & Data Handling'
+      ],
+      keySkills: [
+        'Client Acquisition', 'Active Listening & Problem Solving', 'Communication',
+        'Client Handling', 'Problem-Solving', 'Time Management',
+        'Relationship Management', 'Market Analysis'
+      ],
       skills: [
-        'Client Acquisition', 'Requirement Gathering', 'Functional Specifications', 'Client Handling',
-        'Active Listening & Problem Solving', 'Relationship Management', 'Market Analysis',
-        'Time Management', 'Stakeholder Communication', 'Cross-Functional Coordination'
+        'MS Office (Excel, Word, PowerPoint)', 'Basic CRM Tools', 'Email & Chat Support Systems', 'Internet & Data Handling',
+        'Client Acquisition', 'Active Listening & Problem Solving', 'Communication', 'Client Handling', 'Problem-Solving', 'Time Management', 'Relationship Management', 'Market Analysis'
       ],
       skillCategories: {
         'Tools & Technologies': 'MS Office (Excel, Word, PowerPoint), Basic CRM Tools, Email & Chat Support Systems, Internet & Data Handling',
@@ -532,27 +539,91 @@ function generateCommunicationHtml(profile) {
       </div>
     </section>
 
-    <section class="sec s-tools">
-      <h2>KEY SKILLS &amp; TOOLS</h2>
-      <div class="body">
-        ${profile.skillCategories ? `
-          <div class="cols2">
-            ${Object.entries(profile.skillCategories).map(([cat, list]) => `
-              <div>
-                <b>${escapeHtml(cat)}:</b>
-                <ul>
-                  ${list.split(',').map(item => `<li>${escapeHtml(item.trim())}</li>`).join('')}
-                </ul>
-              </div>
-            `).join('')}
+    ${(() => {
+      // Intelligently and dynamically separate tools and key skills
+      let toolsList = [];
+      let skillsList = [];
+
+      if (Array.isArray(profile.tools) && profile.tools.length > 0) {
+        toolsList = profile.tools.slice();
+      }
+      if (Array.isArray(profile.keySkills) && profile.keySkills.length > 0) {
+        skillsList = profile.keySkills.slice();
+      }
+
+      if (profile.skillCategories && (toolsList.length === 0 || skillsList.length === 0)) {
+        for (const [catName, itemsVal] of Object.entries(profile.skillCategories)) {
+          const items = (typeof itemsVal === 'string' ? itemsVal.split(',') : (Array.isArray(itemsVal) ? itemsVal : []))
+            .map(i => i.trim()).filter(Boolean);
+          const catLower = catName.toLowerCase();
+          if (catLower.includes('tool') || catLower.includes('technolog') || catLower.includes('software') || catLower.includes('system') || catLower.includes('crm')) {
+            toolsList.push(...items);
+          } else {
+            skillsList.push(...items);
+          }
+        }
+      }
+
+      if (toolsList.length === 0 && skillsList.length === 0 && Array.isArray(profile.skills)) {
+        profile.skills.forEach(s => {
+          const sLower = s.toLowerCase();
+          if (sLower.includes('crm') || sLower.includes('office') || sLower.includes('tool') || sLower.includes('system') || sLower.includes('software') || sLower.includes('excel') || sLower.includes('dialer') || sLower.includes('jira') || sLower.includes('telephony') || sLower.includes('chat') || sLower.includes('email')) {
+            toolsList.push(s);
+          } else {
+            skillsList.push(s);
+          }
+        });
+        if (toolsList.length === 0 && skillsList.length > 0) {
+          toolsList = skillsList.splice(0, Math.min(4, Math.ceil(skillsList.length / 2)));
+        }
+      }
+
+      // Split tools into 2 balanced columns (cols2)
+      const midTools = Math.ceil(toolsList.length / 2);
+      const toolsCol1 = toolsList.slice(0, midTools);
+      const toolsCol2 = toolsList.slice(midTools);
+
+      // Split key skills into 3 balanced columns (cols3)
+      const thirdSkills = Math.ceil(skillsList.length / 3);
+      const skillsCol1 = skillsList.slice(0, thirdSkills);
+      const skillsCol2 = skillsList.slice(thirdSkills, thirdSkills * 2);
+      const skillsCol3 = skillsList.slice(thirdSkills * 2);
+
+      return `
+        <!-- ===== TOOLS & TECHNOLOGIES ===== -->
+        <section class="sec s-tools">
+          <h2>TOOLS &amp; TECHNOLOGIES</h2>
+          <div class="body">
+            <div class="cols2">
+              <ul>
+                ${toolsCol1.map(t => `<li>${escapeHtml(t)}</li>`).join('')}
+              </ul>
+              <ul>
+                ${toolsCol2.map(t => `<li>${escapeHtml(t)}</li>`).join('')}
+              </ul>
+            </div>
           </div>
-        ` : `
-          <ul>
-            ${(profile.skills || []).map(s => `<li>${escapeHtml(s)}</li>`).join('')}
-          </ul>
-        `}
-      </div>
-    </section>
+        </section>
+
+        <!-- ===== KEY SKILLS ===== -->
+        <section class="sec s-skill">
+          <h2>KEY SKILLS</h2>
+          <div class="body">
+            <div class="cols3">
+              <ul>
+                ${skillsCol1.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+              </ul>
+              <ul>
+                ${skillsCol2.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+              </ul>
+              <ul>
+                ${skillsCol3.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+        </section>
+      `;
+    })()}
 
     <section class="sec s-edu">
       <h2>EDUCATION</h2>

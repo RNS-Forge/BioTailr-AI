@@ -247,13 +247,60 @@ export async function tailorResumeWithAi(targetRole, userRefinements = '') {
     });
   }
 
-  // Rule 4: Cleanse mismatched domain skills if target role is non-AI (e.g. SDE, QC, Communication)
+  // Rule 4: Dynamic Domain Skill Cleansing & Role-Specific Skill Set Enforcement
   const roleLower = (targetRole || '').toLowerCase();
   const isSde = archetypeId === 'developer' && (
     (roleLower.includes('software') || roleLower.includes('sde') || roleLower.includes('backend') || roleLower.includes('engineer 1') || roleLower.includes('development engineer')) &&
     !roleLower.includes('agentic') && !roleLower.includes('ai engineer') && !roleLower.includes('ml engineer')
   );
-  if (isSde && tailoredProfile.skills) {
+
+  if (archetypeId === 'communication') {
+    // Strictly strip all coding, software engineering, and manufacturing terms
+    const nonCommTerms = ['python', 'c#', 'c++', 'java', 'react', 'node', 'fastapi', 'javascript', 'docker', 'sql', 'agentic', 'langchain', 'autogen', 'crew ai', 'rag', 'caliper', 'micrometer', 'metrology', 'cnc', 'ppap', 'cpk', 'gauge', 'aws', 'github actions', 'ci/cd', 'frontend', 'backend'];
+    if (tailoredProfile.skills) {
+      tailoredProfile.skills = tailoredProfile.skills.filter(s => !nonCommTerms.some(t => s.toLowerCase().includes(t)));
+    }
+    if (tailoredProfile.tools) {
+      tailoredProfile.tools = tailoredProfile.tools.filter(s => !nonCommTerms.some(t => s.toLowerCase().includes(t)));
+    }
+    if (tailoredProfile.keySkills) {
+      tailoredProfile.keySkills = tailoredProfile.keySkills.filter(s => !nonCommTerms.some(t => s.toLowerCase().includes(t)));
+    }
+
+    // Ensure tools and keySkills are populated with high-quality dynamic competencies
+    if (!Array.isArray(tailoredProfile.tools) || tailoredProfile.tools.length === 0) {
+      if (roleLower.includes('voice') || roleLower.includes('bpo') || roleLower.includes('telecall') || roleLower.includes('call')) {
+        tailoredProfile.tools = ['CRM Systems (Salesforce, Zoho)', 'Cloud Telephony & Predictive Dialers (Avaya, Vicidial)', 'Zendesk & Freshdesk Ticketing', 'MS Excel & Call Logging', 'Live Chat Support Platforms'];
+      } else if (roleLower.includes('analyst') || roleLower.includes('requirement')) {
+        tailoredProfile.tools = ['MS Office (Advanced Excel, PowerPoint)', 'Jira & Confluence', 'CRM Systems & Client Portals', 'Data Flow & Process Mapping (Visio/Lucid)', 'Reporting & Documentation Tools'];
+      } else {
+        tailoredProfile.tools = ['MS Office (Excel, Word, PowerPoint)', 'Basic CRM Tools (Salesforce, Zoho)', 'Email & Chat Support Systems', 'Internet & Data Handling', 'Ticketing Systems (Freshdesk)'];
+      }
+    }
+
+    if (!Array.isArray(tailoredProfile.keySkills) || tailoredProfile.keySkills.length === 0) {
+      if (roleLower.includes('voice') || roleLower.includes('bpo') || roleLower.includes('telecall') || roleLower.includes('call')) {
+        tailoredProfile.keySkills = ['Inbound & Outbound Calling', 'Active Listening & Empathy', 'First Call Resolution (FCR)', 'Customer Escalation Handling', 'SLA & AHT Adherence', 'Voice Etiquette & Tone Control', 'Call Quality Auditing', 'Customer Retention', 'Cross-Functional Coordination'];
+      } else if (roleLower.includes('analyst') || roleLower.includes('requirement')) {
+        tailoredProfile.keySkills = ['Requirement Gathering & Elicitation', 'Functional Specifications (BRD/FRD)', 'Client Handling & Relationship Management', 'Stakeholder Communication', 'Gap Analysis & Workflow Optimization', 'UAT Coordination', 'Cross-Functional Team Alignment', 'Change Request Management', 'Process Documentation'];
+      } else {
+        tailoredProfile.keySkills = ['Client Acquisition & Onboarding', 'Active Listening & Problem Solving', 'Professional Communication', 'Client Handling & Retention', 'SLA Adherence & Escalations', 'Time Management', 'Relationship Management', 'Market Analysis', 'Cross-Functional Coordination'];
+      }
+    }
+
+    // Synchronize flat skills and skillCategories
+    tailoredProfile.skills = [...tailoredProfile.tools, ...tailoredProfile.keySkills];
+    tailoredProfile.skillCategories = {
+      'Tools & Technologies': tailoredProfile.tools.join(', '),
+      'Key Skills': tailoredProfile.keySkills.join(', ')
+    };
+  } else if (archetypeId === 'manufacturing') {
+    // Strip coding, AI, and telecalling terms
+    const nonMfgTerms = ['python', 'c#', 'react', 'node', 'fastapi', 'javascript', 'docker', 'agentic', 'langchain', 'autogen', 'crew ai', 'rag', 'telecalling', 'bpo', 'voice process', 'crm', 'restful api'];
+    if (tailoredProfile.skills) {
+      tailoredProfile.skills = tailoredProfile.skills.filter(s => !nonMfgTerms.some(t => s.toLowerCase().includes(t)));
+    }
+  } else if (isSde && tailoredProfile.skills) {
     const aiBuzzwords = ['agentic ai', 'crew ai', 'autogen', 'langgraph', 'langchain', 'rag', 'llm', 'document intelligence', 'prompt engineering', 'genai', 'tensorflow', 'opencv'];
     tailoredProfile.skills = tailoredProfile.skills.filter(s => !aiBuzzwords.some(bw => s.toLowerCase().includes(bw)));
   }
@@ -404,27 +451,110 @@ function generateLocalSmartTailoring(baseProfile, targetRole, refinements, domai
       'Core Competencies': 'Object-Oriented Design (OOD), API Design & Integration, Database Optimization, Agile / Scrum'
     };
   } else if (isMfg) {
-    profile.skills = [
-      'Incoming Inspection', 'In-Process Inspection', 'Final Inspection',
-      'Vernier Calipers (Digital & Dial)', 'Micrometers', 'Height Gauges', 'Bore Gauges', 'Digital Air Gauges',
-      'ISO 9001:2015 Procedures', 'PPAP Documentation', 'Cpk Capability Monitoring',
-      'Non-Conformance Reporting (NCR)', 'Root Cause Analysis', 'Blueprint Reading', 'CNC Turning Inspection'
-    ];
+    const isQualityChecker = roleLower.includes('check') || roleLower.includes('inspect') || roleLower.includes('qa') || roleLower.includes('qc') || roleLower.includes('quality');
+    const isCnc = roleLower.includes('cnc') || roleLower.includes('machin') || roleLower.includes('turn');
+    
+    const inspectionTools = ['Vernier Calipers (Digital & Dial)', 'Outside Micrometers (0-25mm, 25-50mm)', 'Height Gauges', 'Bore Gauges', 'Digital Air Gauges & Comparators', 'Thread Plug & Ring Gauges'];
+    const qualityProcedures = ['ISO 9001:2015 Procedures', 'PPAP Documentation', 'Cpk / Ppk Capability Monitoring', 'Non-Conformance Reporting (NCR)', 'Root Cause Analysis (8D / 5-Why)', 'First Piece & Patrol Inspection'];
+    const processSkills = isCnc 
+      ? ['CNC Turning Inspection', 'Surface Finish & Roughness Testing', 'Tolerance Verification (GD&T)', 'Sampling Inspection (AQL)']
+      : ['Blueprint & Engineering Drawing Reading', 'Sampling Inspection', 'Defect Prevention & Containment', 'In-Process Quality Auditing'];
+
+    profile.skills = [...inspectionTools, ...qualityProcedures, ...processSkills];
     profile.skillCategories = {
-      'Inspection Tools': 'Vernier Calipers (Digital & Dial), Outside Micrometers, Height Gauge, Bore Gauge, Air Gauges',
-      'Quality & Standards': 'ISO 9001:2015 Procedures, PPAP Documentation, Cpk Capability Monitoring, NCR, Root Cause Analysis',
-      'Manufacturing Process': 'CNC Turning Inspection, In-Process Patrol Checks, Sampling Inspection, First Piece Inspection'
+      'Precision Metrology & Tools': inspectionTools.slice(0, 5).join(', '),
+      'Quality Standards & Systems': qualityProcedures.slice(0, 5).join(', '),
+      'Manufacturing & Process': processSkills.join(', ')
     };
   } else if (isComm) {
-    profile.skills = [
-      'Voice Process & Telecalling', 'Customer Service & SLA Resolution', 'Client Acquisition', 'Requirement Gathering', 'Functional Specifications', 'Client Handling',
-      'Active Listening & Problem Solving', 'Relationship Management', 'Market Analysis',
-      'Time Management', 'Stakeholder Communication', 'Cross-Functional Coordination'
-    ];
+    let commTools = [];
+    let commKeySkills = [];
+
+    if (roleLower.includes('voice') || roleLower.includes('bpo') || roleLower.includes('telecall') || roleLower.includes('call') || roleLower.includes('inbound') || roleLower.includes('outbound')) {
+      commTools = [
+        'Cloud Telephony & Auto-Dialers (Vicidial, Avaya)',
+        'CRM Systems (Salesforce, Zoho CRM)',
+        'Ticketing Platforms (Zendesk, Freshdesk)',
+        'MS Excel & Call Logging Worksheets',
+        'Live Chat & Omnichannel Support Systems'
+      ];
+      commKeySkills = [
+        'Inbound & Outbound Calling',
+        'Active Listening & Clear Articulation',
+        'First Call Resolution (FCR)',
+        'Customer Grievance & Escalation Handling',
+        'SLA & Average Handling Time (AHT) Adherence',
+        'Professional Voice Etiquette & Accent Neutrality',
+        'Customer Empathy & Problem Solving',
+        'Customer Retention Strategies',
+        'Cross-Functional Team Collaboration'
+      ];
+    } else if (roleLower.includes('analyst') || roleLower.includes('ba') || roleLower.includes('requirement')) {
+      commTools = [
+        'MS Office Suite (Advanced Excel, PowerPoint)',
+        'Jira & Confluence Project Tracking',
+        'CRM & Enterprise Client Portals',
+        'Process Flow & Wireframing (Visio, Lucidchart)',
+        'Business Reporting & Dashboard Tools'
+      ];
+      commKeySkills = [
+        'Requirement Gathering & Elicitation',
+        'Functional Specification Documents (FSD / BRD)',
+        'Client Handling & Executive Presentations',
+        'Gap Analysis & Business Process Re-engineering',
+        'Stakeholder Communication & Relationship Management',
+        'User Acceptance Testing (UAT) Coordination',
+        'Cross-Functional Technical Alignment',
+        'Change Request & Scope Management',
+        'SLA & Project Milestone Tracking'
+      ];
+    } else if (roleLower.includes('support') || roleLower.includes('service') || roleLower.includes('helpdesk') || roleLower.includes('client')) {
+      commTools = [
+        'Omnichannel Ticketing Systems (Zendesk, Freshdesk)',
+        'CRM Platforms (HubSpot, Salesforce)',
+        'Live Chat Support & Knowledge Base Portals',
+        'MS Office & Communication Suites',
+        'Email Triage & SLA Tracking Software'
+      ];
+      commKeySkills = [
+        'Client Relationship Management',
+        'Customer Satisfaction (CSAT & NPS) Enhancement',
+        'First Contact Resolution (FCR)',
+        'Active Listening & Empathetic Engagement',
+        'Query Escalation & Crisis De-escalation',
+        'SLA Adherence & Ticket Lifecycle Management',
+        'Client Onboarding & Retention',
+        'Incident Troubleshooting & Problem Solving',
+        'Stakeholder Reporting & Feedback Loops'
+      ];
+    } else {
+      // General Communication role: dynamically tailored to role title keywords
+      commTools = [
+        'MS Office Suite (Excel, Word, PowerPoint)',
+        'Basic CRM Tools (Salesforce, Zoho)',
+        'Email, Chat & Cloud Telephony Systems',
+        'Customer Support & Helpdesk Software',
+        'Internet & Data Management Portals'
+      ];
+      commKeySkills = [
+        'Client Acquisition & Onboarding',
+        'Active Listening & Clear Articulation',
+        'Professional Communication & Voice Etiquette',
+        'Client Handling & Retention',
+        'Problem-Solving & Conflict Resolution',
+        'Time Management & Multitasking',
+        'Relationship & Stakeholder Management',
+        'Market Analysis & Strategic Coordination',
+        'Cross-Functional Team Alignment'
+      ];
+    }
+
+    profile.tools = commTools;
+    profile.keySkills = commKeySkills;
+    profile.skills = [...commTools, ...commKeySkills];
     profile.skillCategories = {
-      'Client & Customer Relations': 'Voice Process, Customer Service, Client Onboarding, SLA Resolution, Escalation Management',
-      'Business Analysis & Tools': 'Requirement Gathering, Functional Specifications, CRM Systems, Market Analysis, MS Office Suite',
-      'Core Communication': 'Active Listening, Professional Voice Etiquette, Stakeholder Reporting, Cross-Functional Coordination'
+      'Tools & Technologies': commTools.join(', '),
+      'Key Skills': commKeySkills.join(', ')
     };
   }
 
@@ -574,12 +704,19 @@ CRITICAL INSTRUCTIONS FOR 100% DYNAMIC DOMAIN DETECTION & GENERATION:
    - Title must be "${targetRole}".
    - Write a dynamic, highly targeted 3-4 sentence professional summary focusing on the core competencies, scale, and technologies required for "${targetRole}". Do NOT use canned or static text.
 
-3. Dynamic Skill Curation (Prune & Inject):
-   - Strictly include ONLY skills, tools, and frameworks required for "${targetRole}".
-   - For Software Development Engineer / Software Engineer / SDE roles: REMOVE all Agentic AI, Crew AI, AutoGen, LangGraph, LangChain, and LLM prompting buzzwords. Prioritize C#, Python, ASP.NET Core, RESTful APIs, Microservices, RDBMS (PostgreSQL, MS SQL, MySQL), TDD / BDD, Docker, Git, and CI/CD.
-   - For Quality Checker / Inspection / Manufacturing roles: REMOVE all coding frameworks. Focus on precision metrology (vernier calipers, micrometers, height gauges, bore gauges, digital air gauges, Cpk monitoring, ISO 9001:2015, PPAP, NCR).
-   - For Voice Process / BPO / Business Analyst / Client Handling roles: REMOVE coding frameworks. Focus on voice communication, client handling, requirement gathering, SLA adherence, CRM, stakeholder management.
-   - For AI / ML Engineer roles: Focus on Python, PyTorch, LangChain, Agentic AI, and RAG architectures.
+3. Dynamic Skill Curation (100% Dynamic Full Skill Set as per Role):
+   - In ALL resume templates, you MUST dynamically synthesize the FULL skill set strictly for "${targetRole}".
+   - Zero static or default skills. Every skill must be directly required for the role.
+   - For Communication / Voice Process / BPO / Telecalling / Customer Support / Client Handling / Business Analyst roles:
+     - REMOVE all coding frameworks, programming languages, and manufacturing terms.
+     - You MUST output BOTH "tools" (4-6 role tools, e.g. Cloud Telephony & Dialers like Vicidial/Avaya, CRM like Salesforce/Zoho, Ticketing like Zendesk/Freshdesk, MS Excel) AND "keySkills" (6-9 competencies, e.g. Inbound/Outbound Calling, First Call Resolution [FCR], SLA & AHT Adherence, Active Listening, Voice Etiquette, Escalation Handling, Requirement Gathering, Stakeholder Management).
+     - Include both arrays in the output JSON.
+   - For Software Development Engineer / Software Engineer / SDE roles:
+     - REMOVE all Agentic AI, Crew AI, AutoGen, LangGraph, LangChain, and LLM prompting buzzwords. Prioritize C#, Python, ASP.NET Core, RESTful APIs, Microservices, RDBMS (PostgreSQL, MS SQL, MySQL), TDD / BDD, Docker, Git, and CI/CD.
+   - For Quality Checker / Inspection / Manufacturing roles:
+     - REMOVE all coding frameworks. Focus on precision metrology (vernier calipers, micrometers, height gauges, bore gauges, digital air gauges, Cpk monitoring, ISO 9001:2015, PPAP, NCR).
+   - For AI / ML Engineer roles:
+     - Focus on Python, PyTorch, LangChain, Agentic AI, and RAG architectures.
    - Organize the curated skills into relevant skillCategories.
 
 4. Dynamic Work Experience:
@@ -609,6 +746,8 @@ Return ONLY a valid JSON object matching the schema below:
   "phone": "${baseProfile.phone}",
   "location": "${baseProfile.location}",
   "summary": "...",
+  "tools": ["(4-6 role tools if communication, or relevant tools)"],
+  "keySkills": ["(6-9 role competencies if communication, or relevant skills)"],
   "skills": [...],
   "skillCategories": {...},
   "experience": [...],

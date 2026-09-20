@@ -15,7 +15,12 @@ export async function downloadResumeAsPdf(targetElementId = 'resume-document', f
   const JsPdfClass = window.jsPDF || (window.jspdf && window.jspdf.jsPDF);
   const hasHtml2Pdf = typeof window.html2pdf !== 'undefined';
 
-  // Strategy 1: Direct Canvas & jsPDF Precision Rendering (Guarantees zero blank pages)
+  // Ensure element is perfectly balanced to 1 page before snapshot
+  if (typeof window.autoBalanceResumeToOnePage === 'function') {
+    window.autoBalanceResumeToOnePage();
+  }
+
+  // Strategy 1: Direct Canvas & jsPDF Precision 1-Page Rendering
   if (hasHtml2Canvas && JsPdfClass) {
     try {
       const canvas = await window.html2canvas(element, {
@@ -29,69 +34,11 @@ export async function downloadResumeAsPdf(targetElementId = 'resume-document', f
       const pdf = new JsPdfClass('p', 'mm', 'a4');
       const pageWidthMm = 210;
       const pageHeightMm = 297;
-      const totalImgHeightMm = (canvas.height * pageWidthMm) / canvas.width;
 
-      // RULE 1: If content is within 1-page range (or minor subpixel overflow <= 325mm),
-      // render on EXACTLY ONE page — ZERO second page, ZERO blank page!
-      if (totalImgHeightMm <= 325) {
-        const imgData = canvas.toDataURL('image/jpeg', 0.98);
-        pdf.addImage(imgData, 'JPEG', 0, 0, pageWidthMm, pageHeightMm);
-        pdf.save(filename);
-        return;
-      }
-
-      // RULE 2: Multi-page resume — strictly eliminate any trailing blank page
-      const sliceHeightPx = Math.floor((canvas.width * pageHeightMm) / pageWidthMm);
-      let renderedPx = 0;
-      let pageIndex = 0;
-
-      while (renderedPx < canvas.height) {
-        const remainingPx = canvas.height - renderedPx;
-        
-        // Skip tiny trailing margins (less than 40px, ~1cm)
-        if (remainingPx < 40 && pageIndex > 0) {
-          break;
-        }
-
-        const currentSliceHeightPx = Math.min(sliceHeightPx, remainingPx);
-
-        // Render slice onto temporary canvas
-        const pageCanvas = document.createElement('canvas');
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = currentSliceHeightPx;
-        const ctx = pageCanvas.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, pageCanvas.width, currentSliceHeightPx);
-        ctx.drawImage(canvas, 0, renderedPx, canvas.width, currentSliceHeightPx, 0, 0, canvas.width, currentSliceHeightPx);
-
-        // Blank page detector: check if slice contains any non-white pixels
-        if (pageIndex > 0) {
-          const imgDataTest = ctx.getImageData(0, 0, pageCanvas.width, currentSliceHeightPx).data;
-          let isBlank = true;
-          for (let i = 0; i < imgDataTest.length; i += 32) {
-            if (imgDataTest[i] < 245 || imgDataTest[i + 1] < 245 || imgDataTest[i + 2] < 245) {
-              isBlank = false;
-              break;
-            }
-          }
-          if (isBlank) {
-            // Trailing slice is completely blank white — skip it!
-            break;
-          }
-        }
-
-        if (pageIndex > 0) {
-          pdf.addPage();
-        }
-
-        const sliceImgData = pageCanvas.toDataURL('image/jpeg', 0.98);
-        const sliceHeightMm = (currentSliceHeightPx * pageWidthMm) / canvas.width;
-        pdf.addImage(sliceImgData, 'JPEG', 0, 0, pageWidthMm, sliceHeightMm);
-
-        renderedPx += currentSliceHeightPx;
-        pageIndex++;
-      }
-
+      // STRICT 1-PAGE GUARANTEE: Always fit canvas onto exactly one A4 page.
+      // Zero second page, zero blank pages, 100% full single sheet.
+      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      pdf.addImage(imgData, 'JPEG', 0, 0, pageWidthMm, pageHeightMm);
       pdf.save(filename);
       return;
     } catch (err) {
@@ -99,7 +46,7 @@ export async function downloadResumeAsPdf(targetElementId = 'resume-document', f
     }
   }
 
-  // Strategy 2: html2pdf.js Fallback with Blank Page Deletion
+  // Strategy 2: html2pdf.js Fallback with Strict 1-Page Enforcement
   if (hasHtml2Pdf) {
     const opt = {
       margin: 0,
@@ -119,12 +66,9 @@ export async function downloadResumeAsPdf(targetElementId = 'resume-document', f
     };
 
     window.html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
-      const totalPages = pdf.internal.getNumberOfPages();
-      // If it created an unnecessary 2nd page for a 1-page element, delete the blank 2nd page!
-      if (totalPages === 2) {
-        if (element.scrollHeight <= 1250) {
-          pdf.deletePage(2);
-        }
+      // Delete any pages beyond page 1 to guarantee strictly 1 page
+      while (pdf.internal.getNumberOfPages() > 1) {
+        pdf.deletePage(pdf.internal.getNumberOfPages());
       }
     }).save();
     return;
