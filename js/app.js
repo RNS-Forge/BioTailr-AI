@@ -498,8 +498,33 @@ function bindStudioEvents() {
     window.addEventListener('resize', updateRawPanelPosition);
   }
 
-  // Smooth mousewheel horizontal scrolling on studio navbar controls for laptops and desktops
+  // Smooth mouse drag & mousewheel horizontal scrolling on studio navbar controls (hidden bar)
   if (navScrollWrap) {
+    let isDown = false;
+    let startX = 0;
+    let scrollLeftStart = 0;
+
+    navScrollWrap.addEventListener('mousedown', (e) => {
+      if (e.target.closest('button, a, input, select')) return;
+      isDown = true;
+      startX = e.pageX - navScrollWrap.offsetLeft;
+      scrollLeftStart = navScrollWrap.scrollLeft;
+      navScrollWrap.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDown = false;
+      if (navScrollWrap) navScrollWrap.style.cursor = '';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - navScrollWrap.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      navScrollWrap.scrollLeft = scrollLeftStart - walk;
+    });
+
     navScrollWrap.addEventListener('wheel', (e) => {
       if (navScrollWrap.scrollWidth > navScrollWrap.clientWidth) {
         if (e.deltaY !== 0 && Math.abs(e.deltaX) < Math.abs(e.deltaY)) {
