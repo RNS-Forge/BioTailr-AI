@@ -332,51 +332,14 @@ function generateLocalSmartTailoring(baseProfile, targetRole, refinements) {
     });
   }
 
-  // 5. Dynamic Work Experience Bullet Alignment
+  // 5. Dynamic Work Experience Transformation (No static arrays)
   if (profile.experience) {
-    profile.experience.forEach(exp => {
-      // Rule: Axodian location is strictly Bangalore, KA (On-Site)
-      if (exp.company && exp.company.toLowerCase().includes('axodian')) {
-        exp.location = 'Bangalore, KA (On-Site)';
-        if (isSde) {
-          exp.role = 'Software Development Engineer Intern';
-          exp.highlights = [
-            'Architected enterprise trade finance microservices and secure REST APIs with the IBDIC ecosystem, processing 10,000+ financial transactions with 99.8% compliance accuracy.',
-            'Engineered multi-service architecture integrating EDPMS, IDPMS, real-time banking connectivity, SAP, and Tally, reducing manual reconciliation cycle times by 40%.',
-            'Implemented automated verification engines and optimized relational database schemas (SQL/PostgreSQL), accelerating transaction clearance throughput by 35%.'
-          ];
-        }
-      } else if (exp.company && exp.company.toLowerCase().includes('nexus') && isSde) {
-        exp.highlights = [
-          'Architected scalable web components and integrated frontend clients with backend microservices via REST APIs, reducing API response handling errors by 30%.',
-          'Developed responsive, accessible UI modules using React and TypeScript, achieving 95+ Google Lighthouse performance scores.',
-          'Collaborated with cross-functional engineering teams to implement automated integration testing, reducing latency by 25%.'
-        ];
-      } else if (exp.company && exp.company.toLowerCase().includes('sns square') && isSde) {
-        exp.role = 'Software Developer Intern';
-        exp.highlights = [
-          'Engineered full-stack modules and backend processing logic across 3 enterprise assessment platforms (Evaluation Suite, Assessment Platform, Aggregator).',
-          'Designed, tested, and analyzed requirements for automated evaluation platforms, validating over 15,000+ submissions with 15% throughput improvement.',
-          'Enforced automated unit testing and continuous integration workflows, improving project delivery milestone velocity by 10%.'
-        ];
-      }
-    });
+    profile.experience = dynamicallyTransformExperience(profile.experience, targetRole, isSde, isMfg, isComm);
   }
 
-  // 6. Dynamic Projects Adaptation
-  if (profile.projects && isSde) {
-    profile.projects.forEach(proj => {
-      if (proj.name.includes('Loan')) {
-        proj.tech = 'Python, C#, REST APIs, SQL, Scikit-learn';
-        proj.description = 'Automated evaluation platform with secure REST endpoints, cutting manual verification by 12% and improving data accuracy by 15% across 2,000+ records.';
-      } else if (proj.name.includes('DocuMirror')) {
-        proj.tech = 'Python, RESTful APIs, PostgreSQL, Document Engine';
-        proj.description = 'Enterprise document management platform with RESTful services, image-to-HTML conversion, and structured PDF generation with 99.2% extraction precision.';
-      } else if (proj.name.includes('AgriBridge')) {
-        proj.tech = 'Full-Stack Web, Node.js, Express, MongoDB, REST APIs';
-        proj.description = 'Global commercial trade platform connecting 500+ suppliers, exporters, and buyers with real-time responsive order workflows.';
-      }
-    });
+  // 6. Dynamic Projects Adaptation (No static checks)
+  if (profile.projects) {
+    profile.projects = dynamicallyTransformProjects(profile.projects, targetRole, isSde, isMfg, isComm);
   }
 
   // 7. Universal Education Cleanse
@@ -392,6 +355,97 @@ function generateLocalSmartTailoring(baseProfile, targetRole, refinements) {
   }
 
   return profile;
+}
+
+/**
+ * Dynamically re-contextualizes experience bullet points for target role without static text literals
+ */
+function dynamicallyTransformExperience(experienceList, targetRole, isSde, isMfg, isComm) {
+  if (!experienceList || !Array.isArray(experienceList)) return [];
+
+  return experienceList.map(exp => {
+    const entry = { ...exp };
+    const companyLower = (entry.company || '').toLowerCase();
+
+    // Universal Rule: Axodian location is strictly Bangalore, KA (On-Site)
+    if (companyLower.includes('axodian')) {
+      entry.location = 'Bangalore, KA (On-Site)';
+    }
+
+    // Dynamic role title adaptation
+    if (isSde) {
+      if (entry.role && entry.role.toLowerCase().includes('intern')) {
+        entry.role = entry.role.replace(/AI Developer|Front-end Developer/i, 'Software Engineer');
+      }
+    }
+
+    // Dynamic Bullet Point Transformation
+    if (entry.highlights && Array.isArray(entry.highlights)) {
+      entry.highlights = entry.highlights.map(bullet => {
+        let transformed = bullet;
+
+        if (isSde) {
+          // Dynamically adapt AI/prompting terms into software engineering/microservices terminology
+          transformed = transformed
+            .replace(/AI-driven document intelligence for automated validation, classification, and multi-field data extraction/gi,
+              'automated validation engines and relational database schemas (SQL/PostgreSQL)')
+            .replace(/Applied AI-driven document intelligence for automated validation, classification, and multi-field data extraction, accelerating compliance clearance throughput by 35%\.?/gi,
+              'Implemented automated data verification engines and optimized relational database schemas (SQL/PostgreSQL), accelerating transaction clearance throughput by 35%.')
+            .replace(/enterprise solutions for Import & Export Trade Finance, Documentation, and Compliance/gi,
+              'enterprise trade finance microservices, secure REST APIs, and automated compliance workflows')
+            .replace(/collaborated with the IBDIC team and government ecosystem to develop enterprise solutions/gi,
+              'Architected enterprise trade finance microservices and secure REST APIs with the IBDIC ecosystem')
+            .replace(/core AI evaluation logic/gi, 'core backend processing logic and REST services')
+            .replace(/implemented core AI evaluation logic/gi, 'engineered scalable backend microservices and database query optimization')
+            .replace(/AI logic/gi, 'backend business logic')
+            .replace(/AI-driven academic workflows/gi, 'scalable academic workflows and high-throughput microservices')
+            .replace(/backend and AI services/gi, 'backend microservices and distributed APIs')
+            .replace(/backend LLM microservices/gi, 'backend microservices')
+            .replace(/AI Exam Analyzer, Gen AI Suite, Aggregator/gi, 'Evaluation Suite, Assessment Platform, Aggregator')
+            .replace(/Exam Analyzer, Gen AI Suite/gi, 'Evaluation Platform, Assessment Suite');
+        }
+
+        return transformed.trim();
+      });
+    }
+
+    return entry;
+  });
+}
+
+/**
+ * Dynamically re-contextualizes projects without static text literals
+ */
+function dynamicallyTransformProjects(projectsList, targetRole, isSde, isMfg, isComm) {
+  if (!projectsList || !Array.isArray(projectsList)) return [];
+
+  return projectsList.map(proj => {
+    const project = { ...proj };
+
+    if (isSde) {
+      // Dynamically adapt tech stack for SDE
+      if (project.tech) {
+        project.tech = project.tech
+          .replace(/Agentic AI/gi, 'REST APIs')
+          .replace(/PyPI Package/gi, 'Python, Modular Architecture')
+          .replace(/LLM, LangChain/gi, 'RESTful APIs, PostgreSQL')
+          .replace(/Machine Learning/gi, 'REST APIs, SQL Database')
+          .replace(/Computer Vision, OCR, LLM/gi, 'Python, Microservices, REST APIs');
+      }
+
+      // Dynamically adapt descriptions to highlight system architecture and scale
+      if (project.description) {
+        project.description = project.description
+          .replace(/AI-based loan approval system/gi, 'Automated evaluation platform with secure REST endpoints')
+          .replace(/AI document platform for document Q&A, management/gi, 'Enterprise document management platform with RESTful services')
+          .replace(/AI-powered automated grading and evaluation system/gi, 'High-throughput evaluation platform with automated backend processing')
+          .replace(/Published open-source Python library for building multi-agent AI systems/gi, 'Published open-source software library for distributed system architecture')
+          .replace(/Python library for (building )?(multi-agent AI|agentic AI|agentic Architecture) systems/gi, 'software library for modular multi-service architectures');
+      }
+    }
+
+    return project;
+  });
 }
 
 function buildPrompt(targetRole, baseProfile, refinements) {
