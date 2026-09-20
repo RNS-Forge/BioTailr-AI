@@ -107,10 +107,18 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
   // 2. Ensure skills include the highest priority keywords
   const targetKeywords = ROLE_KEYWORD_MAP[archetypeId] || ROLE_KEYWORD_MAP.developer;
   const currentSkills = new Set(optimized.skills || []);
-  targetKeywords.slice(0, 5).forEach(kw => currentSkills.add(kw));
+  targetKeywords.slice(0, 6).forEach(kw => currentSkills.add(kw));
   optimized.skills = Array.from(currentSkills);
 
-  // 3. Ensure all relevant bullets start with high-tier power verbs & quantified metrics
+  // 3. Ensure all relevant bullets start with high-tier power verbs & quantified metrics naturally
+  const contextualMetrics = [
+    ', reducing turnaround cycle times by 30%.',
+    ', improving workflow throughput by 35%.',
+    ', maintaining 99.8% operational accuracy.',
+    ', accelerating delivery milestone speed by 25%.',
+    ', cutting error rates by 28%.'
+  ];
+
   if (optimized.experience) {
     optimized.experience.forEach(exp => {
       if (exp.relevant !== false && exp.highlights) {
@@ -118,17 +126,18 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
           let updated = bullet.trim();
           // Ensure first word is a power verb
           const words = updated.split(' ');
-          const firstWord = words[0];
+          const firstWord = words[0].replace(/[^a-zA-Z]/g, '');
           const hasPowerVerb = POWER_VERBS.some(v => v.toLowerCase() === firstWord.toLowerCase());
           if (!hasPowerVerb) {
             const verb = POWER_VERBS[idx % POWER_VERBS.length];
             words[0] = verb;
             updated = words.join(' ');
           }
-          // Ensure metric exists
+          // Ensure metric exists naturally without repetitive boilerplate
           const hasMetric = /\d+%|\$\d+|\b\d+[KMB]\b|\b\d+\+\b|\b\d+\b/.test(updated);
           if (!hasMetric) {
-            updated += ` resulting in a 25% increase in operational efficiency.`;
+            const cleanBase = updated.replace(/\.+$/, '');
+            updated = cleanBase + contextualMetrics[idx % contextualMetrics.length];
           }
           return updated;
         });
@@ -138,3 +147,4 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
 
   return optimized;
 }
+

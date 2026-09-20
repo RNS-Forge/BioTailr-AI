@@ -490,7 +490,10 @@
 
       <!-- Right: Model Indicator & PDF Download Actions -->
       <div class="studio-nav-right">
-       
+        <button class="btn btn-outline btn-sm" id="btn-toggle-live-edit" title="Toggle Direct On-Page Live Editing">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          <span id="live-edit-btn-text">Live Edit: OFF</span>
+        </button>
         <button class="btn btn-outline btn-sm" id="btn-print-native" title="Print Directly">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
           <span>Print</span>
@@ -517,41 +520,185 @@
     <!-- Workspace Grid -->
     <div class="studio-main-grid">
       <!-- Left Column: ATS Score & Feedback Chat -->
+      <!-- Left Column: ATS Score & Feedback Chat / Direct Resume Content Editor -->
       <aside class="studio-left-sidebar" id="studio-left-sidebar">
-        <!-- 100% ATS Score Dial -->
-        <div class="ats-score-card">
-          <div class="ats-circle-gauge">
-            <div class="ats-circle-inner">
-              <div class="gauge-score-value" id="ats-gauge-value">100%</div>
-              <div class="gauge-score-label">ATS SCORE</div>
+        <!-- Sidebar Navigation Tabs -->
+        <div class="sidebar-tab-bar">
+          <button class="s-tab-btn active" id="btn-stab-rules" type="button" title="View 100% ATS Ruleset & Optimization Status">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>100% ATS Rules</span>
+          </button>
+          <button class="s-tab-btn" id="btn-stab-editor" type="button" title="Edit Summary, Skills, Experience & Education Directly">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            <span>Edit Content</span>
+          </button>
+        </div>
+
+        <!-- PANEL 1: ATS Ruleset & AI Refinements -->
+        <div class="sidebar-panel active" id="panel-sidebar-rules">
+          <!-- 100% ATS Score Dial -->
+          <div class="ats-score-card">
+            <div class="ats-circle-gauge">
+              <div class="ats-circle-inner">
+                <div class="gauge-score-value" id="ats-gauge-value">100%</div>
+                <div class="gauge-score-label">ATS SCORE</div>
+              </div>
+            </div>
+            <div class="ats-score-meta">
+              <h3 id="ats-gauge-heading">100% ATS Verified</h3>
+              <p id="ats-gauge-desc">Resume meets all 6 primary ATS parsing criteria for this position.</p>
             </div>
           </div>
-          <div class="ats-score-meta">
-            <h3 id="ats-gauge-heading">100% ATS Verified</h3>
-            <p id="ats-gauge-desc">Resume meets all 6 primary ATS parsing criteria for this position.</p>
+
+          <!-- ATS Checklist -->
+          <div class="ats-checklist-card">
+            <div class="checklist-title">ATS Ruleset Verification</div>
+            <div id="ats-checklist-items">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+
+          <!-- Interactive Correction Assistant -->
+          <div class="correction-card">
+            <div class="correction-title">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1e1b78" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+              <span>AI Refinements &amp; Corrections</span>
+            </div>
+            <textarea 
+              id="textarea-corrections" 
+              class="correction-textarea" 
+              placeholder="e.g. 'Add Kubernetes and Vector Search to skills', 'Make summary sound more senior', 'Emphasize cloud cost reduction'"
+            ></textarea>
+            <button class="btn btn-update-resume" id="btn-submit-correction">Update with AI ➔</button>
           </div>
         </div>
 
-        <!-- ATS Checklist -->
-        <div class="ats-checklist-card">
-          <div class="checklist-title">ATS Ruleset Verification</div>
-          <div id="ats-checklist-items">
-            <!-- Dynamically rendered -->
+        <!-- PANEL 2: Interactive Resume Content Editor (Direct Edit Profile, Skills, Experience, Education) -->
+        <div class="sidebar-panel" id="panel-sidebar-editor" style="display: none;">
+          <div class="editor-header-bar">
+            <div class="editor-title-group">
+              <h3>Resume Editor</h3>
+              <p>Edit summary, skills, experience, and education directly.</p>
+            </div>
+            <button class="btn btn-teal btn-sm" id="btn-save-editor-top">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              <span>Apply &amp; Re-Score</span>
+            </button>
           </div>
-        </div>
 
-        <!-- Interactive Correction Assistant -->
-        <div class="correction-card">
-          <div class="correction-title">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1e1b78" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-            <span>Request Corrections / Refinements</span>
+          <div class="editor-accordion">
+            <!-- 1. Profile Title & Contact -->
+            <details class="editor-section" open>
+              <summary class="editor-section-summary">
+                <span class="sec-title-text">Role Title &amp; Contact Info</span>
+                <span class="sec-pill">Header</span>
+              </summary>
+              <div class="editor-section-body">
+                <div class="form-group">
+                  <label>Target Job Title / Headline</label>
+                  <input type="text" id="edit-profile-title" class="form-input" placeholder="e.g. AI Engineer &amp; Software Developer">
+                </div>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="edit-profile-name" class="form-input" value="SANJAY N">
+                  </div>
+                  <div class="form-group">
+                    <label>City / Location</label>
+                    <input type="text" id="edit-profile-location" class="form-input" placeholder="Coimbatore, Tamil Nadu">
+                  </div>
+                </div>
+                <div class="form-row-2">
+                  <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="edit-profile-email" class="form-input" placeholder="2005sanjaynrs@gmail.com">
+                  </div>
+                  <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" id="edit-profile-phone" class="form-input" placeholder="+91 93615 99018">
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <!-- 2. Summary -->
+            <details class="editor-section" open>
+              <summary class="editor-section-summary">
+                <span class="sec-title-text">Professional Summary</span>
+                <span class="sec-pill">Summary</span>
+              </summary>
+              <div class="editor-section-body">
+                <div class="form-group">
+                  <label>Summary Statement</label>
+                  <textarea id="edit-profile-summary" class="form-textarea" rows="4" placeholder="Enter tailored summary..."></textarea>
+                  <span class="form-hint">Highlight primary expertise, measurable metrics, and key technical stack.</span>
+                </div>
+              </div>
+            </details>
+
+            <!-- 3. Technical Skills -->
+            <details class="editor-section" open>
+              <summary class="editor-section-summary">
+                <span class="sec-title-text">Technical Skills &amp; Categories</span>
+                <span class="sec-pill">Skills</span>
+              </summary>
+              <div class="editor-section-body" id="editor-skills-container">
+                <!-- Dynamically populated category fields -->
+              </div>
+            </details>
+
+            <!-- 4. Work Experience -->
+            <details class="editor-section" open>
+              <summary class="editor-section-summary">
+                <span class="sec-title-text">Work Experience &amp; Positions</span>
+                <span class="sec-pill" id="editor-exp-count-pill">3 Roles</span>
+              </summary>
+              <div class="editor-section-body">
+                <div id="editor-experiences-container">
+                  <!-- Dynamically rendered experience cards with bullet point managers -->
+                </div>
+                <button type="button" class="btn btn-outline btn-sm btn-block" id="btn-add-experience-item" style="margin-top: 8px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>+ Add Another Work Experience</span>
+                </button>
+              </div>
+            </details>
+
+            <!-- 5. Projects -->
+            <details class="editor-section">
+              <summary class="editor-section-summary">
+                <span class="sec-title-text">Key Projects</span>
+                <span class="sec-pill">Projects</span>
+              </summary>
+              <div class="editor-section-body">
+                <div id="editor-projects-container">
+                  <!-- Dynamically rendered project cards -->
+                </div>
+                <button type="button" class="btn btn-outline btn-sm btn-block" id="btn-add-project-item" style="margin-top: 8px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>+ Add Project</span>
+                </button>
+              </div>
+            </details>
+
+            <!-- 6. Education -->
+            <details class="editor-section">
+              <summary class="editor-section-summary">
+                <span class="sec-title-text">Education &amp; Academics</span>
+                <span class="sec-pill">Education</span>
+              </summary>
+              <div class="editor-section-body" id="editor-education-container">
+                <!-- Dynamically rendered education fields -->
+              </div>
+            </details>
           </div>
-          <textarea 
-            id="textarea-corrections" 
-            class="correction-textarea" 
-            placeholder="e.g. 'Add Kubernetes and Vector Search to skills', 'Make summary sound more senior', 'Emphasize cloud cost reduction'"
-          ></textarea>
-          <button class="btn btn-update-resume" id="btn-submit-correction">Update Resume ➔</button>
+
+          <div class="editor-bottom-bar">
+            <button class="btn btn-teal btn-block" id="btn-save-editor-bottom">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              <span>Apply Changes &amp; Verify 100% ATS</span>
+            </button>
+          </div>
         </div>
       </aside>
 

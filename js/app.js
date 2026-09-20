@@ -16,7 +16,8 @@ const state = {
   selectedArchetypeId: 'developer',
   currentProfile: null,
   activeModelName: 'Google Gemini Flash',
-  atsData: null
+  atsData: null,
+  liveEdit: false
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -29,6 +30,7 @@ function initApp() {
   bindTryNowEvents();
   bindStudioEvents();
   bindSettingsModalEvents();
+  bindEditorEvents();
   initStudioSplitter();
 
   // Pre-initialize default profile & ATS data so Studio is never blank
@@ -40,10 +42,19 @@ function initApp() {
   state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
   window.showView = showView;
 
-  // Handle direct hash navigation (e.g. #studio, #try-now)
+  // Handle direct hash navigation (e.g. #studio, #studio-editor, #try-now)
   if (window.location.hash) {
     const hashView = window.location.hash.replace('#', '').trim();
-    if (['landing', 'try-now', 'studio'].includes(hashView)) {
+    if (hashView.startsWith('studio')) {
+      showView('studio');
+      if (hashView.includes('editor') || window.location.search.includes('tab=editor')) {
+        setTimeout(() => {
+          document.getElementById('btn-stab-editor')?.click();
+        }, 150);
+      }
+      return;
+    }
+    if (['landing', 'try-now'].includes(hashView)) {
       showView(hashView);
       return;
     }
@@ -272,6 +283,17 @@ function renderStudioWorkspace() {
   const container = document.getElementById('resume-render-container');
   if (container && state.currentProfile) {
     container.innerHTML = generateResumeHtml(state.currentProfile, state.selectedArchetypeId);
+    if (state.liveEdit) {
+      const sheet = document.getElementById('resume-document');
+      if (sheet) sheet.classList.add('live-editing');
+      applyLiveEditingToSheet(true);
+    }
+  }
+
+  // If Editor panel is currently visible, refresh its inputs
+  const panelEditor = document.getElementById('panel-sidebar-editor');
+  if (panelEditor && panelEditor.style.display !== 'none') {
+    populateResumeEditor();
   }
 }
 
@@ -454,6 +476,527 @@ function bindStudioEvents() {
       executeTailoringFlow(state.targetRole, text);
     });
   }
+}
+
+/**
+ * Resume Content Editor: Form Binding & Event Handlers
+ */
+function bindEditorEvents() {
+  // Sidebar tab switcher (100% ATS Rules vs Edit Content)
+  const btnStabRules = document.getElementById('btn-stab-rules');
+  const btnStabEditor = document.getElementById('btn-stab-editor');
+  const panelRules = document.getElementById('panel-sidebar-rules');
+  const panelEditor = document.getElementById('panel-sidebar-editor');
+
+  if (btnStabRules && btnStabEditor && panelRules && panelEditor) {
+    btnStabRules.addEventListener('click', () => {
+      btnStabRules.classList.add('active');
+      btnStabEditor.classList.remove('active');
+      panelRules.style.display = 'flex';
+      panelEditor.style.display = 'none';
+    });
+
+    btnStabEditor.addEventListener('click', () => {
+      btnStabEditor.classList.add('active');
+      btnStabRules.classList.remove('active');
+      panelRules.style.display = 'none';
+      panelEditor.style.display = 'flex';
+      populateResumeEditor();
+    });
+  }
+
+  // Save buttons (Top & Bottom)
+  const btnSaveTop = document.getElementById('btn-save-editor-top');
+  const btnSaveBottom = document.getElementById('btn-save-editor-bottom');
+  [btnSaveTop, btnSaveBottom].forEach(btn => {
+    if (btn) {
+      btn.addEventListener('click', () => {
+        saveResumeEditor();
+      });
+    }
+  });
+
+  // Add Work Experience
+  const btnAddExp = document.getElementById('btn-add-experience-item');
+  if (btnAddExp) {
+    btnAddExp.addEventListener('click', () => {
+      if (!state.currentProfile) return;
+      if (!state.currentProfile.experience) state.currentProfile.experience = [];
+      state.currentProfile.experience.push({
+        id: 'exp_' + Date.now(),
+        role: 'Software Engineer',
+        company: 'New Enterprise Corp',
+        project: 'Core Platform',
+        period: 'Jan 2025 - Present',
+        location: 'Coimbatore, TN (On-Site)',
+        relevant: true,
+        highlights: [
+          'Spearheaded development of scalable software services, improving operational efficiency by 30%.',
+          'Engineered resilient APIs and automated workflows, reducing turnaround cycle times by 25%.'
+        ]
+      });
+      populateResumeEditor();
+      renderStudioWorkspace();
+    });
+  }
+
+  // Add Project
+  const btnAddProj = document.getElementById('btn-add-project-item');
+  if (btnAddProj) {
+    btnAddProj.addEventListener('click', () => {
+      if (!state.currentProfile) return;
+      if (!state.currentProfile.projects) state.currentProfile.projects = [];
+      state.currentProfile.projects.push({
+        name: 'New Project Title',
+        tech: 'Python, React, REST API',
+        description: 'Engineered high-performance software system that accelerated operational throughput by 30%.'
+      });
+      populateResumeEditor();
+      renderStudioWorkspace();
+    });
+  }
+
+  // Live In-Place Edit Toggle in Navbar
+  const btnLiveEdit = document.getElementById('btn-toggle-live-edit');
+  if (btnLiveEdit) {
+    btnLiveEdit.addEventListener('click', () => {
+      toggleLiveEditing();
+    });
+  }
+}
+
+/**
+ * Populate the structured Resume Editor fields from state.currentProfile
+ */
+function populateResumeEditor() {
+  if (!state.currentProfile) return;
+  const p = state.currentProfile;
+
+  // Title & Contact
+  const titleInput = document.getElementById('edit-profile-title');
+  if (titleInput) titleInput.value = p.title || '';
+
+  const nameInput = document.getElementById('edit-profile-name');
+  if (nameInput) nameInput.value = p.fullName || 'SANJAY N';
+
+  const locInput = document.getElementById('edit-profile-location');
+  if (locInput) locInput.value = p.location || 'Coimbatore, Tamil Nadu';
+
+  const emailInput = document.getElementById('edit-profile-email');
+  if (emailInput) emailInput.value = p.email || '2005sanjaynrs@gmail.com';
+
+  const phoneInput = document.getElementById('edit-profile-phone');
+  if (phoneInput) phoneInput.value = p.phone || '+91 93615 99018';
+
+  // Professional Summary
+  const summaryInput = document.getElementById('edit-profile-summary');
+  if (summaryInput) summaryInput.value = p.summary || '';
+
+  // Technical Skills Categories
+  const skillsContainer = document.getElementById('editor-skills-container');
+  if (skillsContainer) {
+    skillsContainer.innerHTML = '';
+    const cats = p.skillCategories || {
+      'Programming Languages': (p.skills || []).slice(0, 6).join(', '),
+      'Frameworks & Libraries': (p.skills || []).slice(6, 12).join(', '),
+      'Tools & Technologies': (p.skills || []).slice(12).join(', ')
+    };
+    Object.entries(cats).forEach(([cat, val]) => {
+      const group = document.createElement('div');
+      group.className = 'form-group';
+      group.innerHTML = `
+        <label>${escapeHtmlApp(cat)}</label>
+        <input type="text" class="form-input edit-skill-cat-input" data-cat-name="${escapeHtmlApp(cat)}" value="${escapeHtmlApp(val)}">
+      `;
+      skillsContainer.appendChild(group);
+    });
+  }
+
+  // Work Experience
+  const expContainer = document.getElementById('editor-experiences-container');
+  const expCountPill = document.getElementById('editor-exp-count-pill');
+  if (expContainer) {
+    expContainer.innerHTML = '';
+    const exps = p.experience || [];
+    if (expCountPill) expCountPill.textContent = `${exps.length} Roles`;
+
+    exps.forEach((exp, eIdx) => {
+      const card = document.createElement('div');
+      card.className = 'exp-edit-card';
+      card.dataset.expIndex = eIdx;
+
+      card.innerHTML = `
+        <div class="exp-edit-card-head">
+          <span>Role #${eIdx + 1}: ${escapeHtmlApp(exp.company || 'Company')}</span>
+          <button type="button" class="btn-remove-exp" data-remove-exp="${eIdx}">✕ Remove</button>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Company</label>
+            <input type="text" class="form-input exp-edit-company" value="${escapeHtmlApp(exp.company || '')}">
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <input type="text" class="form-input exp-edit-role" value="${escapeHtmlApp(exp.role || '')}">
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Dates</label>
+            <input type="text" class="form-input exp-edit-period" value="${escapeHtmlApp(exp.period || '')}">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" class="form-input exp-edit-location" value="${escapeHtmlApp(exp.location || '')}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Project / Domain (Optional)</label>
+          <input type="text" class="form-input exp-edit-project" value="${escapeHtmlApp(exp.project || '')}">
+        </div>
+        <div class="form-group">
+          <label>Bullet Points (Metrics &amp; Action Verbs)</label>
+          <div class="bullets-list-wrap" id="bullets-wrap-${eIdx}">
+            ${(exp.highlights || []).map((b, bIdx) => `
+              <div class="bullet-edit-row">
+                <textarea class="form-input exp-bullet-input" rows="2">${escapeHtmlApp(b)}</textarea>
+                <button type="button" class="btn-remove-bullet" title="Remove Bullet" data-exp-idx="${eIdx}" data-bullet-idx="${bIdx}">✕</button>
+              </div>
+            `).join('')}
+          </div>
+          <button type="button" class="btn btn-outline btn-sm btn-add-bullet" data-exp-idx="${eIdx}" style="align-self: flex-start; margin-top: 4px;">
+            + Add Bullet
+          </button>
+        </div>
+      `;
+      expContainer.appendChild(card);
+    });
+
+    // Wire Remove Experience buttons
+    expContainer.querySelectorAll('.btn-remove-exp').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.currentTarget.dataset.removeExp, 10);
+        state.currentProfile.experience.splice(idx, 1);
+        populateResumeEditor();
+        renderStudioWorkspace();
+      });
+    });
+
+    // Wire Remove Bullet buttons
+    expContainer.querySelectorAll('.btn-remove-bullet').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const eIdx = parseInt(e.currentTarget.dataset.expIdx, 10);
+        const bIdx = parseInt(e.currentTarget.dataset.bulletIdx, 10);
+        if (state.currentProfile.experience[eIdx]?.highlights) {
+          state.currentProfile.experience[eIdx].highlights.splice(bIdx, 1);
+          populateResumeEditor();
+          renderStudioWorkspace();
+        }
+      });
+    });
+
+    // Wire Add Bullet buttons
+    expContainer.querySelectorAll('.btn-add-bullet').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const eIdx = parseInt(e.currentTarget.dataset.expIdx, 10);
+        if (state.currentProfile.experience[eIdx]) {
+          if (!state.currentProfile.experience[eIdx].highlights) {
+            state.currentProfile.experience[eIdx].highlights = [];
+          }
+          state.currentProfile.experience[eIdx].highlights.push('Engineered scalable features and automated workflows, reducing operational turnaround times by 25%.');
+          populateResumeEditor();
+          renderStudioWorkspace();
+        }
+      });
+    });
+  }
+
+  // Projects
+  const projContainer = document.getElementById('editor-projects-container');
+  if (projContainer) {
+    projContainer.innerHTML = '';
+    (p.projects || []).forEach((proj, pIdx) => {
+      const card = document.createElement('div');
+      card.className = 'proj-edit-card';
+      card.innerHTML = `
+        <div class="exp-edit-card-head">
+          <span>Project #${pIdx + 1}: ${escapeHtmlApp(proj.name || '')}</span>
+          <button type="button" class="btn-remove-proj" data-remove-proj="${pIdx}">✕ Remove</button>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Project Name</label>
+            <input type="text" class="form-input proj-edit-name" value="${escapeHtmlApp(proj.name || '')}">
+          </div>
+          <div class="form-group">
+            <label>Tech Stack</label>
+            <input type="text" class="form-input proj-edit-tech" value="${escapeHtmlApp(proj.tech || '')}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Description (Impact &amp; Metrics)</label>
+          <textarea class="form-input proj-edit-desc" rows="2">${escapeHtmlApp(proj.description || '')}</textarea>
+        </div>
+      `;
+      projContainer.appendChild(card);
+    });
+
+    projContainer.querySelectorAll('.btn-remove-proj').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const idx = parseInt(e.currentTarget.dataset.removeProj, 10);
+        state.currentProfile.projects.splice(idx, 1);
+        populateResumeEditor();
+        renderStudioWorkspace();
+      });
+    });
+  }
+
+  // Education
+  const eduContainer = document.getElementById('editor-education-container');
+  if (eduContainer) {
+    eduContainer.innerHTML = '';
+    (p.education || []).forEach((edu) => {
+      const card = document.createElement('div');
+      card.className = 'exp-edit-card';
+      card.innerHTML = `
+        <div class="form-group">
+          <label>Degree / Qualification</label>
+          <input type="text" class="form-input edu-edit-degree" value="${escapeHtmlApp(edu.degree || '')}">
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Institution</label>
+            <input type="text" class="form-input edu-edit-institution" value="${escapeHtmlApp(edu.institution || '')}">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" class="form-input edu-edit-location" value="${escapeHtmlApp(edu.location || 'Coimbatore, Tamil Nadu')}">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Dates / Period</label>
+          <input type="text" class="form-input edu-edit-year" value="${escapeHtmlApp(edu.year || '')}">
+        </div>
+        <div class="form-group">
+          <label>Details / CGPA / Coursework</label>
+          <input type="text" class="form-input edu-edit-details" value="${escapeHtmlApp(edu.details || '')}">
+        </div>
+      `;
+      eduContainer.appendChild(card);
+    });
+  }
+}
+
+/**
+ * Save all changes from the structured Resume Editor back into state.currentProfile
+ * and re-run ATS 100% verification.
+ */
+function saveResumeEditor() {
+  if (!state.currentProfile) return;
+  const p = state.currentProfile;
+
+  // Header & Title
+  p.title = document.getElementById('edit-profile-title')?.value.trim() || p.title;
+  p.fullName = document.getElementById('edit-profile-name')?.value.trim() || p.fullName;
+  p.location = document.getElementById('edit-profile-location')?.value.trim() || p.location;
+  p.email = document.getElementById('edit-profile-email')?.value.trim() || p.email;
+  p.phone = document.getElementById('edit-profile-phone')?.value.trim() || p.phone;
+  p.summary = document.getElementById('edit-profile-summary')?.value.trim() || p.summary;
+
+  // Skills
+  p.skillCategories = {};
+  const skillValues = [];
+  document.querySelectorAll('.edit-skill-cat-input').forEach(input => {
+    const catName = input.dataset.catName;
+    const val = input.value.trim();
+    if (catName && val) {
+      p.skillCategories[catName] = val;
+      val.split(',').forEach(s => {
+        const clean = s.trim();
+        if (clean && !skillValues.includes(clean)) skillValues.push(clean);
+      });
+    }
+  });
+  if (skillValues.length > 0) {
+    p.skills = skillValues;
+  }
+
+  // Experience
+  const expCards = document.querySelectorAll('#editor-experiences-container .exp-edit-card');
+  const newExps = [];
+  expCards.forEach((card, idx) => {
+    const company = card.querySelector('.exp-edit-company')?.value.trim() || 'Company';
+    const role = card.querySelector('.exp-edit-role')?.value.trim() || 'Engineer';
+    const period = card.querySelector('.exp-edit-period')?.value.trim() || '';
+    const location = card.querySelector('.exp-edit-location')?.value.trim() || '';
+    const project = card.querySelector('.exp-edit-project')?.value.trim() || '';
+    const bulletInputs = card.querySelectorAll('.exp-bullet-input');
+    const highlights = [];
+    bulletInputs.forEach(bInput => {
+      const bText = bInput.value.trim();
+      if (bText) highlights.push(bText);
+    });
+
+    newExps.push({
+      id: p.experience[idx]?.id || `exp_${Date.now()}_${idx}`,
+      company,
+      role,
+      period,
+      location,
+      project,
+      relevant: true,
+      highlights
+    });
+  });
+  p.experience = newExps;
+
+  // Projects
+  const projCards = document.querySelectorAll('#editor-projects-container .proj-edit-card');
+  const newProjs = [];
+  projCards.forEach(card => {
+    const name = card.querySelector('.proj-edit-name')?.value.trim();
+    const tech = card.querySelector('.proj-edit-tech')?.value.trim();
+    const description = card.querySelector('.proj-edit-desc')?.value.trim();
+    if (name) {
+      newProjs.push({ name, tech, description });
+    }
+  });
+  if (newProjs.length > 0) {
+    p.projects = newProjs;
+  }
+
+  // Education
+  const eduCards = document.querySelectorAll('#editor-education-container .exp-edit-card');
+  const newEdu = [];
+  eduCards.forEach(card => {
+    const degree = card.querySelector('.edu-edit-degree')?.value.trim();
+    const institution = card.querySelector('.edu-edit-institution')?.value.trim();
+    const location = card.querySelector('.edu-edit-location')?.value.trim();
+    const year = card.querySelector('.edu-edit-year')?.value.trim();
+    const details = card.querySelector('.edu-edit-details')?.value.trim();
+    if (degree || institution) {
+      newEdu.push({ degree, institution, location, year, details });
+    }
+  });
+  if (newEdu.length > 0) {
+    p.education = newEdu;
+  }
+
+  // Re-run ATS optimizer & scoring
+  state.currentProfile = optimizeProfileFor100Ats(p, state.targetRole, state.selectedArchetypeId);
+  state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
+
+  // Render Studio Workspace
+  renderStudioWorkspace();
+
+  // Visual success confirmation
+  const saveBtn = document.getElementById('btn-save-editor-bottom');
+  if (saveBtn) {
+    const origHtml = saveBtn.innerHTML;
+    saveBtn.innerHTML = `✓ Saved &amp; Verified 100% ATS!`;
+    saveBtn.style.background = '#059669';
+    setTimeout(() => {
+      saveBtn.innerHTML = origHtml;
+      saveBtn.style.background = '';
+    }, 2000);
+  }
+}
+
+/**
+ * Toggle Live On-Page Content Editing
+ */
+function toggleLiveEditing() {
+  state.liveEdit = !state.liveEdit;
+  const btn = document.getElementById('btn-toggle-live-edit');
+  const btnText = document.getElementById('live-edit-btn-text');
+  const sheet = document.getElementById('resume-document');
+
+  if (state.liveEdit) {
+    if (btn) btn.classList.add('btn-teal');
+    if (btnText) btnText.textContent = 'Live Edit: ON';
+    if (sheet) sheet.classList.add('live-editing');
+    applyLiveEditingToSheet(true);
+  } else {
+    if (btn) btn.classList.remove('btn-teal');
+    if (btnText) btnText.textContent = 'Live Edit: OFF';
+    if (sheet) sheet.classList.remove('live-editing');
+    applyLiveEditingToSheet(false);
+  }
+}
+
+function applyLiveEditingToSheet(enable = true) {
+  const sheet = document.getElementById('resume-document');
+  if (!sheet) return;
+
+  const editableSelectors = [
+    '[data-editable-field]',
+    '[data-editable-skill-cat]',
+    '.exp-company',
+    '.exp-role',
+    '.exp-period',
+    '.exp-project em',
+    '.exp-bullets li',
+    '.proj-name',
+    '.proj-desc',
+    '.edu-degree',
+    '.edu-year',
+    '.edu-institution',
+    '.edu-location',
+    '.edu-bullets li'
+  ];
+
+  editableSelectors.forEach(sel => {
+    sheet.querySelectorAll(sel).forEach(el => {
+      el.contentEditable = enable ? 'true' : 'false';
+      el.spellcheck = false;
+      if (enable) {
+        el.onblur = () => syncLiveEditToState();
+      } else {
+        el.onblur = null;
+      }
+    });
+  });
+}
+
+function syncLiveEditToState() {
+  const sheet = document.getElementById('resume-document');
+  if (!sheet || !state.currentProfile) return;
+  const p = state.currentProfile;
+
+  // Title
+  const titleEl = sheet.querySelector('.role');
+  if (titleEl) p.title = titleEl.textContent.trim();
+
+  // Summary
+  const summaryEl = sheet.querySelector('.summary');
+  if (summaryEl) p.summary = summaryEl.textContent.trim();
+
+  // Experience bullets
+  sheet.querySelectorAll('.exp-entry').forEach((expEl, eIdx) => {
+    if (p.experience && p.experience[eIdx]) {
+      const bullets = [];
+      expEl.querySelectorAll('.exp-bullets li').forEach(bEl => {
+        bullets.push(bEl.textContent.trim());
+      });
+      if (bullets.length > 0) p.experience[eIdx].highlights = bullets;
+    }
+  });
+
+  // Re-evaluate score
+  state.atsData = evaluateAtsScore(p, state.targetRole, state.selectedArchetypeId);
+  const scoreValEl = document.getElementById('ats-gauge-value');
+  if (scoreValEl) scoreValEl.textContent = `${state.atsData.totalScore}%`;
+  renderAtsChecklist();
+}
+
+function escapeHtmlApp(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 /**

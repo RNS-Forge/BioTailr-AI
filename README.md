@@ -52,17 +52,27 @@ Every generated resume is evaluated against 6 mission-critical parsing rules:
 - Zero colored text, zero emojis, and zero graphical parsing hazards.
 
 ### 5. Resizable Studio Split-Pane Workspace
-- **Draggable Splitter**: Interactively adjust the split ratio between the Left panel (Ruleset & Corrections) and the Right panel (Full-page HTML preview) with smooth mouse and touch dragging.
+- **Draggable Splitter**: Interactively adjust the split ratio between the Left panel (Ruleset & Editor) and the Right panel (Full-page HTML preview) with smooth mouse and touch dragging.
 - **Persistent Layout**: Saves your preferred sidebar width in `localStorage`.
 - **Full-Page Preview**: Clean, unobstructed A4 paper canvas with zero overlapping banners.
 
-### 6. Dedicated "4 Raw Resumes" Navigation Menu
+### 6. Interactive Resume Content Editor & Live In-Place Editing
+- **Dual-Tab Sidebar**: Switch instantly between **100% ATS Rules** and **Edit Content**.
+- **Field-by-Field Editor**: Edit Professional Summary, Technical Skill Categories, Work Experience, Projects, and Education directly.
+- **Experience & Bullet Manager**: Add or remove individual roles and customize bullet points with instant `+ Add Bullet` and `✕ Remove` controls.
+- **Live On-Page Editing**: Click `Live Edit: ON` in the top bar to type directly on any section of the A4 resume sheet in real-time with automatic ATS score re-calculation.
+
+### 7. Two-Line Harvard/Ivy League ATS Alignment
+- **Education Layout**: Primary line presents Degree on the left and Graduation Dates right-aligned to the margin; secondary line presents Institution on the left and Location on the right, completely eliminating cramped text collisions.
+- **Experience Layout**: Company and Role on line 1 with Dates pinned right; Project domain and Location on line 2 with clean metric-quantified bullet points.
+
+### 8. Dedicated "4 Raw Resumes" Navigation Menu
 - Access all 4 authentic base resumes directly from the navigation bar.
 - **View**: Instantly previews the untouched source resume in the Studio.
 - **Download HTML**: Downloads the original `.html` source file.
 - **Download PDF**: Generates and downloads a clean, unedited PDF copy.
 
-### 7. Interactive Correction Assistant
+### 9. Interactive AI Refinement Assistant
 - Enter ad-hoc feedback (e.g., *"Add Kubernetes and Vector Search to skills"*, *"Make summary sound more senior"*) to refine the resume dynamically.
 
 ---
