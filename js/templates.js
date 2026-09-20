@@ -43,7 +43,7 @@ export const RESUME_ARCHETYPES = {
           project: 'OneDoc, OneCompliance',
           companyUrl: 'https://axodian.com/',
           period: 'June 2026 - Present',
-          location: 'Coimbatore, TN (On-Site)',
+          location: 'Bangalore, KA (On-Site)',
           relevant: true,
           highlights: [
             'Collaborated with the IBDIC team and government ecosystem to engineer enterprise trade finance solutions, processing 10,000+ import/export transactions with 99.8% compliance accuracy.',
@@ -169,7 +169,7 @@ export const RESUME_ARCHETYPES = {
           project: 'OneDoc, OneCompliance',
           companyUrl: 'https://axodian.com/',
           period: 'June 2026 - Present',
-          location: 'Coimbatore, TN (On-Site)',
+          location: 'Bangalore, KA (On-Site)',
           relevant: true,
           highlights: [
             'Architected enterprise trade finance microservices and secure REST APIs with the IBDIC ecosystem, processing 10,000+ financial transactions with 99.8% compliance accuracy.',
@@ -284,7 +284,7 @@ export const RESUME_ARCHETYPES = {
           project: 'OneCompliance, LeDoc',
           companyUrl: 'https://www.axodian.com/',
           period: 'June 2026 - Present',
-          location: 'Coimbatore, TN',
+          location: 'Bangalore, KA (On-Site)',
           relevant: true,
           highlights: [
             'Engineered responsive frontend features integrated with backend REST APIs for OneCompliance, managing compliance tracking across 1,200+ corporate entities.',
