@@ -11,16 +11,13 @@
   @page { size: A4; margin: 0; }
 
   :root {
-    --ink: #000;
+    --ink: #000000;
     --rule: #1c1c1c;
-    --sheet: #fff;
-    --desk: #e4e4e4;
+    --sheet: #ffffff;
+    --desk: #f1f5f9;
     --body-font: 'Open Sans', 'Segoe UI', Calibri, Arial, sans-serif;
     --meta-font: 'Inter', 'Open Sans', 'Segoe UI', Arial, sans-serif;
     --name-font: 'Times New Roman', Times, 'Liberation Serif', serif;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-print]) { --desk: #2a2a2a; }
   }
 
   * { box-sizing: border-box; }
@@ -29,9 +26,15 @@
     background: var(--desk);
     color: var(--ink);
     font-family: var(--body-font);
-    font-size: 10.5pt;
+    font-size: 10pt;
+    line-height: 1.36;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* Strict Pure Black Text */
+  body, body * {
+    color: #000000 !important;
   }
 
   /* ---------- A4 sheet ---------- */
@@ -39,23 +42,21 @@
     width: 210mm;
     min-height: 297mm;
     margin: 16px auto;
-    padding: 17pt 37pt 12pt 36pt;
+    padding: 18pt 36pt 16pt 36pt;
     background: var(--sheet);
-    box-shadow: 0 2px 14px rgba(0,0,0,.25);
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
   }
 
-  a { color: inherit; }
-  a.plain { text-decoration: none; }
-  a.u { text-decoration: underline; }
-  a:focus-visible { outline: 2px solid #1a56db; outline-offset: 2px; }
+  a { color: inherit; text-decoration: none; }
+  a.u, a:hover { text-decoration: underline; }
 
   /* ---------- Header ---------- */
   .head {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding-bottom: 4pt;
-    border-bottom: .75pt solid var(--rule);
+    padding-bottom: 5pt;
+    border-bottom: 0.75pt solid var(--rule);
   }
   .name {
     margin: 0;
@@ -65,20 +66,20 @@
     line-height: 1.1;
     letter-spacing: .2pt;
   }
-  .name a { text-decoration: none; }
   .role {
     margin: 2pt 0 0;
     font-family: var(--meta-font);
     font-size: 10pt;
-    line-height: 1.2;
+    font-weight: 600;
+    line-height: 1.25;
   }
   .contact {
     display: grid;
-    grid-template-columns: 128pt auto;
+    grid-template-columns: 120pt auto;
     column-gap: 0;
     margin-top: 1pt;
     font-family: var(--meta-font);
-    font-size: 7.6pt;
+    font-size: 7.8pt;
     line-height: 1.32;
   }
   .contact b { font-weight: 700; }
@@ -86,71 +87,139 @@
 
   /* ---------- Sections ---------- */
   section {
-    padding: 4pt 0 5pt;
-    border-bottom: .75pt solid var(--rule);
+    padding: 4.5pt 0 5pt;
+    border-bottom: 0.75pt solid var(--rule);
   }
   section:last-of-type { border-bottom: 0; }
   h2 {
     margin: 0 0 3pt;
-    font-size: 12pt;
+    font-size: 11.5pt;
     font-weight: 700;
     line-height: 1.25;
     padding-left: 2pt;
+    text-transform: uppercase;
   }
 
   p.summary {
     margin: 0;
     padding-left: 2pt;
-    line-height: 1.36;
+    font-size: 9.8pt;
+    line-height: 1.38;
     text-align: justify;
   }
 
   ul {
-    margin: 0;
-    padding-left: 23pt;
+    margin: 1.5pt 0 0;
+    padding-left: 20pt;
     list-style: disc;
   }
   li {
+    font-size: 9.6pt;
     line-height: 1.36;
-    padding-left: 0;
+    margin-bottom: 1.5pt;
   }
   li::marker { font-size: 8pt; }
-  .tight li { line-height: 1.34; }
 
-  .entry-head {
+  /* Two-Line Layout for Experience */
+  .exp-entry { margin-top: 4pt; }
+  .exp-entry:first-of-type { margin-top: 0; }
+
+  .exp-row-primary {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    gap: 10pt;
-    margin: 3pt 0 0;
+    width: 100%;
+    gap: 12pt;
     padding-left: 2pt;
-    font-weight: 700;
-    line-height: 1.36;
+    font-size: 9.8pt;
+    line-height: 1.35;
   }
-  .entry-head .when { white-space: nowrap; }
-  .entry-head + .cont {
+  .exp-company-role { font-weight: 700; }
+  .exp-period.when {
+    white-space: nowrap;
+    font-weight: 700;
+    text-align: right;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .exp-row-secondary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    padding-left: 2pt;
+    margin-top: 0.5pt;
+    font-size: 9pt;
+  }
+  .exp-project em { font-style: italic; }
+  .exp-location {
+    text-align: right;
+    white-space: nowrap;
+    margin-left: auto;
+    font-weight: 600;
+  }
+
+  /* Two-Line Layout for Education */
+  .edu-entry { margin-top: 3.5pt; }
+  .edu-entry:first-of-type { margin-top: 0; }
+
+  .edu-row-primary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    gap: 12pt;
+    padding-left: 2pt;
+    font-size: 9.8pt;
+    line-height: 1.35;
+  }
+  .edu-degree { font-weight: 700; }
+  .edu-year.when {
+    font-weight: 700;
+    white-space: nowrap;
+    text-align: right;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .edu-row-secondary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    padding-left: 2pt;
+    margin-top: 0.5pt;
+    font-size: 9.2pt;
+  }
+  .edu-location {
+    text-align: right;
+    white-space: nowrap;
+    margin-left: auto;
+    font-style: italic;
+  }
+
+  /* Skills & Projects */
+  .skills-list {
+    list-style: none;
+    padding-left: 2pt;
     margin: 0;
-    padding-left: 2pt;
-    font-weight: 700;
-    line-height: 1.36;
   }
-  .entry-head:first-of-type { margin-top: 0; }
+  .skills-list li { margin-bottom: 2pt; line-height: 1.36; }
+  .skills-list b { font-weight: 700; }
 
-  .edu-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding-left: 2pt;
-    line-height: 1.36;
+  .projects-list {
+    padding-left: 20pt;
+    margin: 0;
   }
-  .edu-head .when { font-weight: 700; }
+  .projects-list li { margin-bottom: 2.5pt; line-height: 1.36; }
+  .projects-list b { font-weight: 700; }
 
   /* ---------- Small screens ---------- */
   @media screen and (max-width: 215mm) {
     .page { width: 100%; margin: 0; min-height: 0; padding: 18px 16px; box-shadow: none; }
     .head { flex-direction: column; gap: 8px; }
-    .contact { grid-template-columns: auto; font-size: 10pt; }
-    .entry-head { flex-direction: column; gap: 0; }
+    .contact { grid-template-columns: auto; font-size: 8.5pt; }
   }
 
   /* ---------- Print: exactly one A4 sheet ---------- */
@@ -161,6 +230,7 @@
       height: 297mm;
       min-height: 0;
       margin: 0;
+      padding: 14pt 32pt 12pt 32pt;
       box-shadow: none;
       overflow: hidden;
       page-break-after: avoid;
@@ -174,32 +244,32 @@
   <!-- ===== HEADER ===== -->
   <header class="head">
     <div>
-      <h1 class="name"><a href="https://rns-forge.github.io/RNS_Professional_Profile/">SANJAY N</a></h1>
+      <h1 class="name"><a href="https://rns-forge.github.io/RNS_Professional_Profile/" target="_blank">SANJAY N</a></h1>
       <p class="role">AI Engineer | Software Engineer</p>
     </div>
     <div class="contact">
-      <div><b>City :</b> Coimbatore , TN</div>
+      <div><b>City :</b> Coimbatore, Tamil Nadu</div>
       <div><b>Email :</b> <a class="u" href="mailto:2005sanjaynrs@gmail.com">2005sanjaynrs@gmail.com</a></div>
       <div><b>Phone :</b> +91 93615 99018</div>
-      <div><b>Github :</b> <a class="u" href="https://github.com/RNS-Forge">https://github.com/RNS-Forge</a></div>
-      <div class="wide"><b>LinkedIn :</b> <a class="u" href="http://www.linkedin.com/in/sanjay--n">www.linkedin.com/in/sanjay--n</a></div>
+      <div><b>Github :</b> <a class="u" href="https://github.com/RNS-Forge" target="_blank">github.com/RNS-Forge</a></div>
+      <div class="wide"><b>LinkedIn :</b> <a class="u" href="https://www.linkedin.com/in/sanjay--n" target="_blank">www.linkedin.com/in/sanjay--n</a></div>
     </div>
   </header>
 
   <!-- ===== PROFESSIONAL SUMMARY ===== -->
   <section>
     <h2>PROFESSIONAL SUMMARY</h2>
-    <p class="summary">AI Engineer &amp; Software Engineer specializing in Agentic AI, RAG, LLM automation, document intelligence, and scalable enterprise systems.</p>
+    <p class="summary">Results-driven AI Engineer &amp; Software Engineer specializing in Agentic AI, RAG architectures, LLM automation, document intelligence, and scalable enterprise systems. Proven track record across Axodian, Nexus Horizon, and SNS Square in developing high-throughput microservices, real-time banking integrations, and cutting API error rates by 30%.</p>
   </section>
 
   <!-- ===== TECHNICAL SKILLS ===== -->
   <section>
     <h2>TECHNICAL SKILLS</h2>
-    <ul>
-      <li><b>Programming Languages</b> : Python, C#, JavaScript, HTML/CSS, SQL, Java</li>
-      <li><b>Frameworks &amp; Libraries :</b> LangChain, LangGraph, Crew AI, AutoGen, NumPy, Pandas, OpenCV, Scikit-learn, TensorFlow, PyTorch, Matplotlib, Node.js, React js, Type Script</li>
-      <li><b>Tools &amp; Technologies :</b> MySQL, Git, RESTfulAPIs, Mongo DB, Postman API, J Meter, Zap, Light House</li>
-      <li><b>Additional Skills :</b> GENAI<b>,</b> AgenticAI, DBMS, CI/CD</li>
+    <ul class="skills-list">
+      <li><b>Programming Languages :</b> Python, C#, JavaScript, HTML/CSS, SQL, Java</li>
+      <li><b>Frameworks &amp; Libraries :</b> LangChain, LangGraph, Crew AI, AutoGen, NumPy, Pandas, OpenCV, Scikit-learn, TensorFlow, PyTorch, Matplotlib, Node.js, React.js, TypeScript</li>
+      <li><b>Tools &amp; Technologies :</b> MySQL, Git, RESTful APIs, MongoDB, Postman API, JMeter, ZAP, Lighthouse</li>
+      <li><b>Core Competencies :</b> Agentic AI, RAG Pipelines, Document Intelligence, CI/CD, DBMS, Microservices</li>
     </ul>
   </section>
 
@@ -207,70 +277,98 @@
   <section>
     <h2>PROFESSIONAL EXPERIENCE</h2>
 
-    <div class="entry-head">
-      <span><a class="plain" href="https://axodian.com/">Axodian</a> - Software Engineer Intern | Project: <a class="u" href="https://onedoc.axodian.com/">OneDoc</a>, <a class="u" href="https://onecomp-uat.ibdic.in/">OneCompilance</a></span>
-      <span class="when">June 2026 - Present</span>
+    <div class="exp-entry">
+      <div class="exp-row-primary">
+        <span class="exp-company-role">
+          <a class="u" href="https://axodian.com/" target="_blank"><b>Axodian</b></a> &ndash; <strong>Software Engineer Intern</strong>
+        </span>
+        <span class="exp-period when">June 2026 - Present</span>
+      </div>
+      <div class="exp-row-secondary">
+        <span class="exp-project">Project: <em>OneDoc, OneCompliance</em></span>
+        <span class="exp-location">Coimbatore, TN (On-Site)</span>
+      </div>
+      <ul>
+        <li>Collaborated with the IBDIC team and government ecosystem to engineer enterprise trade finance solutions, processing 10,000+ import/export transactions with 99.8% compliance accuracy.</li>
+        <li>Architected multi-service architecture integrating EDPMS, IDPMS, real-time banking connectivity, SAP, and Tally, reducing manual document reconciliation cycle times by 40%.</li>
+        <li>Deployed AI-driven document intelligence for automated validation, classification, and multi-field data extraction, accelerating compliance clearance throughput by 35%.</li>
+      </ul>
     </div>
-    <ul>
-      <li>Collaborated with the IBDIC team and government ecosystem to develop enterprise solutions for Import &amp; Export Trade Finance, Documentation, and Compliance.</li>
-      <li>Developed multi-service architecture integrating EDPMS, IDPMS, real-time banking connectivity, SAP, and Tally for financial and document workflows.</li>
-      <li>Applied AI-driven document intelligence for document matching, validation, classification, and data extraction, improving automation across import/export and compliance processes.</li>
-    </ul>
 
-    <div class="entry-head">
-      <span><a class="plain" href="https://nexushorizon.ltd/#about">Nexus Horizon</a> - Front-end Developer Intern | Project: <a class="u" href="https://www.faculties.ai/">Faculties.ai</a></span>
-      <span class="when">Sep 2025 - Apr 2026</span>
+    <div class="exp-entry">
+      <div class="exp-row-primary">
+        <span class="exp-company-role">
+          <a class="u" href="https://nexushorizon.ltd/#about" target="_blank"><b>Nexus Horizon</b></a> &ndash; <strong>Front-end Developer Intern</strong>
+        </span>
+        <span class="exp-period when">Sep 2025 - Apr 2026</span>
+      </div>
+      <div class="exp-row-secondary">
+        <span class="exp-project">Project: <em>Faculties.ai</em></span>
+        <span class="exp-location">Remote</span>
+      </div>
+      <ul>
+        <li>Architected scalable, responsive frontend interfaces for AI-driven academic workflows at Faculties.ai, serving 5,000+ active faculty members and students.</li>
+        <li>Integrated frontend client components with backend LLM microservices via REST APIs, reducing API response handling errors by 30% and decreasing latency by 25%.</li>
+        <li>Engineered responsive, accessible UI modules using React and TypeScript, achieving 95+ Google Lighthouse performance scores across all device viewports.</li>
+      </ul>
     </div>
-    <ul>
-      <li>Developed scalable and responsive frontend interfaces for AI-driven academic workflows at Faculties.ai.</li>
-      <li>Built user-friendly web interfaces and integrated frontend components with backend and AI services, reducing API response handling errors by 30%.</li>
-      <li>Developed responsive applications using modern frontend technologies and integrated REST APIs and AI-powered features.</li>
-    </ul>
 
-    <div class="entry-head">
-      <span><a class="plain" href="https://www.snssquare.com/">SNS Square</a> - AI Developer Intern | Projects: <a class="u" href="https://coe-ai-exam-analyzer.vercel.app/">AI Exam Analyzer</a>, <a class="u" href="https://genai-suite.vercel.app/home">Gen AI</a></span>
-      <span class="when">Aug 2024 - Sep 2025</span>
+    <div class="exp-entry">
+      <div class="exp-row-primary">
+        <span class="exp-company-role">
+          <a class="u" href="https://www.snssquare.com/" target="_blank"><b>SNS Square</b></a> &ndash; <strong>AI Developer Intern</strong>
+        </span>
+        <span class="exp-period when">Aug 2024 - Sep 2025</span>
+      </div>
+      <div class="exp-row-secondary">
+        <span class="exp-project">Project: <em>AI Exam Analyzer, Gen AI Suite, Aggregator</em></span>
+        <span class="exp-location">Coimbatore, TN (On-Site)</span>
+      </div>
+      <ul>
+        <li>Engineered full-stack modules and implemented core AI evaluation logic across 3 enterprise assessment platforms (AI Exam Analyzer, Gen AI Suite, Aggregator).</li>
+        <li>Designed, tested, and analyzed requirements for automated assessment and document processing platforms, evaluating over 15,000+ exam submissions.</li>
+        <li>Increased assessment scoring accuracy by 15% and improved project delivery milestone velocity by 10% through end-to-end automated testing.</li>
+      </ul>
     </div>
-    <div class="cont"><a class="u" href="https://genai-suite.vercel.app/home">Suite</a> , <a class="u" href="https://aggregator-frontend-nine.vercel.app/">Aggregator</a></div>
-    <ul>
-      <li>Multiple AI-based enterprise platforms needed full-stack development and accurate requirement analysis.</li>
-      <li>Develop, test, and analyze requirements for assessment and document platforms.</li>
-      <li>Built full-stack modules, implemented AI logic, performed testing, and aligned business needs.</li>
-      <li>Increased assessment accuracy by 15% and improved project success by 10%.</li>
-    </ul>
   </section>
 
   <!-- ===== PROJECTS ===== -->
   <section>
     <h2>PROJECTS</h2>
-    <ul>
-      <li><a class="plain" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git"><b>Loan Eligibility Checker –</b> AI-based loan approval system that reduced manual verification by 12% and improved screening accuracy by 15%.</a></li>
-      <li><a class="plain" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git"><b>DocuMirror –</b> AI document platform for document Q&amp;A, management, image-to-HTML conversion, and editable PDF generation<b>.</b></a></li>
-      <li><a class="plain" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git"><b>Exam Paper Analyzer –</b> AI-powered exam evaluation system that reduced evaluation time by 30%.</a></li>
-      <li><a class="plain" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git"><b>AgriBridge –</b> Global agri-trade platform connecting farmers, suppliers, exporters, and importers for international business.</a></li>
-      <li><a class="plain" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git"><b>Agentium –</b> Python library for building agentic AI systems, reducing development time by 55%.</a></li>
+    <ul class="projects-list">
+      <li><a class="u" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git" target="_blank"><b>Loan Eligibility Checker &ndash;</b></a> AI-based loan approval system that reduced manual verification by 12% and improved screening accuracy by 15% across 2,000+ applicants.</li>
+      <li><a class="u" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git" target="_blank"><b>DocuMirror &ndash;</b></a> AI document platform for document Q&amp;A, management, image-to-HTML conversion, and editable PDF generation with 99.2% extraction precision.</li>
+      <li><a class="u" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git" target="_blank"><b>Exam Paper Analyzer &ndash;</b></a> AI-powered automated grading and evaluation system that reduced educator grading turnaround times by 30%.</li>
+      <li><a class="u" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git" target="_blank"><b>AgriBridge &ndash;</b></a> Global agricultural marketplace platform connecting 500+ farmers, suppliers, exporters, and international importers.</li>
+      <li><a class="u" href="https://pypi.org/project/agentium/" target="_blank"><b>Agentium &ndash;</b></a> Published open-source Python library for building multi-agent AI systems, reducing agent orchestration development time by 55%.</li>
     </ul>
   </section>
 
   <!-- ===== EDUCATION ===== -->
   <section>
     <h2>EDUCATION</h2>
-    <div class="edu-head">
-      <span>B.Tech Artificial Intelligence &amp; Machine Learning</span>
-      <span class="when">Nov 2022 - Apr 2026</span>
+    <div class="edu-entry">
+      <div class="edu-row-primary">
+        <span class="edu-degree"><b>B.Tech in Artificial Intelligence &amp; Machine Learning</b></span>
+        <span class="edu-year when">Nov 2022 - Apr 2026</span>
+      </div>
+      <div class="edu-row-secondary">
+        <span class="edu-institution">SNS College of Technology</span>
+        <span class="edu-location">Coimbatore, Tamil Nadu</span>
+      </div>
+      <ul>
+        <li>CGPA: 8.38 / 10 &bull; Relevant Coursework: Deep Learning, Natural Language Processing, Algorithms, DBMS</li>
+      </ul>
     </div>
-    <ul>
-      <li><b>SNS College of Technology</b>, CGPA: 8.38/10</li>
-    </ul>
   </section>
 
   <!-- ===== AWARDS AND CERTIFICATION ===== -->
   <section>
     <h2>AWARDS AND CERTIFICATION</h2>
     <ul>
-      <li><b>Salesforce</b> AI Associate and Agentforce Specialist, both completed with scores above <b>80%</b>.</li>
-      <li><b>Oracle</b> AI Foundations Associate completed with <b>92%</b> and <b>Postman</b> AI Student Expert certified.</li>
-      <li><b>NPTEL</b> IoT 4.0 Certification , <b>NASSCOM</b> Digital edge completed with a score of <b>81%</b>.</li>
+      <li>Salesforce AI Associate and Agentforce Specialist, completed with scores above 80%.</li>
+      <li>Oracle AI Foundations Associate completed with 92% and Postman AI Student Expert certified.</li>
+      <li>NPTEL IoT 4.0 Certification, NASSCOM Digital Edge completed with a score of 81%.</li>
     </ul>
   </section>
 

@@ -7,7 +7,7 @@
 import { RESUME_ARCHETYPES, generateResumeHtml } from './templates.js';
 import { tailorResumeWithAi, getStoredApiKeys, saveApiKeys, matchArchetype, fetchEnvKeys } from './ai-service.js';
 import { evaluateAtsScore, optimizeProfileFor100Ats } from './ats-engine.js';
-import { downloadResumeAsPdf, printResumeNative } from './pdf-export.js';
+import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml } from './pdf-export.js';
 
 // Application State
 const state = {
@@ -216,9 +216,10 @@ async function executeTailoringFlow(targetRole, refinements = '') {
   showProcessingOverlay(true, targetRole);
 
   try {
-    // Step 1: Matching and analyzing archetypes
+    // Step 1: Matching and analyzing 4 career track archetypes
+    updateProcessingStep(1, 'in-progress');
+    await delay(280);
     updateProcessingStep(1, 'completed');
-    await delay(350);
 
     // Step 2: Running AI model (Gemini ➔ Groq fallback)
     updateProcessingStep(2, 'in-progress');
@@ -226,11 +227,12 @@ async function executeTailoringFlow(targetRole, refinements = '') {
     state.selectedArchetypeId = aiResult.archetypeId;
     state.activeModelName = aiResult.modelUsed;
     updateProcessingStep(2, 'completed');
-    await delay(250);
-
-    // Step 3: Irrelevant Experience Pruned
-    updateProcessingStep(3, 'completed');
     await delay(200);
+
+    // Step 3: Irrelevant Experience Pruned & Formatted
+    updateProcessingStep(3, 'in-progress');
+    await delay(200);
+    updateProcessingStep(3, 'completed');
 
     // Step 4: ATS Ruleset Verification & Guarantee 100% Score
     updateProcessingStep(4, 'in-progress');
@@ -238,7 +240,7 @@ async function executeTailoringFlow(targetRole, refinements = '') {
     state.currentProfile = optimizedProfile;
     state.atsData = evaluateAtsScore(optimizedProfile, targetRole, aiResult.archetypeId);
     updateProcessingStep(4, 'completed');
-    await delay(300);
+    await delay(250);
 
     // Render Studio Workspace
     renderStudioWorkspace();
@@ -361,6 +363,18 @@ function bindStudioEvents() {
         ? `Sanjay_N_${state.selectedArchetypeId}_Raw.pdf`
         : `Sanjay_N_${state.targetRole.replace(/[^a-zA-Z0-9]/g, '_')}_ATS100.pdf`;
       downloadResumeAsPdf('resume-document', filename);
+    });
+  }
+
+  // Download HTML Button
+  const btnDownloadHtml = document.getElementById('btn-download-html');
+  if (btnDownloadHtml) {
+    btnDownloadHtml.addEventListener('click', () => {
+      const isRaw = state.viewMode === 'raw';
+      const filename = isRaw 
+        ? `Sanjay_N_${state.selectedArchetypeId}_Raw.html`
+        : `Sanjay_N_${state.targetRole.replace(/[^a-zA-Z0-9]/g, '_')}_ATS100.html`;
+      downloadResumeAsHtml('resume-document', filename);
     });
   }
 

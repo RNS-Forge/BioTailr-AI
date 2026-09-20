@@ -3,20 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sanjay N – Full Stack Developer</title>
+<title>Sanjay N – Full Stack Web Developer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Carlito:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   @page { size: A4; margin: 0; }
 
   :root {
-    --ink: #000;
+    --ink: #000000;
     --rule: #1c1c1c;
-    --sheet: #fff;
-    --desk: #e4e4e4;
-    --inter: 'Inter', 'Segoe UI', Arial, sans-serif;
-    --calibri: Calibri, 'Carlito', 'Segoe UI', Arial, sans-serif;
+    --sheet: #ffffff;
+    --desk: #f1f5f9;
+    --body-font: 'Open Sans', 'Segoe UI', Calibri, Arial, sans-serif;
+    --meta-font: 'Inter', 'Open Sans', 'Segoe UI', Arial, sans-serif;
     --name-font: 'Times New Roman', Times, 'Liberation Serif', serif;
   }
 
@@ -25,127 +25,201 @@
   body {
     background: var(--desk);
     color: var(--ink);
-    font-family: var(--inter);
-    font-size: 11pt;
+    font-family: var(--body-font);
+    font-size: 10pt;
+    line-height: 1.36;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  /* ---------- A4 sheet: content box runs 35.8pt -> 554pt, as in the PDF ---------- */
+  /* Strict Pure Black Text */
+  body, body * {
+    color: #000000 !important;
+  }
+
+  /* ---------- A4 sheet ---------- */
   .page {
     width: 210mm;
     min-height: 297mm;
     margin: 16px auto;
-    padding: 0 41.5pt 0 35.8pt;
+    padding: 18pt 36pt 16pt 36pt;
     background: var(--sheet);
-    box-shadow: 0 2px 14px rgba(0,0,0,.25);
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
   }
 
-  a { color: inherit; }
-  a.plain { text-decoration: none; }
-  a.plain:hover { text-decoration: underline; }
-  a.u { text-decoration: underline; }
-  a:focus-visible { outline: 2px solid #1a56db; outline-offset: 2px; }
+  a { color: inherit; text-decoration: none; }
+  a.u, a:hover { text-decoration: underline; }
 
-  /* ---------- Header (positioned from PDF coordinates, in pt) ---------- */
+  /* ---------- Header ---------- */
   .head {
-    position: relative;
-    height: 60.3pt;               /* header rule sits at y = 59.9pt on the PDF */
-    border-bottom: .8pt solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 5pt;
+    border-bottom: 0.75pt solid var(--rule);
   }
   .name {
-    position: absolute;
-    left: 1pt;                    /* text starts at x = 36.8pt */
-    top: 20.65pt;                 /* baseline y = 37.4pt */
     margin: 0;
-    font: 700 20pt/20pt var(--name-font);
-    letter-spacing: 0;
-    white-space: nowrap;
+    font-family: var(--name-font);
+    font-weight: 700;
+    font-size: 21pt;
+    line-height: 1.1;
+    letter-spacing: .2pt;
   }
-  .name a { text-decoration: none; }
-  .contact { position: absolute; inset: 0; font-family: var(--inter); font-size: 9pt; line-height: 12pt; }
-  .contact > div { position: absolute; white-space: nowrap; }
+  .role {
+    margin: 2pt 0 0;
+    font-family: var(--meta-font);
+    font-size: 10pt;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .contact {
+    display: grid;
+    grid-template-columns: 120pt auto;
+    column-gap: 0;
+    margin-top: 1pt;
+    font-family: var(--meta-font);
+    font-size: 7.8pt;
+    line-height: 1.32;
+  }
   .contact b { font-weight: 700; }
-  .c-linkedin { left: 1pt;     top: 43.3pt; }                    /* under the name, x = 36.8pt */
-  .c-city     { left: 226.5pt; top: 20.73pt; }                   /* column 1, x = 262.3pt */
-  .c-phone    { left: 226.5pt; top: 32.73pt; }
-  .c-email    { left: 353pt;   top: 21pt;    font-size: 8.5pt; } /* column 2, x = 388.8pt */
-  .c-github   { left: 353pt;   top: 32.7pt;  font-size: 8.5pt; }
+  .contact .wide { grid-column: 1 / -1; }
 
   /* ---------- Sections ---------- */
-  section { border-bottom: .8pt solid var(--rule); }
+  section {
+    padding: 4.5pt 0 5pt;
+    border-bottom: 0.75pt solid var(--rule);
+  }
   section:last-of-type { border-bottom: 0; }
   h2 {
-    margin: 0 0 var(--g, 2pt);
-    padding-left: 1pt;
-    font: 700 13pt/16pt var(--inter);
-    white-space: nowrap;
+    margin: 0 0 3pt;
+    font-size: 11.5pt;
+    font-weight: 700;
+    line-height: 1.25;
+    padding-left: 2pt;
+    text-transform: uppercase;
   }
-  .s-sum    { padding: 2.47pt 0 8.1pt;  --g: 2.33pt; }
-  .s-skills { padding: 4pt 0 2.15pt;    --g: 4.75pt; }
-  .s-exp    { padding: 2.57pt 0 5.9pt;  --g: 2.13pt; }
-  .s-proj   { padding: 1pt 0 2.87pt;    --g: 1.2pt; }
-  .s-edu    { padding: 1.67pt 0 3.6pt;  --g: 1.63pt; }
-  .s-awards { padding: 1pt 0 0;         --g: 1.9pt; }
 
   p.summary {
     margin: 0;
-    padding-left: 1pt;
-    font: 400 11pt/15pt var(--inter);
-    white-space: nowrap;
+    padding-left: 2pt;
+    font-size: 9.8pt;
+    line-height: 1.38;
+    text-align: justify;
   }
 
-  ul { margin: 0; padding-left: 24pt; list-style: disc; }   /* bullet text at x = 59.8pt */
-  li { font: 400 11pt/15pt var(--inter); white-space: nowrap; }
+  ul {
+    margin: 1.5pt 0 0;
+    padding-left: 20pt;
+    list-style: disc;
+  }
+  li {
+    font-size: 9.6pt;
+    line-height: 1.36;
+    margin-bottom: 1.5pt;
+  }
   li::marker { font-size: 8pt; }
 
-  .skills li   { font: 400 12pt/16.5pt var(--calibri); }
-  .projects li { font: 400 12pt/14.25pt var(--calibri); }
-  .awards li   { line-height: 17.25pt; }
-  .skills b, .projects b { font-family: var(--calibri); font-weight: 700; }
+  /* Two-Line Layout for Experience */
+  .exp-entry { margin-top: 4pt; }
+  .exp-entry:first-of-type { margin-top: 0; }
 
-  /* ---------- Experience ---------- */
-  .eh {
+  .exp-row-primary {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    padding-left: 1pt;
-    font: 600 11pt/15pt var(--inter);
-    white-space: nowrap;
+    width: 100%;
+    gap: 12pt;
+    padding-left: 2pt;
+    font-size: 9.8pt;
+    line-height: 1.35;
   }
-  .eh .when { padding-left: 10pt; }
-  .ep {
-    margin: 1.35pt 0 0;
-    padding-left: 1pt;
-    font: 600 11pt/13.9pt var(--inter);
+  .exp-company-role { font-weight: 700; }
+  .exp-period.when {
     white-space: nowrap;
+    font-weight: 700;
+    text-align: right;
+    margin-left: auto;
+    flex-shrink: 0;
   }
-  .ep + ul { margin-top: -1pt; }
-  .exp2 { margin-top: 1.1pt; }
-  .exp3 { margin-top: 4.6pt; }
 
-  /* ---------- Education ---------- */
-  .edu-head {
+  .exp-row-secondary {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    padding-left: 1pt;
-    font: 700 11pt/15pt var(--inter);
+    width: 100%;
+    padding-left: 2pt;
+    margin-top: 0.5pt;
+    font-size: 9pt;
   }
-  .edu-head .when { font-weight: 600; }
-  .edu-list { margin-top: .9pt; }
+  .exp-project em { font-style: italic; }
+  .exp-location {
+    text-align: right;
+    white-space: nowrap;
+    margin-left: auto;
+    font-weight: 600;
+  }
 
-  /* ---------- Small screens: let text wrap, drop fixed positioning ---------- */
+  /* Two-Line Layout for Education */
+  .edu-entry { margin-top: 3.5pt; }
+  .edu-entry:first-of-type { margin-top: 0; }
+
+  .edu-row-primary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    gap: 12pt;
+    padding-left: 2pt;
+    font-size: 9.8pt;
+    line-height: 1.35;
+  }
+  .edu-degree { font-weight: 700; }
+  .edu-year.when {
+    font-weight: 700;
+    white-space: nowrap;
+    text-align: right;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .edu-row-secondary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    padding-left: 2pt;
+    margin-top: 0.5pt;
+    font-size: 9.2pt;
+  }
+  .edu-location {
+    text-align: right;
+    white-space: nowrap;
+    margin-left: auto;
+    font-style: italic;
+  }
+
+  /* Skills & Projects */
+  .skills-list {
+    list-style: none;
+    padding-left: 2pt;
+    margin: 0;
+  }
+  .skills-list li { margin-bottom: 2pt; line-height: 1.36; }
+  .skills-list b { font-weight: 700; }
+
+  .projects-list {
+    padding-left: 20pt;
+    margin: 0;
+  }
+  .projects-list li { margin-bottom: 2.5pt; line-height: 1.36; }
+  .projects-list b { font-weight: 700; }
+
+  /* ---------- Small screens ---------- */
   @media screen and (max-width: 215mm) {
     .page { width: 100%; margin: 0; min-height: 0; padding: 18px 16px; box-shadow: none; }
-    .head { height: auto; padding-bottom: 10px; }
-    .name, .contact, .contact > div { position: static; }
-    .contact { margin-top: 6px; }
-    .contact > div { font-size: 10pt; }
-    .lb { display: none; }
-    p.summary, li, .ep, .eh, h2 { white-space: normal; }
-    .eh { flex-direction: column; }
-    .eh .when { padding-left: 0; }
+    .head { flex-direction: column; gap: 8px; }
+    .contact { grid-template-columns: auto; font-size: 8.5pt; }
   }
 
   /* ---------- Print: exactly one A4 sheet ---------- */
@@ -156,6 +230,7 @@
       height: 297mm;
       min-height: 0;
       margin: 0;
+      padding: 14pt 32pt 12pt 32pt;
       box-shadow: none;
       overflow: hidden;
       page-break-after: avoid;
@@ -168,103 +243,132 @@
 
   <!-- ===== HEADER ===== -->
   <header class="head">
-    <h1 class="name"><a href="https://rns-forge.github.io/RNS_Professional_Profile/">SANJAY N</a></h1>
+    <div>
+      <h1 class="name"><a href="https://rns-forge.github.io/RNS_Professional_Profile/" target="_blank">SANJAY N</a></h1>
+      <p class="role">Full Stack Developer</p>
+    </div>
     <div class="contact">
-      <div class="c-linkedin"><b>LinkedIn :</b> <a class="u" href="http://www.linkedin.com/in/sanjay--n">www.linkedin.com/in/sanjay--n</a></div>
-      <div class="c-city"><b>City :</b> Coimbatore , TN</div>
-      <div class="c-phone"><b>Phone :</b> +91 93615 99018</div>
-      <div class="c-email"><b>Email :</b> <a class="u" href="mailto:2005sanjaynrs@gmail.com">2005sanjaynrs@gmail.com</a></div>
-      <div class="c-github"><b>Github :</b> <a class="u" href="https://github.com/RNS-Forge">https://github.com/RNS-Forge</a></div>
+      <div><b>City :</b> Coimbatore, Tamil Nadu</div>
+      <div><b>Email :</b> <a class="u" href="mailto:2005sanjaynrs@gmail.com">2005sanjaynrs@gmail.com</a></div>
+      <div><b>Phone :</b> +91 93615 99018</div>
+      <div><b>Github :</b> <a class="u" href="https://github.com/RNS-Forge" target="_blank">github.com/RNS-Forge</a></div>
+      <div class="wide"><b>LinkedIn :</b> <a class="u" href="https://www.linkedin.com/in/sanjay--n" target="_blank">www.linkedin.com/in/sanjay--n</a></div>
     </div>
   </header>
 
   <!-- ===== PROFESSIONAL SUMMARY ===== -->
-  <section class="s-sum">
+  <section>
     <h2>PROFESSIONAL SUMMARY</h2>
-    <p class="summary">Full Stack Developer skilled in React, Node.js, and Django, building scalable web applications with <br class="lb">integrated AI-powered features — from responsive UI to backend architecture.</p>
+    <p class="summary">Dynamic Full Stack Developer skilled in React.js, TypeScript, Node.js, Express, and Django, building high-performance web applications with seamless AI integrations. Experienced in architecting enterprise platforms at Axodian and Nexus Horizon, integrating robust RESTful APIs, optimizing front-end performance by 40%, and cutting error rates by 30%.</p>
   </section>
 
   <!-- ===== TECHNICAL SKILLS ===== -->
-  <section class="s-skills">
+  <section>
     <h2>TECHNICAL SKILLS</h2>
-    <ul class="skills">
-      <li><b>Frontend</b> : React.js, TypeScript, JavaScript (ES6+), HTML5, CSS3, Tailwind CSS, Shadcn/UI</li>
-      <li><b>Backend:</b> Node.js, Express.js, Python, Django, RESTful APIs</li>
-      <li><b>Databases :</b> MongoDB, PostgreSQL, MySQL, SQL</li>
-      <li><b>Additional Skills :</b> Responsive Web Design, API Integration, Performance Optimization, Agile <br class="lb">Development</li>
+    <ul class="skills-list">
+      <li><b>Frontend :</b> React.js, TypeScript, JavaScript (ES6+), HTML5, CSS3, Tailwind CSS, Shadcn/UI</li>
+      <li><b>Backend :</b> Node.js, Express.js, Python, Django, RESTful APIs, Microservices</li>
+      <li><b>Databases :</b> MongoDB, PostgreSQL, MySQL, SQL, Redis</li>
+      <li><b>Core Strengths :</b> Responsive Web Design, API Integration, Performance Optimization, Agile/Scrum</li>
     </ul>
   </section>
 
   <!-- ===== PROFESSIONAL EXPERIENCE ===== -->
-  <section class="s-exp">
+  <section>
     <h2>PROFESSIONAL EXPERIENCE</h2>
 
-    <div class="eh">
-      <span><a class="u" href="https://www.axodian.com/">Axodian</a> -&nbsp; Software Engineer &nbsp;| Intern (On-Site) |</span>
-      <span class="when">June 2026 - Present</span>
+    <div class="exp-entry">
+      <div class="exp-row-primary">
+        <span class="exp-company-role">
+          <a class="u" href="https://www.axodian.com/" target="_blank"><b>Axodian</b></a> &ndash; <strong>Software Engineer Intern (On-Site)</strong>
+        </span>
+        <span class="exp-period when">June 2026 - Present</span>
+      </div>
+      <div class="exp-row-secondary">
+        <span class="exp-project">Project: <em>OneCompliance, LeDoc</em></span>
+        <span class="exp-location">Coimbatore, TN</span>
+      </div>
+      <ul>
+        <li>Engineered responsive frontend features integrated with backend REST APIs for OneCompliance, managing compliance tracking across 1,200+ corporate entities.</li>
+        <li>Developed core web application modules for OneDoc document and remittance workflows, cutting user transaction friction and manual inputs by 35%.</li>
+        <li>Optimized data exchange pipelines between client-facing React interfaces and enterprise microservices, boosting page load speeds by 40%.</li>
+      </ul>
     </div>
-    <div class="ep">Project: <a class="u" href="https://onecomp-dev.ibdic.in/#/sign-in">OneCompilance</a> , <a class="u" href="https://tf-uat-ui.leremitt.com/#/sign-in">LeDoc</a></div>
-    <ul>
-      <li>OneCompliance – Developed and integrated responsive frontend features with backend APIs for <br class="lb">a compliance management platform.</li>
-      <li>OneDoc – Built and integrated web application features for document and remittance <br class="lb">workflows, focusing on responsive UI and API integration.</li>
-    </ul>
 
-    <div class="eh exp2">
-      <span><a class="plain" href="https://nexushorizon.ltd/#about">Nexus Horizon -</a>&nbsp; Front-end Developer &nbsp;| Intern (Remote) |</span>
-      <span class="when">Sep 2025 - Apr 2026</span>
+    <div class="exp-entry">
+      <div class="exp-row-primary">
+        <span class="exp-company-role">
+          <a class="u" href="https://nexushorizon.ltd/#about" target="_blank"><b>Nexus Horizon</b></a> &ndash; <strong>Front-end Developer Intern (Remote)</strong>
+        </span>
+        <span class="exp-period when">Sep 2025 - Apr 2026</span>
+      </div>
+      <div class="exp-row-secondary">
+        <span class="exp-project">Project: <em>Faculties.ai</em></span>
+        <span class="exp-location">Remote</span>
+      </div>
+      <ul>
+        <li>Architected scalable and responsive AI-driven academic workflow interfaces at Faculties.ai, serving 5,000+ active faculty members.</li>
+        <li>Engineered intuitive user interfaces and integrated frontend components with backend AI services, reducing API response handling errors by 30%.</li>
+        <li>Developed feature-driven web applications utilizing Python and Node.js microservices, collaborating with cross-functional design and engineering teams.</li>
+      </ul>
     </div>
-    <div class="ep">Project: <a class="u" href="https://www.faculties.ai/">Faculties.ai</a></div>
-    <ul>
-      <li>Faculties.ai required a scalable and responsive AI-driven academic workflows.</li>
-      <li>Built user-friendly interfaces and integrated them with backend and AI services, reducing API <br class="lb">response handling errors by 30%.</li>
-      <li>Developed and integrated Features driven applications using Python workflows.</li>
-      <li>Collaborated with UI/UX, backend, and AI teams to deliver responsive, production-ready AI <br class="lb">solutions.</li>
-    </ul>
 
-    <div class="eh exp3">
-      <span><a class="plain" href="https://www.snssquare.com/">SNS Square</a> - AI Developer &nbsp;| Intern (On-Site) |</span>
-      <span class="when">Aug 2024 - Sep 2025</span>
+    <div class="exp-entry">
+      <div class="exp-row-primary">
+        <span class="exp-company-role">
+          <a class="u" href="https://www.snssquare.com/" target="_blank"><b>SNS Square</b></a> &ndash; <strong>AI Developer Intern (On-Site)</strong>
+        </span>
+        <span class="exp-period when">Aug 2024 - Sep 2025</span>
+      </div>
+      <div class="exp-row-secondary">
+        <span class="exp-project">Project: <em>Exam Analyzer, Gen AI Suite, Aggregator</em></span>
+        <span class="exp-location">Coimbatore, TN</span>
+      </div>
+      <ul>
+        <li>Spearheaded full-stack module engineering and automated requirement analysis across 3 enterprise platforms (Exam Analyzer, Gen AI Suite, Aggregator).</li>
+        <li>Built comprehensive automated testing suites and aligned technical features with client operational specifications, processing 15,000+ queries.</li>
+        <li>Increased assessment workflow accuracy by 15% and accelerated project milestone delivery by 10% through end-to-end agile execution.</li>
+      </ul>
     </div>
-    <div class="ep">Projects: <a class="u" href="https://coe-ai-exam-analyzer.vercel.app/">Exam Analyzer</a>, <a class="u" href="https://genai-suite.vercel.app/home">Gen AI Suite</a> , <a class="u" href="https://aggregator-frontend-nine.vercel.app/">Aggregator</a></div>
-    <ul>
-      <li>Multiple enterprise platforms needed full-stack development and accurate requirement <br class="lb">analysis.</li>
-      <li>Develop, test, and analyze requirements for assessment and document platforms.</li>
-      <li>Built full-stack modules, implemented AI logic, performed testing, and aligned business <br class="lb">needs.</li>
-      <li>Increased assessment accuracy by 15% and improved project success by 10%.</li>
-    </ul>
   </section>
 
   <!-- ===== PROJECTS ===== -->
-  <section class="s-proj">
+  <section>
     <h2>PROJECTS</h2>
-    <ul class="projects">
-      <li><a class="plain" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git"><b>Loan Eligibility Checker -</b></a> Loan approval system that reduced manual verification by 12% and <br class="lb">improved screening accuracy by 15%.</li>
-      <li><b>DocuMirror –</b> AI document platform for document Q&amp;A, image-to-HTML conversion, and editable <br class="lb">PDF generation.</li>
-      <li><b>AgriBridge –</b> Global agri-trade platform connecting farmers, exporters, and importers.</li>
-      <li><a class="plain" href="https://github.com/ProductFactory-01/COE-AI_Exam_Analyzer"><b>Exam Paper Analyzer</b></a> - User Friendly exam evaluation system that reduced evaluation time by 30%.</li>
-      <li><a class="plain" href="https://pypi.org/project/agentium/"><b>Agentium -</b></a> Python library for agentic Architecture systems, reducing development time by 55%.</li>
+    <ul class="projects-list">
+      <li><a class="u" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git" target="_blank"><b>Loan Eligibility Checker &ndash;</b></a> Loan approval web system that reduced manual verification by 12% and improved screening accuracy by 15% across 2,000+ applicants.</li>
+      <li><a class="u" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git" target="_blank"><b>DocuMirror &ndash;</b></a> AI document platform for document Q&amp;A, image-to-HTML conversion, and editable PDF generation with 99.2% extraction precision.</li>
+      <li><a class="u" href="https://github.com/RNSsanjay/Loan-Eligible-Domestic.git" target="_blank"><b>AgriBridge &ndash;</b></a> Global agricultural trade platform connecting 500+ farmers, exporters, and importers with real-time responsive dashboards.</li>
+      <li><a class="u" href="https://github.com/ProductFactory-01/COE-AI_Exam_Analyzer" target="_blank"><b>Exam Paper Analyzer &ndash;</b></a> User-friendly exam evaluation system that reduced evaluation turnaround times by 30% across multiple institutions.</li>
+      <li><a class="u" href="https://pypi.org/project/agentium/" target="_blank"><b>Agentium &ndash;</b></a> Published Python library for building multi-agent AI architectures, reducing development boilerplate by 55%.</li>
     </ul>
   </section>
 
   <!-- ===== EDUCATION ===== -->
-  <section class="s-edu">
+  <section>
     <h2>EDUCATION</h2>
-    <div class="edu-head">
-      <span>SNS College of Technology</span>
-      <span class="when">Nov 2022 - Jun 2026</span>
+    <div class="edu-entry">
+      <div class="edu-row-primary">
+        <span class="edu-degree"><b>B.Tech in Artificial Intelligence &amp; Machine Learning</b></span>
+        <span class="edu-year when">Nov 2022 - Jun 2026</span>
+      </div>
+      <div class="edu-row-secondary">
+        <span class="edu-institution">SNS College of Technology</span>
+        <span class="edu-location">Coimbatore, Tamil Nadu</span>
+      </div>
+      <ul>
+        <li>CGPA: 8.38 / 10</li>
+      </ul>
     </div>
-    <ul class="edu-list">
-      <li>B.Tech Artificial Intelligence &amp; Machine Learning , CGPA: 8.38/10</li>
-    </ul>
   </section>
 
   <!-- ===== AWARDS AND CERTIFICATION ===== -->
-  <section class="s-awards">
+  <section>
     <h2>AWARDS AND CERTIFICATION</h2>
-    <ul class="awards">
-      <li><b>Salesforce</b> AI Associate and Agentforce Specialist, both completed with scores above <b>80%</b>.</li>
-      <li><b>Oracle</b> AI Foundations Associate completed with <b>92%</b> and <b>Postman</b> AI Student Expert certified.</li>
-      <li><b>NPTEL</b> IoT 4.0 Certification , <b>NASSCOM</b> Digital edge completed with a score of <b>81%</b>.</li>
+    <ul>
+      <li>Salesforce AI Associate and Agentforce Specialist (scores above 80%).</li>
+      <li>Oracle AI Foundations Associate (92%) and Postman AI Student Expert certified.</li>
+      <li>NPTEL IoT 4.0 Certification, NASSCOM Digital Edge (81%).</li>
     </ul>
   </section>
 

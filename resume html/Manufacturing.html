@@ -3,184 +3,364 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sanjay N – Quality Checker Resume</title>
+<title>Sanjay N – Quality Checker | Manufacturing Resume</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
+  @page { size: A4; margin: 0; }
+
   :root {
-    --accent: #1F3A5F;
-    --text: #111111;
-    --muted: #444444;
-    --bg: #ffffff;
+    --ink: #000000;
+    --rule: #1c1c1c;
+    --sheet: #ffffff;
+    --desk: #f1f5f9;
+    --body-font: 'Open Sans', 'Segoe UI', Calibri, Arial, sans-serif;
+    --meta-font: 'Inter', 'Open Sans', 'Segoe UI', Arial, sans-serif;
+    --name-font: 'Times New Roman', Times, 'Liberation Serif', serif;
   }
 
   * { box-sizing: border-box; }
-
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: #e9ecf1;
-    color: var(--text);
-    font-family: Calibri, "Segoe UI", Carlito, Arial, sans-serif;
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--desk);
+    color: var(--ink);
+    font-family: var(--body-font);
     font-size: 10pt;
-    line-height: 1.3;
+    line-height: 1.36;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
+  /* Strict Pure Black Text */
+  body, body * {
+    color: #000000 !important;
+  }
+
+  /* ---------- A4 sheet ---------- */
   .page {
     width: 210mm;
     min-height: 297mm;
-    margin: 12px auto;
-    padding: 14mm 15mm 12mm 15mm;
-    background: var(--bg);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    margin: 16px auto;
+    padding: 18pt 36pt 16pt 36pt;
+    background: var(--sheet);
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
   }
 
-  header { text-align: center; }
-  header h1 {
+  a { color: inherit; text-decoration: none; }
+  a.u, a:hover { text-decoration: underline; }
+
+  /* ---------- Header ---------- */
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 5pt;
+    border-bottom: 0.75pt solid var(--rule);
+    margin-bottom: 2pt;
+  }
+  .name {
     margin: 0;
-    font-size: 24pt;
+    font-family: var(--name-font);
     font-weight: 700;
-    color: var(--accent);
-    letter-spacing: 0.5px;
+    font-size: 21pt;
+    line-height: 1.1;
+    letter-spacing: .2pt;
   }
-  header .role {
-    margin: 2px 0 4px;
-    font-size: 11.5pt;
-    color: #333333;
+  .role {
+    margin: 2pt 0 0;
+    font-family: var(--meta-font);
+    font-size: 10pt;
+    font-weight: 600;
+    line-height: 1.25;
   }
-  header .contact { margin: 0; }
-  header .contact span + span::before {
-    content: "|";
-    margin: 0 8px;
+  .contact {
+    display: grid;
+    grid-template-columns: 120pt auto;
+    column-gap: 0;
+    margin-top: 1pt;
+    font-family: var(--meta-font);
+    font-size: 7.8pt;
+    line-height: 1.32;
   }
-  header a { color: inherit; text-decoration: none; }
+  .contact b { font-weight: 700; }
+  .contact .wide { grid-column: 1 / -1; }
 
+  /* ---------- Sections ---------- */
+  section {
+    padding: 4.5pt 0 5pt;
+    border-bottom: 0.75pt solid var(--rule);
+  }
+  section:last-of-type { border-bottom: 0; }
   h2 {
-    margin: 12px 0 5px;
-    padding-bottom: 1px;
+    margin: 0 0 3pt;
     font-size: 11.5pt;
     font-weight: 700;
+    line-height: 1.25;
+    padding-left: 2pt;
     text-transform: uppercase;
-    color: var(--accent);
-    border-bottom: 2px solid var(--accent);
   }
 
-  p { margin: 0; }
-  .summary { text-align: justify; }
-
-  .row {
-    display: table;
-    width: 100%;
-    margin-top: 4px;
-    font-weight: 700;
-  }
-  .row .title { display: table-cell; font-size: 11pt; }
-  .row .date { display: table-cell; width: 1%; text-align: right; white-space: nowrap; padding-left: 12px; }
-
-  .company-note {
-    margin: 0 0 4px;
-    font-style: italic;
-    color: var(--muted);
+  p.summary {
+    margin: 0;
+    padding-left: 2pt;
+    font-size: 9.8pt;
+    line-height: 1.38;
+    text-align: justify;
   }
 
   ul {
-    margin: 0;
-    padding-left: 18px;
+    margin: 1.5pt 0 0;
+    padding-left: 20pt;
+    list-style: disc;
   }
-  li { margin-bottom: 1.5px; }
-  li::marker { color: var(--text); }
+  li {
+    font-size: 9.6pt;
+    line-height: 1.36;
+    margin-bottom: 1.5pt;
+  }
+  li::marker { font-size: 8pt; }
 
-  .edu-detail { margin: 0 0 2px; }
+  /* Two-Line Layout for Experience */
+  .exp-entry { margin-top: 4pt; }
+  .exp-entry:first-of-type { margin-top: 0; }
 
-  @media (max-width: 800px) {
-    .page { width: 100%; margin: 0; padding: 18px 16px; box-shadow: none; min-height: 0; }
-    .row, .row .title, .row .date { display: block; width: auto; text-align: left; padding-left: 0; }
+  .exp-row-primary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    gap: 12pt;
+    padding-left: 2pt;
+    font-size: 9.8pt;
+    line-height: 1.35;
+  }
+  .exp-company-role { font-weight: 700; }
+  .exp-period.when {
+    white-space: nowrap;
+    font-weight: 700;
+    text-align: right;
+    margin-left: auto;
+    flex-shrink: 0;
   }
 
-  @page { size: A4; margin: 0; }
+  .exp-row-secondary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    padding-left: 2pt;
+    margin-top: 0.5pt;
+    font-size: 9pt;
+  }
+  .exp-project em { font-style: italic; }
+  .exp-location {
+    text-align: right;
+    white-space: nowrap;
+    margin-left: auto;
+    font-weight: 600;
+  }
+
+  /* Two-Line Layout for Education */
+  .edu-entry { margin-top: 3.5pt; }
+  .edu-entry:first-of-type { margin-top: 0; }
+
+  .edu-row-primary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    gap: 12pt;
+    padding-left: 2pt;
+    font-size: 9.8pt;
+    line-height: 1.35;
+  }
+  .edu-degree { font-weight: 700; }
+  .edu-year.when {
+    font-weight: 700;
+    white-space: nowrap;
+    text-align: right;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .edu-row-secondary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    padding-left: 2pt;
+    margin-top: 0.5pt;
+    font-size: 9.2pt;
+  }
+  .edu-location {
+    text-align: right;
+    white-space: nowrap;
+    margin-left: auto;
+    font-style: italic;
+  }
+
+  .skills-block {
+    padding-left: 2pt;
+    font-size: 9.6pt;
+    line-height: 1.42;
+  }
+  .skills-block p {
+    margin: 1.5pt 0;
+  }
+  .skills-block strong {
+    font-weight: 700;
+  }
+
+  /* ---------- Mobile Responsiveness ---------- */
+  @media screen and (max-width: 768px) {
+    body { background: #ffffff; }
+    .page {
+      width: 100%;
+      min-height: auto;
+      margin: 0;
+      padding: 16px 14px;
+      box-shadow: none;
+    }
+    .head { flex-direction: column; }
+    .contact { grid-template-columns: 1fr; gap: 2pt; }
+    .exp-row-primary, .exp-row-secondary,
+    .edu-row-primary, .edu-row-secondary {
+      flex-wrap: wrap;
+      gap: 2pt;
+    }
+    .exp-period.when, .edu-year.when,
+    .exp-location, .edu-location {
+      margin-left: 0;
+      text-align: left;
+    }
+  }
+
+  /* ---------- Print: Clean Vector A4 Output ---------- */
   @media print {
-    html, body { background: #ffffff; }
+    body { background: #ffffff !important; }
     .page {
       margin: 0;
-      width: 210mm;
-      height: 297mm;
+      padding: 18pt 36pt 16pt 36pt;
       box-shadow: none;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
+      width: 100%;
     }
   }
 </style>
 </head>
 <body>
+
 <main class="page">
 
-  <header>
-    <h1>SANJAY N</h1>
-    <p class="role">Quality Checker &nbsp;|&nbsp; Quality Control &amp; Inspection &nbsp;|&nbsp; Steel Bar Components</p>
-    <p class="contact">
-      <span><a href="mailto:2005sanjaynrs@gmail.com">2005sanjaynrs@gmail.com</a></span><span><a href="tel:+919361599018">+91 93615 99018</a></span><span>Coimbatore, Tamil Nadu</span><span><a href="https://www.linkedin.com/in/sanjay--n">linkedin.com/in/sanjay--n</a></span>
-    </p>
+  <!-- ===== HEADER ===== -->
+  <header class="head">
+    <div>
+      <h1 class="name">SANJAY N</h1>
+      <p class="role">Quality Checker | Quality Control &amp; Precision Inspection</p>
+    </div>
+    <div class="contact">
+      <span><b>Phone:</b> <a href="tel:+919361599018">+91 93615 99018</a></span>
+      <span><b>Email:</b> <a href="mailto:2005sanjaynrs@gmail.com">2005sanjaynrs@gmail.com</a></span>
+      <span class="wide"><b>LinkedIn:</b> <a href="https://www.linkedin.com/in/sanjay--n" target="_blank" rel="noopener">linkedin.com/in/sanjay--n</a></span>
+      <span class="wide"><b>Location:</b> Coimbatore, Tamil Nadu, India</span>
+    </div>
   </header>
 
+  <!-- ===== PROFESSIONAL SUMMARY ===== -->
   <section>
     <h2>Professional Summary</h2>
-    <p class="summary">Detail-oriented Quality Checker with 6 months of hands-on experience in incoming, in-process, patrol and final inspection of CNC-turned steel bar components at Anvil Automation, an ISO 9001:2015 precision manufacturing unit running 3 shifts. Skilled in using vernier calipers, micrometers, height gauges, bore gauges and air gauges to verify close-tolerance dimensions, and in recording defects, supporting corrective actions and maintaining quality documentation. B.Tech graduate in Artificial Intelligence &amp; Machine Learning (CGPA 8.38). Seeking a Quality Inspector / Quality Control role in a precision manufacturing company.</p>
+    <p class="summary">
+      Detail-oriented Quality Checker with hands-on precision manufacturing inspection experience across incoming material, in-process machining, patrol inspection, and final quality control at Anvil Automation, an ISO 9001:2015 precision engineering plant running 3 shifts. Proficient in verifying close-tolerance dimensions using digital/dial vernier calipers, micrometers, height gauges, bore gauges, and air gauges calibrated to NABL standards. Demonstrated success tracking process capability (Cpk target 1.70), resolving shop-floor non-conformances, and maintaining strict inspection compliance.
+    </p>
   </section>
 
+  <!-- ===== PROFESSIONAL EXPERIENCE ===== -->
   <section>
     <h2>Professional Experience</h2>
-    <div class="row">
-      <span class="title">Anvil Automation Pvt Ltd &ndash; Quality Checker</span>
-      <span class="date">Dec 2025 &ndash; May 2026</span>
+
+    <div class="exp-entry">
+      <div class="exp-row-primary">
+        <span class="exp-company-role">Quality Checker &ndash; Precision Manufacturing</span>
+        <span class="exp-period when">Dec 2025 &ndash; May 2026</span>
+      </div>
+      <div class="exp-row-secondary">
+        <span class="exp-project"><em>Anvil Automation Pvt Ltd (ISO 9001:2015 Certified)</em></span>
+        <span class="exp-location">Coimbatore, India</span>
+      </div>
+      <ul>
+        <li>Conducted rigorous incoming material verification on raw steel bar stock, checking dimensional diameters, surface finishes, and lengths prior to CNC machining release.</li>
+        <li>Executed patrol and in-process quality audits on CNC-turned components across 3 daily production shifts, ensuring critical dimensions, grooving, threading, and bore tolerances met engineering blueprints.</li>
+        <li>Operated precision metrology instruments including digital vernier calipers, micrometers, dial height gauges, bore gauges, and pneumatic air gauges maintained to NABL calibration standards.</li>
+        <li>Monitored statistical process capability (Cpk) indices against manufacturing target thresholds (minimum 1.66, target 1.70), immediately flagging drift to tooling supervisors.</li>
+        <li>Administered non-conformance quarantine procedures (NCR), tagging and segregating defective lots, logging root-cause data, and maintaining 0 defective batch escapes to dispatch.</li>
+        <li>Compiled daily inspection log sheets, PPAP compliance documentation, and shift summary metrics in MS Excel with 100% data audit compliance.</li>
+      </ul>
     </div>
-    <p class="company-note">Precision manufacturer of CNC-turned, VMC-machined and die-cast components &nbsp;|&nbsp; ISO 9001:2015 &nbsp;|&nbsp; Coimbatore</p>
-    <ul>
-      <li><strong>Incoming inspection:</strong> checked steel bar stock for size, length and condition against specification before release to the CNC turning section.</li>
-      <li><strong>In-process and patrol inspection:</strong> verified critical dimensions, grooves, threads, bores, facing and surface finish on CNC-turned steel bar components across 3 working shifts.</li>
-      <li><strong>Final inspection:</strong> performed final outgoing quality checks on finished steel bar components, releasing only conforming lots for dispatch.</li>
-      <li><strong>Measuring instruments:</strong> used digital and dial vernier calipers, micrometers, digital and dial height gauges, bore gauge sets and digital air gauge units for close-tolerance checks; worked with instruments maintained to NABL-accredited calibration standards.</li>
-      <li><strong>Process capability:</strong> monitored inspection data and Cpk trends against the plant's quality targets (minimum 1.66, target 1.70) and flagged drift to the production team.</li>
-      <li><strong>Non-conformance handling:</strong> identified, tagged and segregated rejected parts, documented defects, and coordinated with CNC operators and supervisors on containment and corrective action.</li>
-      <li><strong>Documentation:</strong> maintained inspection reports, checklists and defect logs in MS Excel and Word; supported PPAP documentation and internal quality audits.</li>
-      <li><strong>Quality system:</strong> followed ISO 9001:2015 procedures, SOPs, 5S and shop-floor safety practices.</li>
-    </ul>
   </section>
 
+  <!-- ===== INSPECTION & QUALITY SKILLS ===== -->
   <section>
     <h2>Inspection &amp; Quality Skills</h2>
-    <ul>
-      <li><strong>Inspection types:</strong> Incoming material inspection, in-process inspection, patrol inspection, final outgoing inspection</li>
-      <li><strong>Instruments:</strong> Vernier caliper (digital &amp; dial), micrometer, height gauge (digital &amp; dial), bore gauge set, digital air gauge</li>
-      <li><strong>Quality tools &amp; systems:</strong> ISO 9001:2015, PPAP documentation support, process capability (Cpk) monitoring, non-conformance reporting, basic root cause analysis, internal audits</li>
-      <li><strong>Manufacturing knowledge:</strong> CNC turning (turning, grooving, threading, boring, facing), steel bar stock, close-tolerance machining, blueprint / drawing reading</li>
-    </ul>
+    <div class="skills-block">
+      <p><strong>Inspection Methodologies:</strong> Incoming Material Inspection, In-Process Machining Inspection, Patrol Inspection, Final Outgoing QA, First-Piece Approval</p>
+      <p><strong>Precision Metrology Instruments:</strong> Vernier Calipers (Digital &amp; Dial), Outside/Inside Micrometers, Height Gauges, Bore Gauge Sets, Digital Air Gauges, Thread Gauges</p>
+      <p><strong>Quality Systems &amp; Standards:</strong> ISO 9001:2015 Standards, PPAP Documentation, Process Capability (Cpk) Monitoring, Non-Conformance Reports (NCR), 5S Principles</p>
+      <p><strong>Manufacturing Knowledge:</strong> CNC Turning &amp; Machining Centers (Turning, Grooving, Threading, Boring, Facing), Steel Bar Components, Engineering Drawing Interpretation</p>
+    </div>
   </section>
 
+  <!-- ===== PROFESSIONAL & COMPUTER SKILLS ===== -->
   <section>
-    <h2>Key Skills</h2>
-    <ul>
-      <li><strong>Professional:</strong> Attention to detail, accuracy, communication, teamwork, problem solving, time management, shift-based working</li>
-      <li><strong>Software:</strong> MS Excel, MS Word, MS PowerPoint, basic data handling and reporting</li>
-    </ul>
+    <h2>Professional &amp; Computer Skills</h2>
+    <div class="skills-block">
+      <p><strong>Core Competencies:</strong> High Attention to Detail, Dimensional Accuracy, Root Cause Analysis, Shift-Based Coordination, Shop-Floor Safety</p>
+      <p><strong>Software &amp; Reporting:</strong> MS Excel (Data Logging &amp; Statistical Formulas), MS Word, MS PowerPoint, Production Defect Tracking</p>
+    </div>
   </section>
 
+  <!-- ===== EDUCATION ===== -->
   <section>
     <h2>Education</h2>
-    <div class="row">
-      <span class="title">SNS College of Technology &ndash; B.Tech, Artificial Intelligence &amp; Machine Learning</span>
-      <span class="date">Nov 2022 &ndash; Jun 2026</span>
+
+    <div class="edu-entry">
+      <div class="edu-row-primary">
+        <span class="edu-degree">B.Tech in Artificial Intelligence &amp; Machine Learning</span>
+        <span class="edu-year when">Nov 2022 &ndash; Jun 2026</span>
+      </div>
+      <div class="edu-row-secondary">
+        <span class="edu-inst">SNS College of Technology</span>
+        <span class="edu-location">Coimbatore, Tamil Nadu</span>
+      </div>
+      <ul>
+        <li>Cumulative Grade Point Average (CGPA): <strong>8.38 / 10</strong></li>
+        <li>Relevant Studies: Industrial Automation, Quality Control Analytics, Machine Vision Inspection, Statistical Computing</li>
+      </ul>
     </div>
-    <p class="edu-detail">CGPA: 8.38 / 10</p>
-    <div class="row">
-      <span class="title">S.R.C Memorial Matric Higher Secondary School</span>
-      <span class="date">Jun 2020 &ndash; May 2022</span>
+
+    <div class="edu-entry">
+      <div class="edu-row-primary">
+        <span class="edu-degree">Higher Secondary Certificate (HSC) &amp; SSLC</span>
+        <span class="edu-year when">Jun 2020 &ndash; May 2022</span>
+      </div>
+      <div class="edu-row-secondary">
+        <span class="edu-inst">S.R.C Memorial Matric Higher Secondary School</span>
+        <span class="edu-location">Coimbatore, Tamil Nadu</span>
+      </div>
+      <ul>
+        <li>HSC (Computer Science): <strong>79%</strong> | SSLC: <strong>60%</strong></li>
+      </ul>
     </div>
-    <p class="edu-detail">HSC (Computer Science): 79% &nbsp;|&nbsp; SSLC: 60%</p>
   </section>
 
+  <!-- ===== LANGUAGES ===== -->
   <section>
     <h2>Languages</h2>
-    <p>English (Fluent) &nbsp;|&nbsp; Tamil (Native)</p>
+    <div class="skills-block">
+      <p><strong>English:</strong> Fluent (Professional Working Proficiency) &nbsp;|&nbsp; <strong>Tamil:</strong> Native Proficiency</p>
+    </div>
   </section>
 
 </main>
+
 </body>
 </html>

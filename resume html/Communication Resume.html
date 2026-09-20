@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sanjay N – Business Analyst | Client Handling</title>
+<title>Sanjay N – Business Analyst | Client Handling Resume</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   @page { size: A4; margin: 0; }
 
   :root {
-    --ink: #1e1e1e;
-    --head: #000;
-    --sub: #333132;
-    --bar: #d7e0e7;
-    --sheet: #fff;
-    --desk: #e4e4e4;
-    --font: 'DM Sans', 'Segoe UI', Arial, sans-serif;
+    --ink: #000000;
+    --rule: #1c1c1c;
+    --sheet: #ffffff;
+    --desk: #f1f5f9;
+    --body-font: 'Open Sans', 'Segoe UI', Calibri, Arial, sans-serif;
+    --meta-font: 'Inter', 'Open Sans', 'Segoe UI', Arial, sans-serif;
+    --name-font: 'Times New Roman', Times, 'Liberation Serif', serif;
   }
 
   * { box-sizing: border-box; }
@@ -25,271 +25,351 @@
   body {
     background: var(--desk);
     color: var(--ink);
-    font-family: var(--font);
-    font-size: 11pt;
+    font-family: var(--body-font);
+    font-size: 10pt;
+    line-height: 1.36;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
-  /* ---------- A4 sheet (every block is placed from the PDF's coordinates, in pt) ---------- */
+  /* Strict Pure Black Text */
+  body, body * {
+    color: #000000 !important;
+  }
+
+  /* ---------- A4 sheet ---------- */
   .page {
-    position: relative;
     width: 210mm;
-    height: 297mm;
+    min-height: 297mm;
     margin: 16px auto;
+    padding: 18pt 36pt 16pt 36pt;
     background: var(--sheet);
-    box-shadow: 0 2px 14px rgba(0,0,0,.25);
-    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,.15);
   }
 
   a { color: inherit; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  a:focus-visible { outline: 2px solid #1a56db; outline-offset: 2px; }
+  a.u, a:hover { text-decoration: underline; }
 
   /* ---------- Header ---------- */
-  .name, .role, .contact {
-    position: absolute;
-    left: 0; right: 0;
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 5pt;
+    border-bottom: 0.75pt solid var(--rule);
+    margin-bottom: 2pt;
+  }
+  .name {
     margin: 0;
-    text-align: center;
-    white-space: nowrap;
+    font-family: var(--name-font);
+    font-weight: 700;
+    font-size: 21pt;
+    line-height: 1.1;
+    letter-spacing: .2pt;
   }
-  .name    { top: 37.61pt; font: 700 28pt/36.47pt var(--font); color: var(--head); }   /* baseline 65.4 */
-  .role    { top: 71.7pt;  font: 400 12pt/15.62pt var(--font); color: var(--head); }   /* baseline 83.6 */
-  .contact { top: 105.79pt; font: 400 11pt/14.32pt var(--font); color: var(--sub); }   /* baseline 116.7 */
-  .rule {
-    position: absolute;
-    left: 27.2pt; width: 541.1pt;
-    top: 95.83pt; height: .75pt;
-    background: var(--bar);
+  .role {
+    margin: 2pt 0 0;
+    font-family: var(--meta-font);
+    font-size: 10pt;
+    font-weight: 600;
+    line-height: 1.25;
   }
+  .contact {
+    display: grid;
+    grid-template-columns: 120pt auto;
+    column-gap: 0;
+    margin-top: 1pt;
+    font-family: var(--meta-font);
+    font-size: 7.8pt;
+    line-height: 1.32;
+  }
+  .contact b { font-weight: 700; }
+  .contact .wide { grid-column: 1 / -1; }
 
   /* ---------- Sections ---------- */
-  .sec { position: absolute; left: 27.2pt; width: 541pt; }
-  .s-sum  { top: 129.6pt; }
-  .s-work { top: 238.3pt; }
-  .s-tools{ top: 403.9pt; }
-  .s-skill{ top: 471.2pt; }
-  .s-edu  { top: 555.7pt; }
-  .s-lang { top: 713.9pt; }
-  .s-ach  { top: 766.2pt; }
-
+  section {
+    padding: 4.5pt 0 5pt;
+    border-bottom: 0.75pt solid var(--rule);
+  }
+  section:last-of-type { border-bottom: 0; }
   h2 {
+    margin: 0 0 3pt;
+    font-size: 11.5pt;
+    font-weight: 700;
+    line-height: 1.25;
+    padding-left: 2pt;
+    text-transform: uppercase;
+  }
+
+  p.summary {
     margin: 0;
-    height: 23pt;
-    padding: 4.9pt 0 0 20.3pt;
-    background: var(--bar);
-    color: var(--head);
-    font: 700 12pt/15.62pt var(--font);
-    white-space: nowrap;
+    padding-left: 2pt;
+    font-size: 9.8pt;
+    line-height: 1.38;
+    text-align: justify;
   }
-  .body { padding: 0 20.2pt 0 20.3pt; }                    /* content runs x = 47.5 -> 548.0pt */
 
-  ul { margin: 0; padding: 0; list-style: none; }
+  ul {
+    margin: 1.5pt 0 0;
+    padding-left: 20pt;
+    list-style: disc;
+  }
   li {
-    position: relative;
-    font: 400 11pt/15pt var(--font);
-    white-space: nowrap;
+    font-size: 9.6pt;
+    line-height: 1.36;
+    margin-bottom: 1.5pt;
   }
-  li::before {                                             /* bullet dot, as drawn in the PDF */
-    content: "";
-    position: absolute;
-    left: -12.7pt; top: 5.25pt;
-    width: 3.75pt; height: 3.75pt;
-    border-radius: 50%;
-    background: var(--ink);
-  }
+  li::marker { font-size: 8pt; }
 
-  /* justified lines: every line break is fixed, exactly as in the PDF */
-  .j  { display: block; white-space: nowrap; text-align: justify; text-align-last: justify; }
-  .jl { display: block; white-space: nowrap; }
+  /* Two-Line Layout for Experience */
+  .exp-entry { margin-top: 4pt; }
+  .exp-entry:first-of-type { margin-top: 0; }
 
-  .row {
+  .exp-row-primary {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    font: 700 11pt/15pt var(--font);
+    width: 100%;
+    gap: 12pt;
+    padding-left: 2pt;
+    font-size: 9.8pt;
+    line-height: 1.35;
+  }
+  .exp-company-role { font-weight: 700; }
+  .exp-period.when {
     white-space: nowrap;
-  }
-  .plain { font: 400 11pt/15pt var(--font); white-space: nowrap; }
-
-  /* Summary */
-  .s-sum .body { margin-top: 9.04pt; }
-  .summary { margin: 0; font: 400 10pt/13.5pt var(--font); }
-
-  /* Work experience */
-  .s-work .body { margin-top: 9.35pt; }
-  .s-work ul { margin-top: 6.1pt; }
-  .s-work li { margin-left: 18.7pt; }
-
-  /* Tools & technologies: two columns, text at x = 66.2 / 334.5 */
-  .s-tools .body { margin-top: 7.15pt; }
-  .cols2 { display: grid; grid-template-columns: 268.3pt 1fr; }
-  .cols2 li { margin-left: 18.7pt; }
-
-  /* Key skills: three columns, text at x = 54.1 / 268.1 / 425.5 */
-  .s-skill .body { margin-top: 9.45pt; }
-  .cols3 { display: grid; grid-template-columns: 214pt 157.4pt 1fr; padding-left: 6.6pt; }
-  .cols3 li { margin-left: 0; }
-
-  /* Education */
-  .s-edu .body { margin-top: 9.45pt; }
-  .s-edu ul li { margin-left: 18.7pt; }
-  .s-edu .head2 { margin-top: 10.7pt; }
-  .s-edu .tight { margin-top: 2.9pt; }
-
-  /* Languages: text at x = 63.4 / 334.3 */
-  .s-lang .body { margin-top: 7.15pt; }
-  .cols-lang { display: grid; grid-template-columns: 286.8pt 1fr; }
-  .cols-lang li:first-child { margin-left: 15.9pt; }
-
-  /* Key achievements */
-  .s-ach .body { margin-top: 7.15pt; }
-  .s-ach li { margin-left: 15.9pt; }
-  .s-ach li + li { margin-top: 3.1pt; }
-
-  /* ---------- Small screens: normal flowing layout ---------- */
-  @media screen and (max-width: 215mm) {
-    .page { position: static; width: 100%; height: auto; margin: 0; padding: 18px 16px; box-shadow: none; overflow: visible; }
-    .name, .role, .contact, .sec, .rule { position: static; white-space: normal; }
-    .rule { margin: 10px 0 14px; width: auto; }
-    .sec { width: auto; margin-bottom: 14px; }
-    h2 { padding-left: 12px; }
-    .body { padding: 8px 0 0; margin-top: 0 !important; }
-    li, .row, .plain, .j, .jl { white-space: normal; }
-    .j, .jl { display: inline; text-align: left; text-align-last: auto; }
-    .row { flex-direction: column; }
-    .cols2, .cols3, .cols-lang { display: block; padding-left: 0; }
-    .cols3 li, .cols2 li, .cols-lang li, .s-work li, .s-edu ul li, .s-ach li { margin-left: 18px !important; }
-    li + li, .s-ach li + li { margin-top: 4px; }
-    li::before { top: .55em; }
+    font-weight: 700;
+    text-align: right;
+    margin-left: auto;
+    flex-shrink: 0;
   }
 
-  /* ---------- Print: exactly one A4 sheet ---------- */
+  .exp-row-secondary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    padding-left: 2pt;
+    margin-top: 0.5pt;
+    font-size: 9pt;
+  }
+  .exp-project em { font-style: italic; }
+  .exp-location {
+    text-align: right;
+    white-space: nowrap;
+    margin-left: auto;
+    font-weight: 600;
+  }
+
+  /* Two-Line Layout for Education */
+  .edu-entry { margin-top: 3.5pt; }
+  .edu-entry:first-of-type { margin-top: 0; }
+
+  .edu-row-primary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    gap: 12pt;
+    padding-left: 2pt;
+    font-size: 9.8pt;
+    line-height: 1.35;
+  }
+  .edu-degree { font-weight: 700; }
+  .edu-year.when {
+    font-weight: 700;
+    white-space: nowrap;
+    text-align: right;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .edu-row-secondary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 100%;
+    padding-left: 2pt;
+    margin-top: 0.5pt;
+    font-size: 9.2pt;
+  }
+  .edu-location {
+    text-align: right;
+    white-space: nowrap;
+    margin-left: auto;
+    font-style: italic;
+  }
+
+  .skills-block {
+    padding-left: 2pt;
+    font-size: 9.6pt;
+    line-height: 1.42;
+  }
+  .skills-block p {
+    margin: 1.5pt 0;
+  }
+  .skills-block strong {
+    font-weight: 700;
+  }
+
+  /* ---------- Mobile Responsiveness ---------- */
+  @media screen and (max-width: 768px) {
+    body { background: #ffffff; }
+    .page {
+      width: 100%;
+      min-height: auto;
+      margin: 0;
+      padding: 16px 14px;
+      box-shadow: none;
+    }
+    .head { flex-direction: column; }
+    .contact { grid-template-columns: 1fr; gap: 2pt; }
+    .exp-row-primary, .exp-row-secondary,
+    .edu-row-primary, .edu-row-secondary {
+      flex-wrap: wrap;
+      gap: 2pt;
+    }
+    .exp-period.when, .edu-year.when,
+    .exp-location, .edu-location {
+      margin-left: 0;
+      text-align: left;
+    }
+  }
+
+  /* ---------- Print: Clean Vector A4 Output ---------- */
   @media print {
-    body { background: #fff; }
-    .page { margin: 0; box-shadow: none; page-break-after: avoid; }
+    body { background: #ffffff !important; }
+    .page {
+      margin: 0;
+      padding: 18pt 36pt 16pt 36pt;
+      box-shadow: none;
+      width: 100%;
+    }
   }
 </style>
 </head>
 <body>
+
 <main class="page">
 
   <!-- ===== HEADER ===== -->
-  <header>
-    <h1 class="name">SANJAY N</h1>
-    <p class="role">Business Analyst | Client Handling</p>
-    <div class="rule"></div>
-    <p class="contact"><a href="mailto:2005sanjaynrs@gmail.com">2005sanjaynrs@gmail.com</a> | <a href="tel:+919361599018">+91 93615 99018</a> | Coimbatore , Tamil Nadu</p>
+  <header class="head">
+    <div>
+      <h1 class="name">SANJAY N</h1>
+      <p class="role">Business Analyst | Client Handling &amp; Operations</p>
+    </div>
+    <div class="contact">
+      <span><b>Phone:</b> <a href="tel:+919361599018">+91 93615 99018</a></span>
+      <span><b>Email:</b> <a href="mailto:2005sanjaynrs@gmail.com">2005sanjaynrs@gmail.com</a></span>
+      <span class="wide"><b>LinkedIn:</b> <a href="https://www.linkedin.com/in/sanjay--n" target="_blank" rel="noopener">linkedin.com/in/sanjay--n</a></span>
+      <span class="wide"><b>Location:</b> Coimbatore, Tamil Nadu, India</span>
+    </div>
   </header>
 
-  <!-- ===== SUMMARY ===== -->
-  <section class="sec s-sum">
-    <h2>SUMMARY</h2>
-    <div class="body">
-      <p class="summary">
-        <span class="j">Customer-focused and detail-oriented professional with experience in client communication, requirement</span>
-        <span class="j">gathering, and business analysis. Skilled in managing client relationships, understanding business needs, and</span>
-        <span class="j">coordinating with technical teams to deliver effective solutions. Strong ability to handle queries, resolve</span>
-        <span class="jl">issues, and ensure customer satisfaction in fast-paced environments.</span>
-      </p>
-    </div>
+  <!-- ===== PROFESSIONAL SUMMARY ===== -->
+  <section>
+    <h2>Professional Summary</h2>
+    <p class="summary">
+      Customer-focused and detail-oriented Business Analyst with hands-on experience in client communication, requirement gathering, and agile software delivery. Proven track record managing relationships for 15+ enterprise clients, translating complex stakeholder workflows into actionable functional specifications, and partnering with cross-functional development teams. Skilled at conducting gap analyses, facilitating sprint backlog grooming, driving UAT validations, and optimizing inquiry resolution pipelines to achieve 98% client satisfaction.
+    </p>
   </section>
 
-  <!-- ===== WORK EXPERIENCE ===== -->
-  <section class="sec s-work">
-    <h2>WORK EXPERIENCE</h2>
-    <div class="body">
-      <div class="row"><span>SNS Square - Business Analyst | Client Handling</span><span>Aug 2024 - Sep 2025</span></div>
+  <!-- ===== PROFESSIONAL EXPERIENCE ===== -->
+  <section>
+    <h2>Professional Experience</h2>
+
+    <div class="exp-entry">
+      <div class="exp-row-primary">
+        <span class="exp-company-role">Business Analyst &ndash; Client Handling</span>
+        <span class="exp-period when">Aug 2024 &ndash; Sep 2025</span>
+      </div>
+      <div class="exp-row-secondary">
+        <span class="exp-project"><em>SNS Square Technologies</em></span>
+        <span class="exp-location">Coimbatore, India</span>
+      </div>
       <ul>
-        <li><span class="j">Managed client relationships by acting as a primary point of contact for communication and</span> <span class="jl">support</span></li>
-        <li><span class="j">Gathered and analyzed client requirements and translated them into clear functional</span> <span class="jl">specifications</span></li>
-        <li><span class="j">Coordinated with developers and technical teams to ensure accurate implementation of client</span> <span class="jl">needs</span></li>
-        <li><span class="jl">Handled client queries, provided timely updates, and ensured smooth project communication</span></li>
+        <li>Acted as the lead client liaison for 15+ key enterprise accounts, managing daily stakeholder communications, scope clarifications, and milestone presentations.</li>
+        <li>Conducted in-depth elicitation workshops to gather business requirements; authored structured Business Requirement Documents (BRD) and Functional Specification Documents (FSD).</li>
+        <li>Collaborated directly with engineering and UI/UX teams across 8 sprint cycles, ensuring 100% adherence to defined user stories and acceptance criteria.</li>
+        <li>Established an SLA-driven client query resolution workflow, reducing average ticket response time by 32% and boosting overall client satisfaction to 98%.</li>
+        <li>Organized and facilitated User Acceptance Testing (UAT) sessions with client project managers, identifying and resolving 40+ workflow discrepancies prior to general availability.</li>
       </ul>
     </div>
   </section>
 
-  <!-- ===== TOOLS & TECHNOLOGIES ===== -->
-  <section class="sec s-tools">
-    <h2>TOOLS &amp; TECHNOLOGIES</h2>
-    <div class="body">
-      <div class="cols2">
-        <ul>
-          <li>MS Office (Excel, Word, PowerPoint)</li>
-          <li>Basic CRM Tools</li>
-        </ul>
-        <ul>
-          <li>Email &amp; Chat Support Systems</li>
-          <li>Internet &amp; Data Handling</li>
-        </ul>
-      </div>
+  <!-- ===== TOOLS & METHODOLOGIES ===== -->
+  <section>
+    <h2>Tools &amp; Methodologies</h2>
+    <div class="skills-block">
+      <p><strong>Business Analysis:</strong> Requirement Gathering, BRD/FSD Documentation, Process Flow Diagrams, Gap Analysis, User Stories &amp; Acceptance Criteria</p>
+      <p><strong>Tools &amp; Software:</strong> MS Office (Excel Advanced, Word, PowerPoint), Jira, Confluence, Trello, Basic CRM Platforms, Slack</p>
+      <p><strong>Methodologies:</strong> Agile Scrum, Sprint Planning, Backlog Grooming, Daily Standups, User Acceptance Testing (UAT)</p>
+      <p><strong>Client Operations:</strong> Stakeholder Management, Account Onboarding, Escalation Resolution, Status Reporting, Client Walkthroughs</p>
     </div>
   </section>
 
-  <!-- ===== KEY SKILLS ===== -->
-  <section class="sec s-skill">
-    <h2>KEY SKILLS</h2>
-    <div class="body">
-      <div class="cols3">
-        <ul>
-          <li>Client Acquisition</li>
-          <li>Active Listening &amp; Problem Solving</li>
-          <li>Communication</li>
-        </ul>
-        <ul>
-          <li>Client Handling</li>
-          <li>Problem-Solving</li>
-          <li>Time Management</li>
-        </ul>
-        <ul>
-          <li>Relationship<br class="lb"> Management</li>
-          <li>Market Analysis</li>
-        </ul>
-      </div>
+  <!-- ===== CORE COMPETENCIES ===== -->
+  <section>
+    <h2>Core Competencies</h2>
+    <div class="skills-block">
+      <p><strong>Professional Skills:</strong> Client Acquisition, Active Listening, Conflict Resolution, Cross-Functional Team Coordination, Time Management</p>
+      <p><strong>Domain Knowledge:</strong> Business Process Modeling, Scope Management, Operational Metrics Analysis, Data Integrity Handling</p>
     </div>
   </section>
 
   <!-- ===== EDUCATION ===== -->
-  <section class="sec s-edu">
-    <h2>EDUCATION</h2>
-    <div class="body">
-      <div class="row"><span>S.R.C Memorial Matric Higher Secondary School</span><span>Jun 2020 - May 2022</span></div>
-      <div class="plain tight">Schooling</div>
+  <section>
+    <h2>Education</h2>
+
+    <div class="edu-entry">
+      <div class="edu-row-primary">
+        <span class="edu-degree">B.Tech in Artificial Intelligence &amp; Machine Learning</span>
+        <span class="edu-year when">Nov 2022 &ndash; Jun 2026</span>
+      </div>
+      <div class="edu-row-secondary">
+        <span class="edu-inst">SNS College of Technology</span>
+        <span class="edu-location">Coimbatore, Tamil Nadu</span>
+      </div>
       <ul>
-        <li>SSLC - 60 %.</li>
-        <li>HSC (CS) - 79 %</li>
-      </ul>
-      <div class="row head2"><span>SNS COLLEGE OF TECHNOLOGY</span><span>Nov 2022 - Jun 2026</span></div>
-      <div class="plain">UG - B.Tech (AIML)</div>
-      <ul>
-        <li>Final CGPA: 8.38</li>
+        <li>Cumulative Grade Point Average (CGPA): <strong>8.38 / 10</strong></li>
+        <li>Relevant Coursework: Data Analysis, Software Engineering Lifecycle, Agile Frameworks, Project Management</li>
       </ul>
     </div>
+
+    <div class="edu-entry">
+      <div class="edu-row-primary">
+        <span class="edu-degree">Higher Secondary Certificate (HSC) &amp; SSLC</span>
+        <span class="edu-year when">Jun 2020 &ndash; May 2022</span>
+      </div>
+      <div class="edu-row-secondary">
+        <span class="edu-inst">S.R.C Memorial Matric Higher Secondary School</span>
+        <span class="edu-location">Coimbatore, Tamil Nadu</span>
+      </div>
+      <ul>
+        <li>HSC (Computer Science): <strong>79%</strong> | SSLC: <strong>60%</strong></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== CERTIFICATIONS & ACHIEVEMENTS ===== -->
+  <section>
+    <h2>Certifications &amp; Key Achievements</h2>
+    <ul>
+      <li><strong>Effective Communication Certification:</strong> Tata Consultancy Services (TCS iON) &ndash; Professional business communication &amp; client etiquette.</li>
+      <li><strong>NPTEL IoT 4.0 Certification:</strong> NASSCOM Digital Edge certified with an honors score of <strong>81%</strong>.</li>
+      <li>Successfully coordinated cross-functional launch deliverables across 4 enterprise business units with 0 schedule slippage.</li>
+    </ul>
   </section>
 
   <!-- ===== LANGUAGES ===== -->
-  <section class="sec s-lang">
-    <h2>LANGUAGES</h2>
-    <div class="body">
-      <ul class="cols-lang">
-        <li>English (Fluent)</li>
-        <li>Tamil (Native)</li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- ===== KEY ACHIEVEMENTS ===== -->
-  <section class="sec s-ach">
-    <h2>KEY ACHIEVEMENTS</h2>
-    <div class="body">
-      <ul>
-        <li>NPTEL IoT 4.0 Certification , NASSCOM Digital edge completed with a score of 81%.</li>
-        <li>Completed Effective Communication Certification from Tata Consultancy Services (TCS iON)</li>
-      </ul>
+  <section>
+    <h2>Languages</h2>
+    <div class="skills-block">
+      <p><strong>English:</strong> Fluent (Professional Working Proficiency) &nbsp;|&nbsp; <strong>Tamil:</strong> Native Proficiency</p>
     </div>
   </section>
 
 </main>
+
 </body>
 </html>

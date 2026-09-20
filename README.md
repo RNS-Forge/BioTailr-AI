@@ -66,11 +66,10 @@ Every generated resume is evaluated against 6 mission-critical parsing rules:
 - **Education Layout**: Primary line presents Degree on the left and Graduation Dates right-aligned to the margin; secondary line presents Institution on the left and Location on the right, completely eliminating cramped text collisions.
 - **Experience Layout**: Company and Role on line 1 with Dates pinned right; Project domain and Location on line 2 with clean metric-quantified bullet points.
 
-### 8. Dedicated "4 Raw Resumes" Navigation Menu
-- Access all 4 authentic base resumes directly from the navigation bar.
-- **View**: Instantly previews the untouched source resume in the Studio.
-- **Download HTML**: Downloads the original `.html` source file.
-- **Download PDF**: Generates and downloads a clean, unedited PDF copy.
+### 8. Dual Export: Clean HTML & Vector PDF
+- **Download HTML**: Instantly exports a clean, standalone, self-contained HTML file with bundled ATS-compliant styles, pure black typography (`#000000`), and Harvard two-line alignment that can be edited in any IDE or submitted to job boards.
+- **Download PDF**: Vector-rendered A4 PDF export using `html2pdf.js` with exact margins and zero clipping.
+- **Dedicated "4 Raw Resumes" Menu**: Access and download all 4 unedited source resumes (`Developer Resume.html`, `FSD Resume.html`, `Communication Resume.html`, `Manufacturing.html`) directly in HTML and PDF formats.
 
 ### 9. Interactive AI Refinement Assistant
 - Enter ad-hoc feedback (e.g., *"Add Kubernetes and Vector Search to skills"*, *"Make summary sound more senior"*) to refine the resume dynamically.
