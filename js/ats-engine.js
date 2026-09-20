@@ -146,6 +146,15 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
     }
   }
 
+  // Enforce Axodian location is strictly Bangalore, KA (On-Site)
+  if (optimized.experience) {
+    optimized.experience.forEach(exp => {
+      if (exp.company && exp.company.toLowerCase().includes('axodian')) {
+        exp.location = 'Bangalore, KA (On-Site)';
+      }
+    });
+  }
+
   // 2. Ensure skills include the highest priority keywords
   const targetKeywords = isSde ? ROLE_KEYWORD_MAP.sde : (ROLE_KEYWORD_MAP[archetypeId] || ROLE_KEYWORD_MAP.developer);
   const currentSkills = new Set(optimized.skills || []);

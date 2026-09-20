@@ -138,6 +138,15 @@ export async function tailorResumeWithAi(targetRole, userRefinements = '') {
   tailoredProfile.github = baseProfile.github;
   tailoredProfile.linkedin = baseProfile.linkedin;
 
+  // Enforce Axodian location is strictly Bangalore, KA (On-Site)
+  if (tailoredProfile.experience) {
+    tailoredProfile.experience.forEach(exp => {
+      if (exp.company && exp.company.toLowerCase().includes('axodian')) {
+        exp.location = 'Bangalore, KA (On-Site)';
+      }
+    });
+  }
+
   return {
     archetypeId,
     profile: tailoredProfile,

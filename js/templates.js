@@ -580,7 +580,11 @@ export function generateResumeHtml(profile, archetypeId = 'developer') {
           ${(exp.project || exp.location) ? `
             <div class="exp-row-secondary">
               <span class="exp-project">${exp.project ? `Project: <em>${escapeHtml(exp.project)}</em>` : ''}</span>
-              <span class="exp-location">${escapeHtml(exp.location || 'Coimbatore, TN')}</span>
+              <span class="exp-location">${escapeHtml(
+                (exp.company && exp.company.toLowerCase().includes('axodian'))
+                  ? (exp.location && !exp.location.toLowerCase().includes('coimbatore') ? exp.location : 'Bangalore, KA (On-Site)')
+                  : (exp.location || 'Coimbatore, TN')
+              )}</span>
             </div>
           ` : ''}
           ${exp.companyNote ? `<p class="company-note">${escapeHtml(exp.companyNote)}</p>` : ''}
