@@ -594,6 +594,12 @@ CRITICAL INSTRUCTIONS FOR 100% DYNAMIC DOMAIN DETECTION & GENERATION:
    - Under education details, output ONLY the CGPA/percentage (e.g. "CGPA: 8.38 / 10").
    - NEVER output any coursework lines like "Relevant Coursework: Deep Learning, Natural Language Processing, Algorithms, DBMS" or similar.
 
+7. STRICT REQUIREMENT - EXACTLY ONE FULL A4 PAGE DENSITY:
+   - The resume content MUST ALWAYS fill 100% of a standard single A4 page from top to bottom.
+   - It must NEVER look sparse, half-page (50%), or 75% full.
+   - Generate rich, substantive content: a solid 3-4 sentence summary, 4 rich skill categories (5-8 items each), 3-4 quantified bullet points per experience, 3-4 detailed projects, and complete education/certifications.
+   - Maintain high information density so the page is 100% full and visually complete.
+
 Return ONLY a valid JSON object matching the schema below:
 {
   "detectedDomain": "manufacturing | communication | fsd | developer",

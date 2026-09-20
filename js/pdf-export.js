@@ -31,12 +31,11 @@ export async function downloadResumeAsPdf(targetElementId = 'resume-document', f
       const pageHeightMm = 297;
       const totalImgHeightMm = (canvas.height * pageWidthMm) / canvas.width;
 
-      // RULE 1: If content is within 1-page range (or minor subpixel overflow <= 315mm),
+      // RULE 1: If content is within 1-page range (or minor subpixel overflow <= 325mm),
       // render on EXACTLY ONE page — ZERO second page, ZERO blank page!
-      if (totalImgHeightMm <= 318) {
-        const renderHeightMm = Math.min(pageHeightMm, totalImgHeightMm);
+      if (totalImgHeightMm <= 325) {
         const imgData = canvas.toDataURL('image/jpeg', 0.98);
-        pdf.addImage(imgData, 'JPEG', 0, 0, pageWidthMm, renderHeightMm);
+        pdf.addImage(imgData, 'JPEG', 0, 0, pageWidthMm, pageHeightMm);
         pdf.save(filename);
         return;
       }
@@ -200,6 +199,9 @@ export function downloadResumeAsHtml(targetElementId = 'resume-document', filena
     padding: 18pt 36pt 16pt 36pt;
     background: #ffffff;
     box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   a { color: #000000 !important; text-decoration: none; }
   a.u, a:hover { text-decoration: underline; }

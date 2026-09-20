@@ -285,6 +285,7 @@ function renderStudioWorkspace() {
   const container = document.getElementById('resume-render-container');
   if (container && state.currentProfile) {
     container.innerHTML = generateResumeHtml(state.currentProfile, state.selectedArchetypeId);
+    autoBalanceResumeToOnePage();
     if (state.liveEdit) {
       const sheet = document.getElementById('resume-document');
       if (sheet) sheet.classList.add('live-editing');
@@ -296,6 +297,56 @@ function renderStudioWorkspace() {
   const panelEditor = document.getElementById('panel-sidebar-editor');
   if (panelEditor && panelEditor.style.display !== 'none') {
     populateResumeEditor();
+  }
+}
+
+/**
+ * Guarantees the resume is ALWAYS exactly 1 full A4 page (never half page, 75%, or overflow)
+ */
+function autoBalanceResumeToOnePage() {
+  const resumeEl = document.getElementById('resume-document');
+  if (!resumeEl) return;
+
+  // Reset previous inline styles to measure true scrollHeight
+  resumeEl.style.fontSize = '';
+  resumeEl.style.lineHeight = '';
+  resumeEl.querySelectorAll('section').forEach(s => {
+    s.style.paddingTop = '';
+    s.style.paddingBottom = '';
+  });
+
+  const targetA4Px = 1122.5; // Exactly 297mm at standard 96 DPI
+  const isManuf = resumeEl.classList.contains('archetype-manufacturing');
+  const isComm = resumeEl.classList.contains('archetype-communication');
+  const baseFontSize = isManuf ? 10 : (isComm ? 10.5 : 9.8);
+  const baseLineHeight = isManuf ? 1.32 : (isComm ? 1.36 : 1.34);
+
+  let currentHeight = resumeEl.scrollHeight;
+
+  if (currentHeight > targetA4Px + 3) {
+    // Content exceeds 1 A4 page -> gently scale down font size & line-height to fit 100%
+    let scaleFactor = Math.max(0.85, Math.min(0.98, targetA4Px / currentHeight));
+    resumeEl.style.fontSize = `${(baseFontSize * scaleFactor).toFixed(1)}pt`;
+    resumeEl.style.lineHeight = `${(baseLineHeight * scaleFactor).toFixed(2)}`;
+    resumeEl.querySelectorAll('section').forEach(s => {
+      s.style.paddingTop = '2pt';
+      s.style.paddingBottom = '2pt';
+    });
+
+    // Secondary micro-tuning pass if still slightly overflowing
+    if (resumeEl.scrollHeight > targetA4Px + 2) {
+      scaleFactor = Math.max(0.82, scaleFactor * (targetA4Px / resumeEl.scrollHeight));
+      resumeEl.style.fontSize = `${(baseFontSize * scaleFactor).toFixed(1)}pt`;
+      resumeEl.style.lineHeight = `${(baseLineHeight * scaleFactor).toFixed(2)}`;
+    }
+  } else if (currentHeight < targetA4Px - 60) {
+    // Content is sparse -> gracefully expand breathing room so page is 100% full and balanced
+    resumeEl.style.fontSize = `${(baseFontSize * 1.02).toFixed(1)}pt`;
+    resumeEl.style.lineHeight = `${(baseLineHeight * 1.04).toFixed(2)}`;
+    resumeEl.querySelectorAll('section').forEach(s => {
+      s.style.paddingTop = '5.5pt';
+      s.style.paddingBottom = '5.5pt';
+    });
   }
 }
 
