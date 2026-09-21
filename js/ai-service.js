@@ -36,8 +36,22 @@ export function getStoredApiKeys() {
 
 export function saveApiKeys(geminiKey, groqKey) {
   if (typeof localStorage === 'undefined') return;
-  if (geminiKey) localStorage.setItem('biotailr_gemini_key', geminiKey.trim());
-  if (groqKey) localStorage.setItem('biotailr_groq_key', groqKey.trim());
+  if (typeof geminiKey === 'string') {
+    const trimmed = geminiKey.trim();
+    if (trimmed) {
+      localStorage.setItem('biotailr_gemini_key', trimmed);
+    } else {
+      localStorage.removeItem('biotailr_gemini_key');
+    }
+  }
+  if (typeof groqKey === 'string') {
+    const trimmed = groqKey.trim();
+    if (trimmed) {
+      localStorage.setItem('biotailr_groq_key', trimmed);
+    } else {
+      localStorage.removeItem('biotailr_groq_key');
+    }
+  }
 }
 
 /**

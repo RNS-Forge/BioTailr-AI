@@ -1207,34 +1207,89 @@ function setResumeViewMode(mode) {
  */
 function bindSettingsModalEvents() {
   const modal = document.getElementById('settings-modal');
-  const btnOpen = document.getElementById('btn-open-settings');
-  const btnClose = document.getElementById('btn-close-settings');
-  const btnSave = document.getElementById('btn-save-keys');
+  if (!modal) return;
 
   const geminiInput = document.getElementById('input-gemini-key');
   const groqInput = document.getElementById('input-groq-key');
+  const feedbackEl = document.getElementById('settings-feedback');
 
-  if (btnOpen && modal) {
-    btnOpen.addEventListener('click', async () => {
-      await fetchEnvKeys();
-      const keys = getStoredApiKeys();
-      if (geminiInput) geminiInput.value = keys.geminiKey;
-      if (groqInput) groqInput.value = keys.groqKey;
-      modal.classList.add('active');
-    });
-  }
+  const openSettings = async (e) => {
+    if (e) e.preventDefault();
+    await fetchEnvKeys();
+    const keys = getStoredApiKeys();
+    if (geminiInput) geminiInput.value = keys.geminiKey || '';
+    if (groqInput) groqInput.value = keys.groqKey || '';
+    if (feedbackEl) {
+      feedbackEl.style.display = 'none';
+      feedbackEl.textContent = '';
+    }
+    modal.classList.add('active');
+  };
 
-  if (btnClose && modal) {
-    btnClose.addEventListener('click', () => {
-      modal.classList.remove('active');
-    });
-  }
+  const closeSettings = (e) => {
+    if (e) e.preventDefault();
+    modal.classList.remove('active');
+  };
 
-  if (btnSave && modal) {
-    btnSave.addEventListener('click', () => {
+  // Wire ALL Settings triggers across the application:
+  // 1. Landing nav right action button (#btn-settings-nav)
+  // 2. Landing nav center menu link (#btn-open-settings)
+  // 3. Studio nav right action button (#btn-studio-settings)
+  // 4. Any element with class .btn-trigger-settings
+  const openTriggers = [
+    document.getElementById('btn-settings-nav'),
+    document.getElementById('btn-open-settings'),
+    document.getElementById('btn-studio-settings'),
+    ...document.querySelectorAll('.btn-trigger-settings')
+  ].filter(Boolean);
+
+  openTriggers.forEach(btn => {
+    btn.addEventListener('click', openSettings);
+  });
+
+  // Wire ALL Close triggers (#btn-close-settings, #btn-cancel-settings)
+  const closeTriggers = [
+    document.getElementById('btn-close-settings'),
+    document.getElementById('btn-cancel-settings')
+  ].filter(Boolean);
+
+  closeTriggers.forEach(btn => {
+    btn.addEventListener('click', closeSettings);
+  });
+
+  // Close when clicking on backdrop outside modal box
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeSettings(e);
+    }
+  });
+
+  // Close on Escape key press
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeSettings(e);
+    }
+  });
+
+  // Save Credentials button
+  const btnSave = document.getElementById('btn-save-keys');
+  if (btnSave) {
+    btnSave.addEventListener('click', (e) => {
+      e.preventDefault();
       saveApiKeys(geminiInput?.value, groqInput?.value);
-      modal.classList.remove('active');
-      alert('API credentials saved securely to your browser localStorage.');
+      if (feedbackEl) {
+        feedbackEl.style.display = 'block';
+        feedbackEl.style.background = '#dcfce7';
+        feedbackEl.style.color = '#166534';
+        feedbackEl.style.border = '1px solid #86efac';
+        feedbackEl.textContent = '✓ Credentials saved securely in local storage.';
+        setTimeout(() => {
+          modal.classList.remove('active');
+          feedbackEl.style.display = 'none';
+        }, 700);
+      } else {
+        modal.classList.remove('active');
+      }
     });
   }
 }
