@@ -935,9 +935,16 @@ input.role-input-field::placeholder {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.45rem 0;
+  padding: 0.5rem 0.45rem;
   border-bottom: 1px solid #f1f5f9;
   font-size: 0.84rem;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+  cursor: default;
+}
+
+.check-item:hover {
+  background: #f8fafc;
 }
 
 .check-item:last-child {

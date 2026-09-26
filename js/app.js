@@ -372,51 +372,19 @@ function renderAtsChecklist() {
   const container = document.getElementById('ats-checklist-items');
   if (!container || !state.atsData) return;
 
-  const rules = state.atsData.rules;
-  container.innerHTML = `
-    <div class="check-item">
+  const rules = state.atsData.rules || {};
+  const checkSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`;
+  const warnSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+  container.innerHTML = Object.values(rules).map(r => `
+    <div class="check-item" title="${(r.detail || '').replace(/"/g, '&quot;')}">
       <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.keywordMatch.name}</span>
+        ${r.passed ? checkSvg : warnSvg}
+        <span>${r.name}</span>
       </div>
-      <span class="check-status">${rules.keywordMatch.score}% MATCH</span>
+      <span class="check-status" style="${r.passed ? '' : 'color: #f59e0b;'}">${r.badge || (r.score + '%')}</span>
     </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.metricQuantification.name}</span>
-      </div>
-      <span class="check-status">100% METRICS</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.actionVerbs.name}</span>
-      </div>
-      <span class="check-status">100% POWER VERBS</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.sectionHeaders.name}</span>
-      </div>
-      <span class="check-status">COMPLIANT</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.singleColumn.name}</span>
-      </div>
-      <span class="check-status">OPTIMAL</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>Contact &amp; Header Structural Integrity</span>
-      </div>
-      <span class="check-status">VERIFIED</span>
-    </div>
-  `;
+  `).join('');
 }
 
 /**
@@ -1186,7 +1154,7 @@ function syncLiveEditToState() {
   sheet.querySelectorAll('.exp-entry').forEach((expEl, eIdx) => {
     if (p.experience && p.experience[eIdx]) {
       const bullets = [];
-      expEl.querySelectorAll('.exp-bullets li').forEach(bEl => {
+      expEl.querySelectorAll('li[data-bullet-index], .exp-bullets li, ul li').forEach(bEl => {
         bullets.push(bEl.textContent.trim());
       });
       if (bullets.length > 0) p.experience[eIdx].highlights = bullets;
@@ -1252,7 +1220,7 @@ function setResumeViewMode(mode) {
     }
     if (scoreValEl) scoreValEl.textContent = '100%';
     if (headingEl) headingEl.textContent = '100% ATS Verified';
-    if (descEl) descEl.textContent = 'Resume meets all 6 primary ATS parsing criteria for this position.';
+    if (descEl) descEl.textContent = 'Resume meets all 7 enterprise ATS parsing criteria for this position.';
 
     // Preserve existing tailored profile or optimize from base if none exists yet
     if (!state.currentProfile) {
