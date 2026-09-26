@@ -101,12 +101,30 @@ export function downloadResumeAsHtml(targetElementId = 'resume-document', filena
     el.removeAttribute('spellcheck');
   });
 
-  const fullHtml = `<!DOCTYPE html>
+  const fullHtml = buildStandaloneResumeHtml(clone.outerHTML, document.title || 'Sanjay N – 100% ATS Resume');
+
+  const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Builds a complete standalone, self-contained HTML resume document
+ * with all fonts, styling, and print directives inlined.
+ */
+export function buildStandaloneResumeHtml(resumeContentHtml, title = 'Sanjay N – 100% ATS Resume') {
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${document.title || 'Sanjay N – 100% ATS Resume'}</title>
+<title>${title}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
@@ -140,7 +158,7 @@ export function downloadResumeAsHtml(targetElementId = 'resume-document', filena
     width: 210mm;
     min-height: 297mm;
     margin: 16px auto;
-    padding: 18pt 36pt 16pt 36pt;
+    padding: 16pt 34pt 14pt 34pt;
     background: #ffffff;
     box-shadow: 0 4px 20px rgba(0,0,0,.15);
     display: flex;
@@ -214,9 +232,12 @@ export function downloadResumeAsHtml(targetElementId = 'resume-document', filena
     margin-bottom: 1.5pt;
   }
   li::marker { font-size: 8pt; color: #000000 !important; }
+  .skills-cat-list { list-style: none; padding-left: 2pt; margin: 0; }
+  .skills-cat-list li { margin-bottom: 2pt; line-height: 1.36; font-size: 9.6pt; }
+  .skills-cat-list b { font-weight: 700; }
   .exp-entry { margin-top: 4pt; }
   .exp-entry:first-of-type { margin-top: 0; }
-  .exp-row-primary {
+  .exp-row-primary, .entry-head {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
@@ -227,7 +248,7 @@ export function downloadResumeAsHtml(targetElementId = 'resume-document', filena
     line-height: 1.35;
   }
   .exp-company-role { font-weight: 700; }
-  .exp-period.when {
+  .exp-period.when, .entry-head .when {
     white-space: nowrap;
     font-weight: 700;
     text-align: right;
@@ -250,6 +271,16 @@ export function downloadResumeAsHtml(targetElementId = 'resume-document', filena
     margin-left: auto;
     font-weight: 600;
   }
+  .company-note {
+    margin: 1.5pt 0 2pt 2pt;
+    font-size: 8.8pt;
+    font-style: italic;
+  }
+  .exp-bullets { margin: 1.5pt 0 0; padding-left: 20pt; list-style: disc; }
+  .exp-bullets li { margin-bottom: 1.5pt; line-height: 1.36; }
+  .projects-list { margin: 0; padding-left: 20pt; }
+  .projects-list li { margin-bottom: 2.5pt; line-height: 1.36; font-size: 9.6pt; }
+  .projects-list b { font-weight: 700; }
   .edu-entry { margin-top: 3.5pt; }
   .edu-entry:first-of-type { margin-top: 0; }
   .edu-row-primary {
@@ -279,36 +310,27 @@ export function downloadResumeAsHtml(targetElementId = 'resume-document', filena
     margin-top: 0.5pt;
     font-size: 9.2pt;
   }
+  .edu-institution { font-weight: 600; }
   .edu-location {
     text-align: right;
     white-space: nowrap;
     margin-left: auto;
-    font-style: italic;
   }
   @media print {
     body { background: #ffffff !important; }
     .resume-sheet {
       width: 100%;
       margin: 0;
-      padding: 18pt 36pt 16pt 36pt;
+      padding: 16pt 34pt 14pt 34pt;
       box-shadow: none;
+      page-break-after: avoid;
     }
   }
 </style>
 </head>
 <body>
-${clone.outerHTML}
+${resumeContentHtml}
 </body>
 </html>`;
-
-  const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
 }
 

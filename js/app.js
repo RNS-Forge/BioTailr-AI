@@ -7,7 +7,7 @@
 import { RESUME_ARCHETYPES, generateResumeHtml } from './templates.js';
 import { tailorResumeWithAi, getStoredApiKeys, saveApiKeys, matchArchetype, fetchEnvKeys } from './ai-service.js';
 import { evaluateAtsScore, optimizeProfileFor100Ats } from './ats-engine.js';
-import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml } from './pdf-export.js';
+import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml, buildStandaloneResumeHtml } from './pdf-export.js';
 
 // Application State
 const state = {
@@ -145,12 +145,19 @@ async function initExtensionJobMode(extJobId) {
 
       // Step 4: Generate HTML using the web app's own templates
       const compiledHtml = generateResumeHtml(optimizedProfile, resolvedArchetype);
+      const fullDocumentHtml = buildStandaloneResumeHtml(compiledHtml, `${optimizedProfile.fullName || 'Sanjay N'} – 100% ATS Resume – ${targetRole}`);
+      const candidateName = optimizedProfile.fullName || 'Sanjay N';
+      const roleSlug = targetRole.replace(/[^a-zA-Z0-9]/g, '_');
+      const candidateSlug = candidateName.replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `${candidateSlug}_${roleSlug}_Resume`;
 
       // Post result back to content-webapp.js bridge
       window.postMessage({
         type: 'BIOTAILR_EXT_RESULT',
         jobId: extJobId,
         compiledHtml,
+        fullDocumentHtml,
+        filename,
         archetypeId: resolvedArchetype,
         targetRole,
         atsScore: atsData?.totalScore || 100,

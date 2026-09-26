@@ -138,9 +138,9 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
     }
   }
 
-  // Universal Rule: Strict Summary Cleanse & Cap (Max 36 words for 1-page fit)
+  // Universal Rule: Clean summary of scraped page metadata
   if (optimized.summary) {
-    let cleanSum = optimized.summary
+    optimized.summary = optimized.summary
       .replace(/Specialized focus on Date posted.*/is, '')
       .replace(/Date posted.*/is, '')
       .replace(/Easy Apply.*/is, '')
@@ -148,11 +148,6 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
       .replace(/All filters.*/is, '')
       .replace(/https?:\/\/\S+/gi, '')
       .trim();
-    const sumWords = cleanSum.split(/\s+/).filter(Boolean);
-    if (sumWords.length > 36) {
-      cleanSum = sumWords.slice(0, 35).join(' ') + '.';
-    }
-    optimized.summary = cleanSum;
   }
 
   // Universal Rule: Clean education of any coursework strings across ALL archetypes
@@ -189,13 +184,9 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
   ];
 
   if (optimized.experience) {
-    optimized.experience.forEach((exp, expIdx) => {
+    optimized.experience.forEach(exp => {
       if (exp.relevant !== false && exp.highlights) {
-        // Enforce bullet limit: 3 for first role (Axodian), 2 for subsequent roles
-        const maxBullets = expIdx === 0 ? 3 : 2;
-        const bulletsToProcess = exp.highlights.slice(0, maxBullets);
-
-        exp.highlights = bulletsToProcess.map((bullet, idx) => {
+        exp.highlights = exp.highlights.map((bullet, idx) => {
           let updated = bullet.trim();
           // Ensure first word is a power verb
           const words = updated.split(' ');
@@ -212,34 +203,10 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
             const cleanBase = updated.replace(/\.+$/, '');
             updated = cleanBase + contextualMetrics[idx % contextualMetrics.length];
           }
-          // Strict word limit: max 22 words per bullet for 1-page fit
-          const bWords = updated.split(/\s+/).filter(Boolean);
-          if (bWords.length > 22) {
-            updated = bWords.slice(0, 21).join(' ') + '.';
-          }
           return updated;
         });
       }
     });
-  }
-
-  // Universal Rule: Strict Limit on Projects (Top 2 projects, max 16 words each)
-  if (optimized.projects && Array.isArray(optimized.projects)) {
-    optimized.projects = optimized.projects.slice(0, 2).map(proj => {
-      const p = { ...proj };
-      if (p.description) {
-        const pWords = p.description.split(/\s+/).filter(Boolean);
-        if (pWords.length > 16) {
-          p.description = pWords.slice(0, 15).join(' ') + '.';
-        }
-      }
-      return p;
-    });
-  }
-
-  // Universal Rule: Strict Limit on Certifications (Top 2 for 1-page fit)
-  if (optimized.certifications && Array.isArray(optimized.certifications)) {
-    optimized.certifications = optimized.certifications.slice(0, 2);
   }
 
   return optimized;
