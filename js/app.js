@@ -48,8 +48,9 @@ function initApp() {
   // pipeline, and post the result back. The tab then closes itself.
   const urlParams = new URLSearchParams(window.location.search);
   const extJobId = urlParams.get('extjob');
+  const authKey = urlParams.get('authKey') || '';
   if (extJobId) {
-    initExtensionJobMode(extJobId);
+    initExtensionJobMode(extJobId, authKey);
     return;
   }
 
@@ -104,22 +105,41 @@ function initApp() {
  * Receives job data via postMessage from content-webapp.js, runs the full pipeline,
  * then posts the compiled HTML result back for the extension to download.
  */
-async function initExtensionJobMode(extJobId) {
+async function initExtensionJobMode(extJobId, authKey = '') {
   // Show a minimal processing indicator instead of the full landing UI
   document.body.style.cssText = 'margin:0;padding:0;background:#0a0e1a;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Inter,sans-serif;';
   document.body.innerHTML = `
     <div style="text-align:center;color:#ffffff;">
       <div style="width:40px;height:40px;border:3px solid #1a2040;border-top-color:#00b49f;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;"></div>
       <div style="font-size:14px;font-weight:600;color:#00b49f;letter-spacing:.5px;">BioTailr AI</div>
-      <div style="font-size:12px;color:#8892b0;margin-top:6px;">Generating tailored resume...</div>
+      <div style="font-size:12px;color:#8892b0;margin-top:6px;">Securely generating tailored resume...</div>
       <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
     </div>
   `;
 
   // Listen for job data from content-webapp.js bridge
   window.addEventListener('message', async (event) => {
+    // 1. Strict Origin verification
+    if (event.origin !== window.location.origin) {
+      console.warn('[BioTailr Security] Untrusted message origin:', event.origin);
+      return;
+    }
+
     if (!event.data || event.data.type !== 'BIOTAILR_EXT_JOB') return;
     if (event.data.jobId !== extJobId) return;
+
+    // 2. Cryptographic Security Key Authentication
+    const messageAuthKey = event.data.authKey || '';
+    if (authKey && messageAuthKey !== authKey) {
+      console.error('[BioTailr Security] Authentication token mismatch! Dropping untrusted message.');
+      window.postMessage({
+        type: 'BIOTAILR_EXT_RESULT',
+        jobId: extJobId,
+        authKey: authKey,
+        error: 'Security authentication failed: invalid token.'
+      }, window.location.origin);
+      return;
+    }
 
     const jobData = event.data.data;
     if (!jobData) return;
@@ -151,10 +171,11 @@ async function initExtensionJobMode(extJobId) {
       const candidateSlug = candidateName.replace(/[^a-zA-Z0-9]/g, '_');
       const filename = `${candidateSlug}_${roleSlug}_Resume`;
 
-      // Post result back to content-webapp.js bridge
+      // Post authenticated result back to content-webapp.js bridge with targetOrigin scoping
       window.postMessage({
         type: 'BIOTAILR_EXT_RESULT',
         jobId: extJobId,
+        authKey: authKey || messageAuthKey,
         compiledHtml,
         fullDocumentHtml,
         filename,
@@ -162,15 +183,16 @@ async function initExtensionJobMode(extJobId) {
         targetRole,
         atsScore: atsData?.totalScore || 100,
         modelUsed: aiResult.modelUsed
-      }, '*');
+      }, window.location.origin);
 
     } catch (err) {
       console.error('[BioTailr ExtMode] Pipeline error:', err);
       window.postMessage({
         type: 'BIOTAILR_EXT_RESULT',
         jobId: extJobId,
+        authKey: authKey || messageAuthKey,
         error: err.message || 'Generation failed'
-      }, '*');
+      }, window.location.origin);
     }
   });
 }
