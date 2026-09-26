@@ -420,6 +420,78 @@ function renderAtsChecklist() {
 }
 
 /**
+ * Generates a clean, professional download filename matching the candidate name & Role on the PDF.
+ * Format: <Candidate_Name>_<Role>_Resume.<ext> (e.g. Sanjay_N_Software_Development_Engineer_Resume.pdf)
+ */
+export function getResumeDownloadFilename(extension = 'pdf', explicitArchetype = null) {
+  const resumeEl = document.getElementById('resume-document');
+
+  // 1. Role: extract from the rendered resume DOM, or active profile state
+  const roleEl = resumeEl?.querySelector('[data-editable-field="title"]') 
+              || resumeEl?.querySelector('.role');
+  let role = roleEl?.textContent?.trim() || '';
+
+  // If explicit archetype is provided (e.g. from raw dropdown click)
+  if (explicitArchetype && RESUME_ARCHETYPES[explicitArchetype]) {
+    role = RESUME_ARCHETYPES[explicitArchetype].defaultRole 
+        || RESUME_ARCHETYPES[explicitArchetype].profile?.title 
+        || role;
+  }
+
+  // Fallback to state if DOM is empty
+  if (!role) {
+    if (state.viewMode === 'raw' && state.selectedArchetypeId && RESUME_ARCHETYPES[state.selectedArchetypeId]) {
+      role = RESUME_ARCHETYPES[state.selectedArchetypeId].defaultRole 
+          || RESUME_ARCHETYPES[state.selectedArchetypeId].profile?.title 
+          || '';
+    } else {
+      role = state.currentProfile?.title || state.targetRole || '';
+    }
+  }
+
+  // Fallback to archetype default role if still empty
+  if (!role && state.selectedArchetypeId && RESUME_ARCHETYPES[state.selectedArchetypeId]) {
+    role = RESUME_ARCHETYPES[state.selectedArchetypeId].defaultRole || '';
+  }
+
+  // 2. Candidate name: extract from rendered resume DOM, or profile
+  const nameEl = resumeEl?.querySelector('[data-editable-field="fullName"]')
+              || resumeEl?.querySelector('h1');
+  let name = nameEl?.textContent?.trim() 
+          || state.currentProfile?.fullName 
+          || 'Sanjay N';
+
+  // Format clean name: "SANJAY N" -> "Sanjay_N"
+  const cleanName = name
+    .replace(/[^a-zA-Z0-9\s]/g, '')
+    .trim()
+    .split(/\s+/)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join('_') || 'Sanjay_N';
+
+  // Extract primary role if multiple titles are separated by '|'
+  let primaryRole = role.split('|')[0].trim() || role.trim();
+
+  // Clean role string: replace slashes with space, remove special chars, normalize whitespace to underscores
+  let cleanRole = primaryRole
+    .replace(/[/]/g, ' ')
+    .replace(/[^a-zA-Z0-9\s_-]/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .join('_');
+
+  if (!cleanRole) {
+    cleanRole = 'Professional';
+  }
+
+  const hasResumeInRole = cleanRole.toLowerCase().endsWith('resume');
+  const roleWithResume = hasResumeInRole ? cleanRole : `${cleanRole}_Resume`;
+  const ext = extension.replace(/^\./, '');
+
+  return `${cleanName}_${roleWithResume}.${ext}`;
+}
+
+/**
  * Studio Toolbar & Correction Assistant Events
  */
 function bindStudioEvents() {
@@ -427,10 +499,7 @@ function bindStudioEvents() {
   const btnDownloadPdf = document.getElementById('btn-download-pdf');
   if (btnDownloadPdf) {
     btnDownloadPdf.addEventListener('click', () => {
-      const isRaw = state.viewMode === 'raw';
-      const filename = isRaw 
-        ? `Sanjay_N_${state.selectedArchetypeId}_Raw.pdf`
-        : `Sanjay_N_${state.targetRole.replace(/[^a-zA-Z0-9]/g, '_')}_ATS100.pdf`;
+      const filename = getResumeDownloadFilename('pdf');
       downloadResumeAsPdf('resume-document', filename);
     });
   }
@@ -439,10 +508,7 @@ function bindStudioEvents() {
   const btnDownloadHtml = document.getElementById('btn-download-html');
   if (btnDownloadHtml) {
     btnDownloadHtml.addEventListener('click', () => {
-      const isRaw = state.viewMode === 'raw';
-      const filename = isRaw 
-        ? `Sanjay_N_${state.selectedArchetypeId}_Raw.html`
-        : `Sanjay_N_${state.targetRole.replace(/[^a-zA-Z0-9]/g, '_')}_ATS100.html`;
+      const filename = getResumeDownloadFilename('html');
       downloadResumeAsHtml('resume-document', filename);
     });
   }
@@ -578,7 +644,7 @@ function bindStudioEvents() {
       panelRaw?.classList.remove('active');
       btnRawMenu?.classList.remove('active');
       setResumeViewMode('raw');
-      const filename = `Sanjay_N_${arch}_Raw.pdf`;
+      const filename = getResumeDownloadFilename('pdf', arch);
       setTimeout(() => {
         downloadResumeAsPdf('resume-document', filename);
       }, 250);

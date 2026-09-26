@@ -2,7 +2,45 @@
  * BioTailr AI - Accurate HTML to PDF Exporter
  * Ensures single-page resumes download as EXACTLY 1 page with ZERO blank pages.
  */
+/**
+ * Resolves a clean, dynamic filename based on the candidate's name and role in the resume element
+ */
+function resolveFallbackFilename(targetElementId = 'resume-document', defaultFilename = '', ext = 'pdf') {
+  if (defaultFilename && defaultFilename !== 'BioTailr_Resume.pdf' && defaultFilename !== 'BioTailr_Resume.html') {
+    return defaultFilename;
+  }
+  const el = document.getElementById(targetElementId);
+  if (!el) return defaultFilename || `Sanjay_N_Resume.${ext}`;
+
+  const roleEl = el.querySelector('[data-editable-field="title"]') || el.querySelector('.role');
+  const nameEl = el.querySelector('[data-editable-field="fullName"]') || el.querySelector('h1');
+
+  const role = roleEl?.textContent?.trim() || '';
+  const name = nameEl?.textContent?.trim() || 'Sanjay N';
+
+  const cleanName = name
+    .replace(/[^a-zA-Z0-9\s]/g, '')
+    .trim()
+    .split(/\s+/)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join('_') || 'Sanjay_N';
+
+  const primaryRole = role.split('|')[0].trim() || role.trim();
+  const cleanRole = primaryRole
+    .replace(/[/]/g, ' ')
+    .replace(/[^a-zA-Z0-9\s_-]/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .join('_');
+
+  if (!cleanRole) return `${cleanName}_Resume.${ext}`;
+
+  const suffix = cleanRole.toLowerCase().endsWith('resume') ? '' : '_Resume';
+  return `${cleanName}_${cleanRole}${suffix}.${ext}`;
+}
+
 export async function downloadResumeAsPdf(targetElementId = 'resume-document', filename = 'BioTailr_Resume.pdf') {
+  const actualFilename = resolveFallbackFilename(targetElementId, filename, 'pdf');
   const element = document.getElementById(targetElementId);
   if (!element) {
     console.error('Target element not found:', targetElementId);
@@ -39,7 +77,7 @@ export async function downloadResumeAsPdf(targetElementId = 'resume-document', f
       // Zero second page, zero blank pages, 100% full single sheet.
       const imgData = canvas.toDataURL('image/jpeg', 0.98);
       pdf.addImage(imgData, 'JPEG', 0, 0, pageWidthMm, pageHeightMm);
-      pdf.save(filename);
+      pdf.save(actualFilename);
       return;
     } catch (err) {
       console.warn('Direct canvas-to-pdf pipeline failed, falling back to html2pdf:', err);
@@ -50,7 +88,7 @@ export async function downloadResumeAsPdf(targetElementId = 'resume-document', f
   if (hasHtml2Pdf) {
     const opt = {
       margin: 0,
-      filename: filename,
+      filename: actualFilename,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: {
         scale: 2,
@@ -79,7 +117,13 @@ export async function downloadResumeAsPdf(targetElementId = 'resume-document', f
 }
 
 export function printResumeNative() {
+  const finalTitle = resolveFallbackFilename('resume-document', '', 'pdf').replace(/\.pdf$/i, '').replace(/_/g, ' ');
+  const oldTitle = document.title;
+  if (finalTitle) document.title = finalTitle;
   window.print();
+  setTimeout(() => {
+    document.title = oldTitle;
+  }, 1000);
 }
 
 /**
@@ -87,6 +131,7 @@ export function printResumeNative() {
  * self-contained, 100% pure black ATS-compliant HTML file.
  */
 export function downloadResumeAsHtml(targetElementId = 'resume-document', filename = 'BioTailr_Resume.html') {
+  const actualFilename = resolveFallbackFilename(targetElementId, filename, 'html');
   const element = document.getElementById(targetElementId);
   if (!element) {
     console.error('Target element not found:', targetElementId);
@@ -305,7 +350,7 @@ ${clone.outerHTML}
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = filename;
+  a.download = actualFilename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
