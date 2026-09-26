@@ -319,6 +319,24 @@ export async function tailorResumeWithAi(targetRole, userRefinements = '') {
     tailoredProfile.skills = tailoredProfile.skills.filter(s => !aiBuzzwords.some(bw => s.toLowerCase().includes(bw)));
   }
 
+  // Rule 5: Strict Text Limit & Cleanse on Professional Summary (Max 36 words for 100% 1-page fit)
+  if (tailoredProfile.summary) {
+    let cleanSummary = tailoredProfile.summary
+      .replace(/Specialized focus on Date posted.*/is, '')
+      .replace(/Date posted.*/is, '')
+      .replace(/Easy Apply.*/is, '')
+      .replace(/In my network.*/is, '')
+      .replace(/All filters.*/is, '')
+      .replace(/https?:\/\/\S+/gi, '')
+      .trim();
+
+    const sumWords = cleanSummary.split(/\s+/).filter(Boolean);
+    if (sumWords.length > 36) {
+      cleanSummary = sumWords.slice(0, 35).join(' ') + '.';
+    }
+    tailoredProfile.summary = cleanSummary;
+  }
+
   return {
     archetypeId,
     profile: tailoredProfile,
@@ -430,21 +448,44 @@ function generateLocalSmartTailoring(baseProfile, targetRole, refinements, domai
 
   let dynamicSummary = '';
   if (isMfg) {
-    dynamicSummary = `Detail-oriented ${targetRole} with hands-on precision metrology, quality inspection, and testing experience across incoming, in-process, and final inspection workflows at ${companiesString}. Proficient in operating digital vernier calipers, micrometers, height gauges, and bore gauges to verify tight-tolerance engineering specifications against blueprints, ensuring zero-defect compliance, PPAP documentation, and ISO 9001:2015 standards.`;
+    dynamicSummary = `Detail-oriented ${targetRole} with verified expertise in precision metrology, quality inspection, and ISO 9001:2015 standards across ${companiesString}. Proven track record ensuring zero-defect compliance and streamlining quality assurance workflows.`;
   } else if (isComm) {
-    dynamicSummary = `High-impact ${targetRole} with verified expertise in voice process operations, customer relationship management, SLA adherence, and requirement gathering across ${companiesString}. Adept at managing client escalations, resolving customer inquiries with first-contact resolution, and collaborating with cross-functional technical teams to maintain 98%+ satisfaction.`;
+    dynamicSummary = `High-impact ${targetRole} experienced in enterprise client relationship management, SLA adherence, and business requirement gathering across ${companiesString}. Adept at managing escalations, streamlining communication, and sustaining 98%+ customer satisfaction.`;
   } else if (isFsd) {
-    dynamicSummary = `Versatile ${targetRole} skilled in modern frontend and backend web architecture across ${companiesString}. Experienced in delivering responsive web applications, integrating robust RESTful APIs, optimizing frontend workflows by 40%, and building scalable user-facing features.`;
+    dynamicSummary = `Dynamic ${targetRole} experienced in responsive web architectures, React.js, TypeScript, and RESTful APIs across ${companiesString}. Proven track record delivering scalable applications, optimizing frontend workflows, and decreasing API latency by 25%.`;
   } else if (isSde) {
-    dynamicSummary = `Results-driven ${targetRole} with proven experience in architecting scalable microservices, RESTful APIs, and enterprise software solutions across ${companiesString}. Experienced in relational database optimization, Test-Driven Development (TDD), CI/CD pipelines, and cutting API error rates by 30%. Adept at collaborating with cross-functional product and engineering teams to deliver robust, high-availability software.`;
+    dynamicSummary = `Results-driven ${targetRole} experienced in scalable microservices, RESTful APIs, and distributed systems across ${companiesString}. Proven track record optimizing databases, automating CI/CD pipelines, and cutting API error rates by 30%.`;
   } else {
-    dynamicSummary = `Innovator and ${targetRole} with hands-on experience building high-throughput systems, scalable APIs, and intelligent automation across ${companiesString}. Proven track record integrating real-time services, boosting assessment precision by 15%, and reducing delivery cycle times by 40%.`;
+    dynamicSummary = `Results-driven ${targetRole} specializing in Agentic AI, RAG pipelines, LLM automation, and scalable systems across ${companiesString}. Proven track record integrating real-time services, accelerating document throughput by 35%, and optimizing workflows.`;
   }
 
-  // Incorporate custom user refinements into summary if provided
-  if (refinements && refinements.trim().length > 0) {
-    dynamicSummary += ` Specialized focus on ${refinements.trim()}.`;
+  // Incorporate custom user refinements ONLY if valid user instruction (not scraped text)
+  if (refinements && typeof refinements === 'string') {
+    const trimmed = refinements.trim();
+    const lower = trimmed.toLowerCase();
+    const isScrapedJunk = trimmed.length > 50 ||
+      lower.includes('easy apply') ||
+      lower.includes('date posted') ||
+      lower.includes('filters') ||
+      lower.includes('network') ||
+      lower.includes('preferences') ||
+      lower.includes('applicant') ||
+      lower.includes('results -') ||
+      lower.includes('full-time') ||
+      lower.includes('posted') ||
+      lower.includes('http');
+
+    if (!isScrapedJunk && trimmed.length > 3) {
+      dynamicSummary += ` Focused on ${trimmed.replace(/^[•\-\*]\s*/, '')}.`;
+    }
   }
+
+  // Strict text limit on Professional Summary for 1-page compliance (Max 36 words)
+  const summaryWords = dynamicSummary.split(/\s+/).filter(Boolean);
+  if (summaryWords.length > 36) {
+    dynamicSummary = summaryWords.slice(0, 35).join(' ') + '.';
+  }
+
   profile.summary = dynamicSummary;
 
   // 4. Dynamic Skill Curation & Pruning
@@ -714,9 +755,11 @@ CRITICAL INSTRUCTIONS FOR 100% DYNAMIC DOMAIN DETECTION & GENERATION:
    - "developer": For software development engineer (SDE), backend engineer, core software engineer, AI/ML, data engineer.
    You MUST include the root field "detectedDomain": "manufacturing" | "communication" | "fsd" | "developer" in your JSON output.
 
-2. Dynamic Title & Summary:
+2. Dynamic Title & Summary (STRICT TEXT LIMIT):
    - Title must be "${targetRole}".
-   - Write a dynamic, highly targeted 3-4 sentence professional summary focusing on the core competencies, scale, and technologies required for "${targetRole}". Do NOT use canned or static text.
+   - Write an executive 2-sentence professional summary (STRICTLY MAXIMUM 35 words total).
+   - High-impact, concise, highlighting core competencies for "${targetRole}".
+   - NEVER include scraped page metadata, URLs, "Easy Apply", "Date posted", or UI text.
 
 3. Dynamic Skill Curation (100% Dynamic Full Skill Set as per Role):
    - In ALL resume templates, you MUST dynamically synthesize the FULL skill set strictly for "${targetRole}".
@@ -731,25 +774,26 @@ CRITICAL INSTRUCTIONS FOR 100% DYNAMIC DOMAIN DETECTION & GENERATION:
      - REMOVE all coding frameworks. Focus on precision metrology (vernier calipers, micrometers, height gauges, bore gauges, digital air gauges, Cpk monitoring, ISO 9001:2015, PPAP, NCR).
    - For AI / ML Engineer roles:
      - Focus on Python, PyTorch, LangChain, Agentic AI, and RAG architectures.
-   - Organize the curated skills into relevant skillCategories.
+   - Organize the curated skills into 4 compact categories (max 6-8 items per category).
 
-4. Dynamic Work Experience:
+4. Dynamic Work Experience (STRICT BULLET LIMITS):
    - Retain authentic companies (Axodian, Nexus Horizon, SNS Square, Anvil Automation) and true date periods.
+   - Strictly 2 to 3 concise bullet points per role (max 22 words per bullet).
    - Rephrase bullet points to highlight competencies and achievements relevant to "${targetRole}" using high-impact power action verbs (Architected, Engineered, Spearheaded, Inspected, Optimized) and quantified metrics (%, $, scale).
    - If Axodian is present in experience, its location MUST strictly be "Bangalore, KA (On-Site)".
 
-5. Dynamic Projects:
-   - Rephrase project descriptions to highlight the technical stack, architecture, and metrics that align with "${targetRole}".
+5. Dynamic Projects (STRICT 2-3 PROJECTS LIMIT):
+   - Include ONLY the top 2 or 3 most relevant projects.
+   - Each project description must be strictly 1 sentence (MAXIMUM 16 words).
 
 6. Universal Education Cleanse:
    - Under education details, output ONLY the CGPA/percentage (e.g. "CGPA: 8.38 / 10").
    - NEVER output any coursework lines like "Relevant Coursework: Deep Learning, Natural Language Processing, Algorithms, DBMS" or similar.
 
-7. STRICT REQUIREMENT - EXACTLY ONE FULL A4 PAGE DENSITY:
-   - The resume content MUST ALWAYS fill 100% of a standard single A4 page from top to bottom.
-   - It must NEVER look sparse, half-page (50%), or 75% full.
-   - Generate rich, substantive content: a solid 3-4 sentence summary, 4 rich skill categories (5-8 items each), 3-4 quantified bullet points per experience, 3-4 detailed projects, and complete education/certifications.
-   - Maintain high information density so the page is 100% full and visually complete.
+7. STRICT REQUIREMENT - EXACTLY ONE PAGE (NO SPILLOVER):
+   - The generated resume must fit onto EXACTLY ONE single A4 page.
+   - Every word must be punchy, executive, and within the specified limits.
+   - Total bullets across all work experience must not exceed 7. Total projects must not exceed 3.
 
 Return ONLY a valid JSON object matching the schema below:
 {

@@ -42,6 +42,29 @@ function initApp() {
   state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
   window.showView = showView;
 
+  // ── Extension Communicator Mode ─────────────────────────────────────────
+  // When opened by the BioTailr extension with ?extjob=<id>, we hide the normal
+  // UI, listen for job data from the content-webapp.js bridge, run the full
+  // pipeline, and post the result back. The tab then closes itself.
+  const urlParams = new URLSearchParams(window.location.search);
+  const extJobId = urlParams.get('extjob');
+  if (extJobId) {
+    initExtensionJobMode(extJobId);
+    return;
+  }
+
+  // Handle URL query parameters (e.g. ?role=Senior+AI+Engineer from extension)
+  const roleParam = urlParams.get('role');
+  if (roleParam) {
+    const targetRole = decodeURIComponent(roleParam).trim();
+    state.targetRole = targetRole;
+    state.selectedArchetypeId = matchArchetype(targetRole);
+    setTimeout(() => {
+      executeTailoringFlow(targetRole);
+    }, 150);
+    return;
+  }
+
   // Handle direct hash navigation (e.g. #studio, #studio-editor, #try-now)
   if (window.location.hash) {
     const hashView = window.location.hash.replace('#', '').trim();
@@ -73,6 +96,76 @@ function initApp() {
       showView('landing');
     });
   }
+}
+
+/**
+ * BioTailr Extension Job Mode
+ * Processes a job from the extension without showing the normal web app UI.
+ * Receives job data via postMessage from content-webapp.js, runs the full pipeline,
+ * then posts the compiled HTML result back for the extension to download.
+ */
+async function initExtensionJobMode(extJobId) {
+  // Show a minimal processing indicator instead of the full landing UI
+  document.body.style.cssText = 'margin:0;padding:0;background:#0a0e1a;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Inter,sans-serif;';
+  document.body.innerHTML = `
+    <div style="text-align:center;color:#ffffff;">
+      <div style="width:40px;height:40px;border:3px solid #1a2040;border-top-color:#00b49f;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;"></div>
+      <div style="font-size:14px;font-weight:600;color:#00b49f;letter-spacing:.5px;">BioTailr AI</div>
+      <div style="font-size:12px;color:#8892b0;margin-top:6px;">Generating tailored resume...</div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    </div>
+  `;
+
+  // Listen for job data from content-webapp.js bridge
+  window.addEventListener('message', async (event) => {
+    if (!event.data || event.data.type !== 'BIOTAILR_EXT_JOB') return;
+    if (event.data.jobId !== extJobId) return;
+
+    const jobData = event.data.data;
+    if (!jobData) return;
+
+    try {
+      // Fetch API keys first
+      await fetchEnvKeys();
+
+      const targetRole = jobData.targetRole || 'Software Development Engineer';
+      const refinements = jobData.refinements || '';
+      const description = jobData.description || '';
+
+      // Step 1: Match archetype
+      const archetypeId = matchArchetype(targetRole, description);
+
+      // Step 2: Run AI tailoring (Gemini → Groq → Local fallback)
+      const aiResult = await tailorResumeWithAi(targetRole, refinements);
+      const resolvedArchetype = aiResult.archetypeId || archetypeId;
+
+      // Step 3: ATS Optimization
+      const optimizedProfile = optimizeProfileFor100Ats(aiResult.profile, targetRole, resolvedArchetype);
+      const atsData = evaluateAtsScore(optimizedProfile, targetRole, resolvedArchetype);
+
+      // Step 4: Generate HTML using the web app's own templates
+      const compiledHtml = generateResumeHtml(optimizedProfile, resolvedArchetype);
+
+      // Post result back to content-webapp.js bridge
+      window.postMessage({
+        type: 'BIOTAILR_EXT_RESULT',
+        jobId: extJobId,
+        compiledHtml,
+        archetypeId: resolvedArchetype,
+        targetRole,
+        atsScore: atsData?.totalScore || 100,
+        modelUsed: aiResult.modelUsed
+      }, '*');
+
+    } catch (err) {
+      console.error('[BioTailr ExtMode] Pipeline error:', err);
+      window.postMessage({
+        type: 'BIOTAILR_EXT_RESULT',
+        jobId: extJobId,
+        error: err.message || 'Generation failed'
+      }, '*');
+    }
+  });
 }
 
 /**

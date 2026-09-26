@@ -738,7 +738,7 @@ function generateDeveloperHtml(profile, archetypeId = 'developer') {
           ` : ''}
           ${exp.companyNote ? `<p class="company-note">${escapeHtml(exp.companyNote)}</p>` : ''}
           <ul class="exp-bullets">
-            ${(exp.highlights || []).map((bullet, bIdx) => `
+            ${(exp.highlights || []).slice(0, expIdx === 0 ? 3 : 2).map((bullet, bIdx) => `
               <li data-bullet-index="${bIdx}">${escapeHtml(bullet)}</li>
             `).join('')}
           </ul>
@@ -751,7 +751,7 @@ function generateDeveloperHtml(profile, archetypeId = 'developer') {
     <section class="sec-projects">
       <h2>PROJECTS</h2>
       <ul class="projects-list">
-        ${profile.projects.map((proj, pIdx) => `
+        ${profile.projects.slice(0, 2).map((proj, pIdx) => `
           <li data-proj-index="${pIdx}">
             ${proj.url ? `<a class="plain proj-name" href="${escapeHtml(proj.url)}" target="_blank"><b>${escapeHtml(proj.name)} &ndash;</b></a>` : `<b class="proj-name">${escapeHtml(proj.name)} &ndash;</b>`}
             <span class="proj-desc">${escapeHtml(proj.description)}</span>
@@ -772,13 +772,8 @@ function generateDeveloperHtml(profile, archetypeId = 'developer') {
           </div>
           <div class="edu-row-secondary">
             <span class="edu-institution">${escapeHtml(edu.institution)}</span>
-            <span class="edu-location">${escapeHtml(edu.location || 'Coimbatore, Tamil Nadu')}</span>
+            <span class="edu-location">${escapeHtml(edu.details || 'CGPA: 8.38 / 10')}</span>
           </div>
-          ${edu.details ? `
-            <ul class="edu-bullets">
-              <li>${escapeHtml(edu.details)}</li>
-            </ul>
-          ` : ''}
         </div>
       `).join('')}
     </section>
@@ -788,7 +783,7 @@ function generateDeveloperHtml(profile, archetypeId = 'developer') {
     <section class="sec-certifications">
       <h2>AWARDS AND CERTIFICATION</h2>
       <ul>
-        ${profile.certifications.map((cert, cIdx) => `
+        ${profile.certifications.slice(0, 2).map((cert, cIdx) => `
           <li data-cert-index="${cIdx}">${escapeHtml(cert)}</li>
         `).join('')}
       </ul>

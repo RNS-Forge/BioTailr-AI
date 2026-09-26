@@ -12,20 +12,22 @@
   --meta-font: 'Inter', 'Open Sans', 'Segoe UI', Arial, sans-serif;
   --name-font: 'Times New Roman', Times, 'Liberation Serif', serif;
 
-  width: 100%;
+  width: 210mm;
   max-width: 210mm;
-  min-height: 297mm;
+  height: 297mm;
+  max-height: 297mm;
+  overflow: hidden;
   margin: 0 auto;
-  padding: 16pt 34pt 14pt 34pt;
+  padding: 13pt 32pt 11pt 32pt;
   background: var(--sheet);
   color: var(--ink) !important;
   font-family: var(--body-font);
-  font-size: 9.8pt;
-  line-height: 1.34;
+  font-size: 9.0pt;
+  line-height: 1.28;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
@@ -108,8 +110,8 @@
 
 /* ---------- Sections ---------- */
 .resume-sheet section {
-  padding: 4.5pt 0 5pt;
-  border-bottom: 0.75pt solid var(--rule);
+  padding: 2.5pt 0 3pt;
+  border-bottom: 0.6pt solid var(--rule);
 }
 
 .resume-sheet section:last-of-type {
@@ -117,11 +119,11 @@
 }
 
 .resume-sheet h2 {
-  margin: 0 0 3pt;
+  margin: 0 0 2pt;
   font-family: var(--body-font);
-  font-size: 11.5pt;
+  font-size: 10.5pt;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.2;
   padding-left: 2pt;
   text-transform: uppercase;
   color: #000000 !important;
@@ -130,28 +132,28 @@
 .resume-sheet p.summary {
   margin: 0;
   padding-left: 2pt;
-  font-size: 9.8pt;
-  line-height: 1.38;
+  font-size: 9.0pt;
+  line-height: 1.28;
   text-align: justify;
   color: #000000 !important;
 }
 
 .resume-sheet ul {
   margin: 0;
-  padding-left: 22pt;
+  padding-left: 17pt;
   list-style: disc;
 }
 
 .resume-sheet li {
-  font-size: 9.6pt;
-  line-height: 1.36;
+  font-size: 8.8pt;
+  line-height: 1.25;
   padding-left: 0;
-  margin-bottom: 1.5pt;
+  margin-bottom: 0.8pt;
   color: #000000 !important;
 }
 
 .resume-sheet li::marker {
-  font-size: 8pt;
+  font-size: 7.5pt;
   color: #000000 !important;
 }
 
@@ -163,8 +165,9 @@
 }
 
 .resume-sheet .skills-cat-list li {
-  margin-bottom: 2pt;
-  line-height: 1.36;
+  margin-bottom: 1pt;
+  line-height: 1.26;
+  font-size: 8.8pt;
 }
 
 .resume-sheet .skills-cat-list b {
@@ -173,7 +176,7 @@
 
 /* Experience Entries */
 .resume-sheet .exp-entry {
-  margin-top: 4pt;
+  margin-top: 2.5pt;
 }
 
 .resume-sheet .exp-entry:first-of-type {
@@ -251,26 +254,27 @@
 
 .resume-sheet .exp-bullets,
 .resume-sheet ul {
-  margin: 1.5pt 0 0;
-  padding-left: 20pt;
+  margin: 1pt 0 0;
+  padding-left: 17pt;
   list-style: disc;
 }
 
 .resume-sheet .exp-bullets li,
 .resume-sheet ul li {
-  margin-bottom: 1.5pt;
-  line-height: 1.36;
+  margin-bottom: 0.8pt;
+  line-height: 1.25;
 }
 
 /* Projects List */
 .resume-sheet .projects-list {
   margin: 0;
-  padding-left: 20pt;
+  padding-left: 17pt;
 }
 
 .resume-sheet .projects-list li {
-  margin-bottom: 2.5pt;
-  line-height: 1.36;
+  margin-bottom: 1pt;
+  line-height: 1.25;
+  font-size: 8.8pt;
 }
 
 .resume-sheet .projects-list b {
@@ -279,7 +283,7 @@
 
 /* Education: Clean 2-line layout solving date collision */
 .resume-sheet .edu-entry {
-  margin-top: 3.5pt;
+  margin-top: 2pt;
 }
 
 .resume-sheet .edu-entry:first-of-type {
@@ -657,5 +661,30 @@
   margin-bottom: 2pt !important;
   line-height: 1.35 !important;
   color: #1e1e1e !important;
+}
+
+/* Print Rules - Strict Single Page Guarantee */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    width: 210mm !important;
+    height: 297mm !important;
+  }
+  .resume-sheet {
+    width: 210mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
+    overflow: hidden !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+  }
 }
 
