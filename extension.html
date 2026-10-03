@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioTailr AI Browser Extension — 1-Click ATS Resume Tailoring</title>
+  <meta name="description" content="Official BioTailr AI Extension for Chrome and Edge. 1-Click real-time job scanning, tactile left-to-right swipe tailoring, multi-job queue, and strict 1-page A4 PDF generation.">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    .ext-page {
+      background: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Hero with entrance animations */
+    .ext-hero-section {
+      padding: 4rem 1.5rem 3rem;
+      text-align: center;
+      max-width: 960px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .ext-hero-anim-title {
+      font-size: 3.2rem;
+      font-family: var(--font-brand);
+      font-weight: 800;
+      color: #1e1b78;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+      margin: 1.25rem 0 1rem;
+      animation: heroSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .ext-hero-anim-title .teal-ai {
+      color: #00b49f;
+      font-size: 0.65em;
+      vertical-align: super;
+      position: relative;
+      top: -4px;
+    }
+    .ext-hero-sub {
+      font-size: 1.2rem;
+      color: #475569;
+      line-height: 1.6;
+      max-width: 760px;
+      margin: 0 auto 2.5rem;
+      animation: heroFadeIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes heroSlideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes heroFadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Interactive Extension UI Preview Box */
+    .ext-preview-frame-wrap {
+      max-width: 640px;
+      margin: 0 auto 4rem;
+      background: #ffffff;
+      border: 1.5px solid #d4d2f8;
+      border-radius: 18px;
+      box-shadow: 0 16px 45px rgba(30, 27, 120, 0.12), 0 2px 8px rgba(0, 180, 159, 0.08);
+      overflow: hidden;
+      animation: heroSlideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .ext-frame-header {
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .ext-frame-body {
+      padding: 20px;
+      background: radial-gradient(circle at 50% 0%, #ffffff 0%, #f4f6fb 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .demo-detect-card {
+      width: 100%;
+      background: linear-gradient(180deg, #ffffff 0%, #f7fdfc 100%);
+      border: 1.5px solid #9ee6dd;
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: left;
+      box-shadow: 0 4px 14px rgba(0, 180, 159, 0.08);
+    }
+    .demo-swipe-console {
+      width: 100%;
+      height: 52px;
+      background: linear-gradient(90deg, #f0fdf9 0%, #ffffff 50%, #f6fdfc 100%);
+      border: 1.5px solid #00b49f;
+      border-radius: 26px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 12px rgba(0, 180, 159, 0.12);
+    }
+    .demo-swipe-handle {
+      position: absolute;
+      left: 4px;
+      top: 3px;
+      width: 44px;
+      height: 44px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #00b49f 0%, #009382 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 8px rgba(0, 180, 159, 0.35);
+      animation: swipePrompt 2.5s ease-in-out infinite;
+    }
+    @keyframes swipePrompt {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(45px); }
+    }
+
+    /* Scrolled Feature Showcase (One by One) */
+    .ext-scrolled-features {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+    .feature-step-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      margin-bottom: 4.5rem;
+      padding: 2.5rem;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      box-shadow: 0 4px 20px rgba(30, 27, 120, 0.04);
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+    .feature-step-row:hover {
+      transform: translateY(-3px);
+      border-color: #00b49f;
+      box-shadow: 0 12px 32px rgba(0, 180, 159, 0.12);
+    }
+    @media (max-width: 820px) {
+      .feature-step-row {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.75rem;
+      }
+      .ext-hero-anim-title { font-size: 2.4rem; }
+    }
+    .feature-step-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #1e1b78;
+      background: #f0effe;
+      border: 1px solid #d4d2f8;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      letter-spacing: 0.5px;
+      display: inline-block;
+      margin-bottom: 0.75rem;
+    }
+    .feature-step-content h3 {
+      font-family: var(--font-brand);
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #1e1b78;
+      margin: 0 0 0.75rem;
+      line-height: 1.25;
+    }
+    .feature-step-content p {
+      font-size: 1rem;
+      color: #64748b;
+      line-height: 1.6;
+      margin: 0 0 1rem;
+    }
+    .feature-points-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .feature-points-list li {
+      font-size: 0.92rem;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feature-step-visual {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .tech-pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tech-pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #1e1b78;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    /* Final CTA Section */
+    .ext-final-cta-section {
+      background: linear-gradient(135deg, #1e1b78 0%, #100d47 100%);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 4rem 2rem;
+      text-align: center;
+      margin: 2rem auto 4rem;
+      max-width: 1060px;
+      box-shadow: 0 16px 40px rgba(30, 27, 120, 0.25);
+    }
+    .ext-final-cta-section h2 {
+      font-family: var(--font-brand);
+      font-size: 2.3rem;
+      font-weight: 800;
+      margin-bottom: 0.85rem;
+      letter-spacing: -0.02em;
+    }
+    .ext-final-cta-section p {
+      color: #cbd5e1;
+      font-size: 1.1rem;
+      max-width: 640px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.6;
+    }
+    .btn-try-it-now {
+      background: #00b49f;
+      color: #ffffff;
+      font-family: var(--font-brand);
+      font-size: 1.15rem;
+      font-weight: 800;
+      padding: 16px 36px;
+      border-radius: 12px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px rgba(0, 180, 159, 0.4);
+      transition: all 0.2s ease;
+      border: 1.5px solid #9ee6dd;
+    }
+    .btn-try-it-now:hover {
+      background: #009382;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0, 180, 159, 0.55);
+    }
+  </style>
+</head>
+<body class="ext-page">
+  <!-- Top Navigation -->
+  <header class="landing-nav">
+    <a href="index.html" class="brand-link">
+      <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
+      <div class="brand-text-logo">
+        <span class="navy">BioTailr</span><span class="teal"> AI</span>
+      </div>
+    </a>
+
+    <ul class="nav-center-menu">
+      <li><a href="index.html">Platform Overview</a></li>
+      <li><a href="ats-rules.html">ATS Ruleset</a></li>
+      <li><a href="extension.html" class="active">Browser Extension</a></li>
+      <li><a href="download.html">Download .ZIP</a></li>
+    </ul>
+
+    <div class="nav-right-actions">
+      <a href="download.html" class="btn btn-outline btn-extension-trigger">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Download .ZIP</span>
+      </a>
+      <a href="download.html" class="btn btn-primary">Try It Now &rarr;</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="ext-hero-section">
+    <div class="hero-pill" style="display: inline-flex;">
+      <span class="badge badge-teal">MANIFEST V3 CERTIFIED &bull; CHROME &amp; EDGE EXTENSION</span>
+    </div>
+    <h1 class="ext-hero-anim-title">
+      BioTailr <span class="teal-ai">AI</span> Extension
+    </h1>
+    <p class="ext-hero-sub">
+      1-Click 100% ATS Resume Tailoring directly on LinkedIn, Indeed, Greenhouse, Lever, and Workday. Tailors Sanjay N's authentic experience to match any job specification in seconds.
+    </p>
+
+    <!-- Animated Extension Mockup Frame -->
+    <div class="ext-preview-frame-wrap">
+      <div class="ext-frame-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <img src="assets/logo.png" alt="BioTailr AI" style="width: 22px; height: 22px;">
+          <div class="brand-text-logo">
+            <span class="navy" style="font-size: 1.05rem;">BioTailr</span><span class="teal" style="font-size: 0.58rem;"> AI</span>
+          </div>
+          <span style="font-size: 0.65rem; background: #e6f9f6; color: #009382; padding: 2px 6px; border-radius: 9999px; font-weight: 700; border: 1px solid #9ee6dd;">100% ATS</span>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <span style="font-size: 0.70rem; color: #1e1b78; background: #f0effe; padding: 3px 8px; border-radius: 6px; font-weight: 600;">Side Panel</span>
+        </div>
+      </div>
+
+      <div class="ext-frame-body">
+        <div class="demo-detect-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; color: #059669; font-weight: 700;">
+              <span style="width: 7px; height: 7px; border-radius: 50%; background: #00b49f;"></span> Active Job Detected
+            </span>
+            <span style="font-size: 0.68rem; color: #475569; background: #f1f5f9; padding: 2px 7px; border-radius: 6px; font-weight: 600;">LinkedIn</span>
+          </div>
+          <div style="font-family: var(--font-brand); font-size: 1.05rem; font-weight: 800; color: #1e1b78;">Senior AI &amp; Software Development Engineer</div>
+          <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">Verified Job Posting &bull; Ready to Tailor</div>
+        </div>
+
+        <!-- Sleek Swipe Console Preview -->
+        <div class="demo-swipe-console">
+          <div style="text-align: center; pointer-events: none;">
+            <div style="font-family: var(--font-brand); font-size: 0.88rem; font-weight: 800; color: #1e1b78; letter-spacing: 0.3px;">SWIPE TO TAILOR RESUME</div>
+            <div style="font-size: 0.68rem; font-weight: 600; color: #008272;">1-Click 100% ATS Match &bull; Direct PDF</div>
+          </div>
+          <div class="demo-swipe-handle">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="13 6 19 12 13 18"></polyline>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scrolled Feature Showcase: Shown One by One -->
+  <main class="ext-scrolled-features">
+    <!-- Step 1: Real-Time DOM Job Scraper -->
+    <section class="feature-step-row">
+      <div class="feature-step-content">
+        <span class="feature-step-tag">FEATURE 01</span>
+        <h3>Real-Time Active Job Scanner</h3>
+        <p>No more copy-pasting job descriptions. The BioTailr AI extension dynamically scans the active browser tab, extracting role titles, competencies, and requirements in under 200 milliseconds.</p>
+        <ul class="feature-points-list">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Supported: LinkedIn, Indeed, Greenhouse, Lever, Workday
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Automatic JSON-LD Schema.org structured data extraction
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Real-time tab listener synchronizes instantly when you switch tabs
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-step-visual">
+        <span style="font-size: 0.75rem; font-weight: 700; color: #1e1b78; text-transform: uppercase;">Supported Job Platforms</span>
+        <div class="tech-pill-group">
+          <span class="tech-pill">LinkedIn Jobs</span>
+          <span class="tech-pill">Indeed Career Portal</span>
+          <span class="tech-pill">Greenhouse Boards</span>
+          <span class="tech-pill">Lever Job Postings</span>
+          <span class="tech-pill">Workday Talent</span>
+          <span class="tech-pill">Wellfound / AngelList</span>
+        </div>
+        <div style="font-size: 0.82rem; color: #64748b; margin-top: 8px;">
+          Dynamic DOM parsing checks unified job cards, H1 titles, and JSON-LD schema with zero delay.
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 2: Tactile Swipe-to-Tailor Console -->
+    <section class="feature-step-row">
+      <div class="feature-step-content">
+        <span class="feature-step-tag">FEATURE 02</span>
+        <h3>Tactile Left-to-Right Swipe Console</h3>
+        <p>Tailor resumes with an intuitive tactile swipe. Designed in executive light tones with crisp vector graphics and strictly zero spinning or rotating distractions.</p>
+        <ul class="feature-points-list">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Smooth drag-and-swipe handle with physical spring release
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Single-click track fallback for fast desktop execution
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Zero rotating icons &bull; Pure executive design system
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-step-visual">
+        <div style="background: #ffffff; border: 1.5px solid #00b49f; border-radius: 24px; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 16px; background: #00b49f; color: #ffffff; display: flex; align-items: center; justify-content: center;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 800; color: #1e1b78;">TACTILE SLIDER INTERACTION</div>
+              <div style="font-size: 0.70rem; color: #008272; font-weight: 600;">Left-to-Right Swipe Motion</div>
+            </div>
+          </div>
+          <span style="font-size: 0.72rem; color: #059669; font-weight: 700;">Unlocked</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 3: Multi-Job Queue ("Job Manner") -->
+    <section class="feature-step-row">
+      <div class="feature-step-content">
+        <span class="feature-step-tag">FEATURE 03</span>
+        <h3>Multi-Job Queue ("Job Manner")</h3>
+        <p>Applying to several openings at once? The extension keeps each job in a separate tab session. Switch between tailored resumes seamlessly without losing progress or history.</p>
+        <ul class="feature-points-list">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Independent job tab slots with live status indicators
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Concurrent background processing with zero tab collisions
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Revision history stored locally in browser storage
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-step-visual">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <div style="background: #1e1b78; color: #ffffff; padding: 6px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #00b49f;"></span> AI Engineer (Active)
+          </div>
+          <div style="background: #f1f5f9; color: #475569; padding: 6px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; display: flex; align-items: center; gap: 6px; border: 1px solid #cbd5e1;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #059669;"></span> Full Stack Dev (Ready)
+          </div>
+          <div style="background: #e6f9f6; color: #009382; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: 1px solid #9ee6dd;">
+            + New Job
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Step 4: Strict 1-Page A4 PDF Engine -->
+    <section class="feature-step-row">
+      <div class="feature-step-content">
+        <span class="feature-step-tag">FEATURE 04</span>
+        <h3>Direct 1-Page A4 PDF Engine</h3>
+        <p>Download your resume right from the side panel. Equipped with dynamic height balancing and font-size scaling, ensuring all 5 projects, education, and certifications are 100% visible on one single A4 page with zero text clipping.</p>
+        <ul class="feature-points-list">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Strict 1090px rendering threshold prevents second-page spill
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Automatic font size &amp; line-height step-down for dense profiles
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            Pure black ink (#000000) for highest OCR parsing scores
+          </li>
+        </ul>
+      </div>
+
+      <div class="feature-step-visual">
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+          <div style="font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; color: #059669; margin-bottom: 4px;">STRICT 1-PAGE A4 GUARANTEE</div>
+          <div style="font-size: 0.85rem; color: #1e1b78; font-weight: 700;">Zero Bottom Truncation &bull; 297mm Boundary</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA Banner -->
+    <div class="ext-final-cta-section">
+      <h2>Ready to Tailor Resumes in 1-Click?</h2>
+      <p>Download the official extension archive and install in under 60 seconds on Google Chrome or Microsoft Edge.</p>
+      <a href="download.html" class="btn-try-it-now">
+        <span>Try It Now &mdash; Get BioTailr Extension</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  </main>
+
+  <!-- Complete Executive Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <div class="brand-text-logo" style="margin-bottom: 1rem;">
+          <span style="color: #ffffff; font-size: 1.35rem; font-weight: 800;">BioTailr</span><span style="color: #00b49f; font-size: 0.68rem; font-weight: 800; vertical-align: super; position: relative; top: -2px;"> AI</span>
+        </div>
+        <p style="font-size: 0.88rem; line-height: 1.6; color: #94a3b8; max-width: 320px;">
+          Intelligent ATS-compliant resume tailoring engine calibrated on Sanjay N's 4 authentic career profiles. Built for 100% parser compliance and zero hallucinations.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>PLATFORM</h4>
+        <ul>
+          <li><a href="index.html">Platform Overview</a></li>
+          <li><a href="index.html#screen-try-now">ATS Resume Studio</a></li>
+          <li><a href="ats-rules.html">100% ATS Ruleset</a></li>
+          <li><a href="extension.html">Browser Extension</a></li>
+          <li><a href="download.html">Download .ZIP Package</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>ENGINEERING</h4>
+        <ul>
+          <li><a href="https://rns-forge.github.io/RNS_Professional_Profile/" target="_blank">Candidate Portfolio</a></li>
+          <li><a href="https://github.com/RNS-Forge/BioTailr-AI" target="_blank">Web App GitHub</a></li>
+          <li><a href="https://github.com/RNS-Forge/BioTailr-AI-Extension" target="_blank">Extension GitHub</a></li>
+          <li><a href="ats-rules.html">Parsing Architecture</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>SPECIFICATION</h4>
+        <p style="font-size: 0.82rem; line-height: 1.5; color: #94a3b8;">
+          Dual Engine: Google Gemini 2.5 Flash with Groq Llama 3.3 70B Failover. Strict 1-Page A4 Precision guarantee.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 BioTailr AI &mdash; Engineered by Sanjay N. All rights reserved.</div>
+      <div>100% ATS Parsing Guarantee &bull; Manifest V3 Certified</div>
+    </div>
+  </footer>
+</body>
+</html>

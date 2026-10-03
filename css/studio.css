@@ -344,8 +344,24 @@ input.role-input-field::placeholder {
 }
 
 .studio-brand-fixed .brand-text-logo {
+  display: inline-flex;
+  align-items: flex-start;
   font-size: 1.15rem;
-  font-weight: 700;
+  font-weight: 800;
+}
+.studio-brand-fixed .brand-text-logo .navy {
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.studio-brand-fixed .brand-text-logo .teal {
+  font-size: 0.60rem;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: super;
+  margin-left: 2px;
+  position: relative;
+  top: -2px;
 }
 
 /* Horizontally Scrollable Navbar Controls (Zero Scrollbar Visible) */
