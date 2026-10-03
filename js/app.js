@@ -30,8 +30,7 @@ function initApp() {
   bindTryNowEvents();
   bindStudioEvents();
   bindSettingsModalEvents();
-  bindExtensionGuideEvents();
-  bindEditorEvents();
+    bindEditorEvents();
   initStudioSplitter();
 
   // Pre-initialize default profile & ATS data so Studio is never blank
