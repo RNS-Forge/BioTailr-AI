@@ -97,6 +97,9 @@ function initApp() {
       clearTimeout(entryTimeout);
       showView('landing');
     });
+  } else if (document.getElementById('screen-studio')) {
+    // Standalone Studio Page (studio.html)
+    showView('studio');
   }
 }
 
