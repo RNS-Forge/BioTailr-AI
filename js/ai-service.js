@@ -319,6 +319,20 @@ export async function tailorResumeWithAi(targetRole, userRefinements = '') {
     tailoredProfile.skills = tailoredProfile.skills.filter(s => !aiBuzzwords.some(bw => s.toLowerCase().includes(bw)));
   }
 
+  // Rule 5: Professional Summary Cleanse (strip scraped page metadata)
+  if (tailoredProfile.summary) {
+    let cleanSummary = tailoredProfile.summary
+      .replace(/Specialized focus on Date posted.*/is, '')
+      .replace(/Date posted.*/is, '')
+      .replace(/Easy Apply.*/is, '')
+      .replace(/In my network.*/is, '')
+      .replace(/All filters.*/is, '')
+      .replace(/https?:\/\/\S+/gi, '')
+      .trim();
+
+    tailoredProfile.summary = cleanSummary;
+  }
+
   return {
     archetypeId,
     profile: tailoredProfile,
@@ -430,7 +444,7 @@ function generateLocalSmartTailoring(baseProfile, targetRole, refinements, domai
 
   let dynamicSummary = '';
   if (isMfg) {
-    dynamicSummary = `Detail-oriented ${targetRole} with hands-on precision metrology, quality inspection, and testing experience across incoming, in-process, and final inspection workflows at ${companiesString}. Proficient in operating digital vernier calipers, micrometers, height gauges, and bore gauges to verify tight-tolerance engineering specifications against blueprints, ensuring zero-defect compliance, PPAP documentation, and ISO 9001:2015 standards.`;
+    dynamicSummary = `Detail-oriented ${targetRole} with verified expertise in precision metrology, quality inspection, and ISO 9001:2015 standards across ${companiesString}. Proven track record ensuring zero-defect compliance and streamlining quality assurance workflows.`;
   } else if (isComm) {
     dynamicSummary = `High-impact ${targetRole} with verified expertise in voice process operations, customer relationship management, SLA adherence, and requirement gathering across ${companiesString}. Adept at managing client escalations, resolving customer inquiries with first-contact resolution, and collaborating with cross-functional technical teams to maintain 98%+ satisfaction.`;
   } else if (isFsd) {
@@ -441,10 +455,27 @@ function generateLocalSmartTailoring(baseProfile, targetRole, refinements, domai
     dynamicSummary = `Innovator and ${targetRole} with hands-on experience building high-throughput systems, scalable APIs, and intelligent automation across ${companiesString}. Proven track record integrating real-time services, boosting assessment precision by 15%, and reducing delivery cycle times by 40%.`;
   }
 
-  // Incorporate custom user refinements into summary if provided
-  if (refinements && refinements.trim().length > 0) {
-    dynamicSummary += ` Specialized focus on ${refinements.trim()}.`;
+  // Incorporate custom user refinements ONLY if valid user instruction (not scraped text)
+  if (refinements && typeof refinements === 'string') {
+    const trimmed = refinements.trim();
+    const lower = trimmed.toLowerCase();
+    const isScrapedJunk = trimmed.length > 50 ||
+      lower.includes('easy apply') ||
+      lower.includes('date posted') ||
+      lower.includes('filters') ||
+      lower.includes('network') ||
+      lower.includes('preferences') ||
+      lower.includes('applicant') ||
+      lower.includes('results -') ||
+      lower.includes('full-time') ||
+      lower.includes('posted') ||
+      lower.includes('http');
+
+    if (!isScrapedJunk && trimmed.length > 3) {
+      dynamicSummary += ` Focused on ${trimmed.replace(/^[•\-\*]\s*/, '')}.`;
+    }
   }
+
   profile.summary = dynamicSummary;
 
   // 4. Dynamic Skill Curation & Pruning
@@ -717,6 +748,7 @@ CRITICAL INSTRUCTIONS FOR 100% DYNAMIC DOMAIN DETECTION & GENERATION:
 2. Dynamic Title & Summary:
    - Title must be "${targetRole}".
    - Write a dynamic, highly targeted 3-4 sentence professional summary focusing on the core competencies, scale, and technologies required for "${targetRole}". Do NOT use canned or static text.
+   - NEVER include scraped page metadata, URLs, "Easy Apply", "Date posted", or UI text.
 
 3. Dynamic Skill Curation (100% Dynamic Full Skill Set as per Role):
    - In ALL resume templates, you MUST dynamically synthesize the FULL skill set strictly for "${targetRole}".

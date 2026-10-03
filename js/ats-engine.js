@@ -291,12 +291,19 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
     }
   }
 
-  // 4. Inject prioritized target keywords and dual acronyms
-  const currentSkills = new Set(optimized.skills || []);
-  targetKeywords.slice(0, 8).forEach(kw => currentSkills.add(kw));
-  optimized.skills = Array.from(currentSkills);
+  // Universal Rule: Clean summary of scraped page metadata
+  if (optimized.summary) {
+    optimized.summary = optimized.summary
+      .replace(/Specialized focus on Date posted.*/is, '')
+      .replace(/Date posted.*/is, '')
+      .replace(/Easy Apply.*/is, '')
+      .replace(/In my network.*/is, '')
+      .replace(/All filters.*/is, '')
+      .replace(/https?:\/\/\S+/gi, '')
+      .trim();
+  }
 
-  // 5. Universal Rule: Clean education of coursework noise across all archetypes
+  // Universal Rule: Clean education of any coursework strings across ALL archetypes
   if (optimized.education) {
     optimized.education.forEach(edu => {
       if (edu.details && /Coursework/i.test(edu.details)) {
