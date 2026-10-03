@@ -451,7 +451,7 @@ export function autoBalanceResumeToOnePage() {
     s.style.paddingBottom = '';
   });
 
-  const targetA4Px = 1122.5; // Exactly 297mm at standard 96 DPI
+  const targetA4Px = 1090; // Strictly safe 1-page A4 threshold with breathing buffer
   const isManuf = resumeEl.classList.contains('archetype-manufacturing');
   const isComm = resumeEl.classList.contains('archetype-communication');
   const baseFontSize = isManuf ? 10 : (isComm ? 10.5 : 9.8);

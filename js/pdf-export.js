@@ -158,12 +158,15 @@ export function buildStandaloneResumeHtml(resumeContentHtml, title = 'Sanjay N â
     width: 210mm;
     min-height: 297mm;
     margin: 16px auto;
-    padding: 16pt 34pt 14pt 34pt;
+    padding: 12pt 32pt 8pt 32pt;
     background: #ffffff;
     box-shadow: 0 4px 20px rgba(0,0,0,.15);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: flex-start;
+    max-height: 297mm;
+    box-sizing: border-box;
+    overflow: hidden;
   }
   a { color: #000000 !important; text-decoration: none; }
   a.u, a:hover { text-decoration: underline; }
@@ -202,13 +205,13 @@ export function buildStandaloneResumeHtml(resumeContentHtml, title = 'Sanjay N â
   .contact b { font-weight: 700; }
   .contact .wide { grid-column: 1 / -1; }
   section {
-    padding: 4.5pt 0 5pt;
+    padding: 2.8pt 0 3.2pt;
     border-bottom: 0.75pt solid #1c1c1c;
   }
   section:last-of-type { border-bottom: 0; }
   h2 {
-    margin: 0 0 3pt;
-    font-size: 11.5pt;
+    margin: 0 0 1.5pt;
+    font-size: 11pt;
     font-weight: 700;
     line-height: 1.25;
     padding-left: 2pt;
