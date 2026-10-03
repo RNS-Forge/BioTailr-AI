@@ -30,6 +30,7 @@ function initApp() {
   bindTryNowEvents();
   bindStudioEvents();
   bindSettingsModalEvents();
+  bindExtensionGuideEvents();
   bindEditorEvents();
   initStudioSplitter();
 
@@ -1546,5 +1547,160 @@ function initStudioSplitter() {
       isDragging = false;
       grid.classList.remove('is-dragging');
     }
+  });
+}
+
+/**
+ * Extension Download & Installation Guide Controller
+ * Coordinates automatic .zip download and opens the installation walkthrough modal.
+ */
+function bindExtensionGuideEvents() {
+  const guideModal = document.getElementById('modal-extension-guide');
+  const closeBtn = document.getElementById('btn-close-ext-guide');
+  const doneBtn = document.getElementById('btn-done-ext-guide');
+
+  function triggerZipDownload() {
+    const link = document.createElement('a');
+    link.href = 'downloads/BioTailr-AI-Extension.zip';
+    link.download = 'BioTailr-AI-Extension.zip';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function openGuideModal(shouldDownload = false) {
+    if (!guideModal) return;
+    guideModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    if (shouldDownload) {
+      triggerZipDownload();
+    }
+  }
+
+  function closeGuideModal() {
+    if (!guideModal) return;
+    guideModal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Header navigation Extension trigger
+  const headerBtn = document.getElementById('btn-header-extension');
+  if (headerBtn) {
+    headerBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(true);
+    });
+  }
+
+  // Landing hero button
+  const landingHeroBtn = document.getElementById('btn-landing-extension');
+  if (landingHeroBtn) {
+    landingHeroBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(true);
+    });
+  }
+
+  // Studio navigation Extension button
+  const studioExtBtn = document.getElementById('btn-studio-extension');
+  if (studioExtBtn) {
+    studioExtBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(true);
+    });
+  }
+
+  // Showcase section primary CTA (Download .ZIP)
+  const bannerDownloadBtn = document.getElementById('btn-download-ext-banner');
+  if (bannerDownloadBtn) {
+    bannerDownloadBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(true);
+    });
+  }
+
+  // Showcase section secondary CTA (Open Guide without triggering re-download)
+  const openGuideOnlyBtn = document.getElementById('btn-open-ext-guide');
+  if (openGuideOnlyBtn) {
+    openGuideOnlyBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(false);
+    });
+  }
+
+  // Generic class-based triggers if any
+  document.querySelectorAll('.btn-download-ext-action').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(true);
+    });
+  });
+
+  document.querySelectorAll('.btn-trigger-ext-guide').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(false);
+    });
+  });
+
+  // Modal dismiss buttons
+  if (closeBtn) closeBtn.addEventListener('click', closeGuideModal);
+  if (doneBtn) doneBtn.addEventListener('click', closeGuideModal);
+
+  // Backdrop click dismiss
+  if (guideModal) {
+    guideModal.addEventListener('click', (e) => {
+      if (e.target === guideModal) {
+        closeGuideModal();
+      }
+    });
+  }
+
+  // Escape key dismiss
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && guideModal && guideModal.classList.contains('active')) {
+      closeGuideModal();
+    }
+  });
+
+  // Copy buttons with visual confirmation feedback
+  const copyChips = document.querySelectorAll('.btn-copy-chip[data-copy]');
+  copyChips.forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const textToCopy = btn.getAttribute('data-copy');
+      if (!textToCopy) return;
+
+      const markCopied = () => {
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(textToCopy);
+          markCopied();
+          return;
+        } catch (err) {
+          // Fall back to execCommand
+        }
+      }
+
+      try {
+        const input = document.createElement('input');
+        input.value = textToCopy;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        markCopied();
+      } catch (err) {
+        console.error('Clipboard copy failed:', err);
+      }
+    });
   });
 }
