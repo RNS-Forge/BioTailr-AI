@@ -163,9 +163,22 @@ async function initExtensionJobMode(extJobId, authKey = '') {
       const optimizedProfile = optimizeProfileFor100Ats(aiResult.profile, targetRole, resolvedArchetype);
       const atsData = evaluateAtsScore(optimizedProfile, targetRole, resolvedArchetype);
 
-      // Step 4: Generate HTML using the web app's own templates
-      const compiledHtml = generateResumeHtml(optimizedProfile, resolvedArchetype);
-      const fullDocumentHtml = buildStandaloneResumeHtml(compiledHtml, `${optimizedProfile.fullName || 'Sanjay N'} – 100% ATS Resume – ${targetRole}`);
+      // Step 4: Generate HTML using the web app's own templates and strictly auto-balance to 1 A4 page
+      const rawHtml = generateResumeHtml(optimizedProfile, resolvedArchetype);
+      const balanceContainer = document.createElement('div');
+      balanceContainer.id = 'resume-render-container';
+      balanceContainer.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:210mm;background:#ffffff;';
+      balanceContainer.innerHTML = rawHtml;
+      document.body.appendChild(balanceContainer);
+      try {
+        autoBalanceResumeToOnePage();
+      } catch (balErr) {
+        console.warn('[BioTailr ExtMode] Auto-balance warning:', balErr);
+      }
+      const compiledHtml = balanceContainer.innerHTML;
+      document.body.removeChild(balanceContainer);
+
+      const fullDocumentHtml = buildStandaloneResumeHtml(compiledHtml, `${optimizedProfile.fullName || 'Sanjay N'} — 100% ATS Resume — ${targetRole}`);
       const candidateName = optimizedProfile.fullName || 'Sanjay N';
       const roleSlug = targetRole.replace(/[^a-zA-Z0-9]/g, '_');
       const candidateSlug = candidateName.replace(/[^a-zA-Z0-9]/g, '_');
