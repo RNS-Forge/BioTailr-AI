@@ -78,8 +78,14 @@ function initApp() {
       }
       return;
     }
-    if (['landing', 'try-now'].includes(hashView)) {
-      showView(hashView);
+    if (hashView === 'landing' || hashView === 'try-now') {
+      showView('landing');
+      if (hashView === 'try-now') {
+        setTimeout(() => {
+          document.getElementById('section-try-now')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          document.getElementById('input-target-role')?.focus();
+        }, 300);
+      }
       return;
     }
   }
@@ -218,7 +224,7 @@ async function initExtensionJobMode(extJobId, authKey = '') {
  */
 export function showView(viewName) {
   state.currentView = viewName;
-  const screens = ['entry', 'landing', 'try-now', 'studio'];
+  const screens = ['entry', 'landing', 'studio'];
 
   if (viewName === 'studio') {
     if (!state.currentProfile) {
@@ -311,27 +317,30 @@ function bindNavigationEvents() {
  * Try Now Role Input & Go Button Bindings
  */
 function bindTryNowEvents() {
-  const roleInput = document.getElementById('input-target-role');
-  const btnGo = document.getElementById('btn-go-tailr');
-
   // Role Chips Quick Selection
   document.querySelectorAll('.role-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
       document.querySelectorAll('.role-chip').forEach(c => c.classList.remove('selected'));
       chip.classList.add('selected');
+      const selectedRole = chip.getAttribute('data-role') || chip.textContent.trim();
+      const roleInput = document.getElementById('input-target-role');
       if (roleInput) {
-        roleInput.value = chip.dataset.role || chip.textContent.trim();
+        roleInput.value = selectedRole;
         roleInput.focus();
       }
     });
   });
 
   // Go Button Click
+  const btnGo = document.getElementById('btn-go-tailr');
   if (btnGo) {
-    btnGo.addEventListener('click', () => {
+    btnGo.addEventListener('click', (e) => {
+      e.preventDefault();
+      const roleInput = document.getElementById('input-target-role');
       const role = roleInput ? roleInput.value.trim() : '';
       if (!role) {
-        alert('Please enter your target job role to tailor your resume.');
+        alert('Please enter or select a target job role to tailor your resume.');
         roleInput?.focus();
         return;
       }
@@ -339,12 +348,18 @@ function bindTryNowEvents() {
     });
   }
 
-  // Enter key inside input
+  // Enter key inside role input field
+  const roleInput = document.getElementById('input-target-role');
   if (roleInput) {
     roleInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        btnGo?.click();
+        const role = roleInput.value.trim();
+        if (role) {
+          executeTailoringFlow(role);
+        } else {
+          alert('Please enter a target job role.');
+        }
       }
     });
   }
