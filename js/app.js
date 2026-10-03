@@ -78,14 +78,15 @@ function initApp() {
       }
       return;
     }
-    if (hashView === 'landing' || hashView === 'try-now') {
+    if (hashView === 'landing') {
       showView('landing');
-      if (hashView === 'try-now') {
-        setTimeout(() => {
-          document.getElementById('section-try-now')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          document.getElementById('input-target-role')?.focus();
-        }, 300);
-      }
+      return;
+    }
+    if (hashView === 'try-now') {
+      showView('try-now');
+      setTimeout(() => {
+        document.getElementById('input-target-role')?.focus();
+      }, 150);
       return;
     }
   }
@@ -224,7 +225,7 @@ async function initExtensionJobMode(extJobId, authKey = '') {
  */
 export function showView(viewName) {
   state.currentView = viewName;
-  const screens = ['entry', 'landing', 'studio'];
+  const screens = ['entry', 'landing', 'try-now', 'studio'];
 
   if (viewName === 'studio') {
     if (!state.currentProfile) {
