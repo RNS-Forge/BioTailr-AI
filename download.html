@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Download BioTailr AI Extension — Chrome &amp; Edge (.ZIP)</title>
   <meta name="description" content="Download the official BioTailr AI browser extension unpacked package (.ZIP). Step-by-step local installation guide for Google Chrome and Microsoft Edge.">
+  <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/landing.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -309,7 +310,7 @@
 <body class="download-page">
   <!-- Navigation Bar -->
   <header class="landing-nav">
-    <a href="index.html" class="brand-link">
+    <a href="index.html" class="brand-link" title="Return to Main Landing Page">
       <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
       <div class="brand-text-logo">
         <span class="navy">BioTailr</span><span class="teal"> AI</span>
@@ -318,15 +319,18 @@
 
     <ul class="nav-center-menu">
       <li><a href="index.html">Platform Overview</a></li>
-      <li><a href="studio.html">ATS Studio</a></li>
       <li><a href="ats-rules.html">ATS Ruleset</a></li>
-      <li><a href="extension.html">Browser Extension</a></li>
-      <li><a href="download.html" class="active">Download .ZIP</a></li>
     </ul>
 
     <div class="nav-right-actions">
-      <a href="extension.html" class="btn btn-outline">
-        <span>Explore Features</span>
+      <a href="extension.html" class="btn btn-outline btn-extension-trigger" title="Explore Browser Extension">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <span class="btn-extension-label">Extension</span>
+        <span class="badge-ext-pill">v1.1</span>
       </a>
       <a href="studio.html" class="btn btn-primary">
         <span>Launch Studio</span>
@@ -350,16 +354,16 @@
     </p>
 
     <!-- Big Download Button -->
-    <div>
-      <button class="btn-download-big" id="btn-open-confirm-modal">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <div style="margin: 2.5rem 0 1.75rem; display: flex; justify-content: center;">
+      <a href="downloads/BioTailr-AI-Extension.zip" download="BioTailr-AI-Extension.zip" class="btn-download-big" id="btn-direct-download" style="text-decoration: none; cursor: pointer;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
           <polyline points="7 10 12 15 17 10"></polyline>
           <line x1="12" y1="15" x2="12" y2="3"></line>
         </svg>
         <span>Download Extension (.ZIP)</span>
         <span class="badge-ver-pill">v1.1.0</span>
-      </button>
+      </a>
     </div>
 
     <!-- Metadata Bar -->
@@ -496,13 +500,17 @@
   </div>
 
   <!-- Complete Executive Footer -->
+  <!-- Executive Site Footer (Zero Emojis, High Contrast) -->
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-col">
-        <div class="brand-text-logo" style="margin-bottom: 1rem;">
-          <span style="color: #ffffff; font-size: 1.35rem; font-weight: 800;">BioTailr</span><span style="color: #00b49f; font-size: 0.68rem; font-weight: 800; vertical-align: super; position: relative; top: -2px;"> AI</span>
-        </div>
-        <p style="font-size: 0.88rem; line-height: 1.6; color: #94a3b8; max-width: 320px;">
+        <a href="index.html" class="brand-link" style="margin-bottom: 1rem; display: inline-flex; text-decoration: none;">
+          <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
+          <div class="brand-text-logo">
+            <span style="color: #ffffff; font-size: 1.35rem; font-weight: 800;">BioTailr</span><span style="color: #00b49f; font-size: 0.68rem; font-weight: 800; vertical-align: super; position: relative; top: -2px;"> AI</span>
+          </div>
+        </a>
+        <p style="font-size: 0.88rem; line-height: 1.6; color: #94a3b8; max-width: 320px; margin-top: 0.5rem;">
           Intelligent ATS-compliant resume tailoring engine calibrated on Sanjay N's 4 authentic career profiles. Built for 100% parser compliance and zero hallucinations.
         </p>
       </div>
@@ -542,77 +550,21 @@
     </div>
   </footer>
 
-  <!-- Script for Modal & Download Handling -->
-  <script>
+    <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const openModalBtn = document.getElementById('btn-open-confirm-modal');
-      const modal = document.getElementById('modal-confirm-download');
-      const closeModalBtn = document.getElementById('btn-close-modal');
-      const cancelModalBtn = document.getElementById('btn-cancel-modal');
-      const confirmActionBtn = document.getElementById('btn-confirm-action');
+      const dlBtn = document.getElementById('btn-direct-download');
       const successAlert = document.getElementById('download-success-alert');
 
-      function showModal() {
-        modal.classList.add('active');
-      }
-
-      function hideModal() {
-        modal.classList.remove('active');
-      }
-
-      function triggerDownload() {
-        hideModal();
-        const a = document.createElement('a');
-        a.href = 'downloads/BioTailr-AI-Extension.zip';
-        a.download = 'BioTailr-AI-Extension.zip';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        if (successAlert) {
-          successAlert.classList.add('active');
-        }
-        document.getElementById('section-installation-guide')?.scrollIntoView({ behavior: 'smooth' });
-      }
-
-      if (openModalBtn) openModalBtn.addEventListener('click', showModal);
-      if (closeModalBtn) closeModalBtn.addEventListener('click', hideModal);
-      if (cancelModalBtn) cancelModalBtn.addEventListener('click', hideModal);
-      if (confirmActionBtn) confirmActionBtn.addEventListener('click', triggerDownload);
-
-      if (modal) {
-        modal.addEventListener('click', (e) => {
-          if (e.target === modal) hideModal();
-        });
-      }
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) hideModal();
-      });
-
-      // Copy chip listeners
-      document.querySelectorAll('.btn-copy-chip[data-copy]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const val = btn.getAttribute('data-copy');
-          try {
-            await navigator.clipboard.writeText(val);
-          } catch(err) {
-            const input = document.createElement('input');
-            input.value = val;
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
+      if (dlBtn) {
+        dlBtn.addEventListener('click', () => {
+          if (successAlert) {
+            successAlert.classList.add('active');
           }
-          const orig = btn.textContent;
-          btn.textContent = 'Copied!';
-          btn.classList.add('copied');
           setTimeout(() => {
-            btn.textContent = orig;
-            btn.classList.remove('copied');
-          }, 2000);
+            document.getElementById('section-installation-guide')?.scrollIntoView({ behavior: 'smooth' });
+          }, 400);
         });
-      });
+      }
     });
   </script>
 </body>

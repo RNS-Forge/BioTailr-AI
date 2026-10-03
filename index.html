@@ -69,7 +69,7 @@
   <main id="screen-landing" class="view-screen">
     <!-- Navbar -->
     <header class="landing-nav">
-      <a href="index.html" class="brand-link btn-home-nav">
+      <a href="index.html" class="brand-link btn-home-nav" title="Return to Main Landing Page">
         <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
         <div class="brand-text-logo">
           <span class="navy">BioTailr</span><span class="teal"> AI</span>
@@ -78,11 +78,8 @@
 
       <ul class="nav-center-menu">
         <li><a href="index.html" class="btn-home-nav active">Platform Overview</a></li>
-        <li><a href="studio.html">ATS Studio</a></li>
         <li><a href="#" id="btn-landing-raw-resumes">4 Raw Resumes ▾</a></li>
         <li><a href="ats-rules.html">ATS Ruleset</a></li>
-        <li><a href="extension.html">Browser Extension</a></li>
-        <li><a href="download.html">Download .ZIP</a></li>
       </ul>
 
       <div class="nav-right-actions">
@@ -282,7 +279,7 @@
        ========================================================= -->
   <main id="screen-try-now" class="view-screen">
     <nav class="studio-top-nav">
-      <a href="#" class="brand-link btn-home-nav">
+      <a href="index.html" class="brand-link btn-home-nav">
         <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
         <div class="brand-text-logo">
           <span class="navy">BioTailr</span><span class="teal"> AI</span>
@@ -350,500 +347,54 @@
     </div>
   
     <!-- Executive Site Footer (Zero Emojis, High Contrast) -->
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <div class="footer-col">
-          <div class="brand-text-logo" style="margin-bottom: 1rem;">
-            <span style="color: #ffffff; font-size: 1.35rem; font-weight: 800;">BioTailr</span><span style="color: #00b49f; font-size: 0.68rem; font-weight: 800; vertical-align: super; position: relative; top: -2px;"> AI</span>
-          </div>
-          <p style="font-size: 0.88rem; line-height: 1.6; color: #94a3b8; max-width: 320px;">
-            Intelligent ATS-compliant resume tailoring engine calibrated on Sanjay N's 4 authentic career profiles. Built for 100% parser compliance and zero hallucinations.
-          </p>
-        </div>
-
-        <div class="footer-col">
-          <h4>PLATFORM</h4>
-          <ul>
-            <li><a href="index.html">Platform Overview</a></li>
-            <li><a href="studio.html">ATS Resume Studio</a></li>
-            <li><a href="ats-rules.html">100% ATS Ruleset</a></li>
-            <li><a href="extension.html">Browser Extension</a></li>
-            <li><a href="download.html">Download .ZIP Package</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>ENGINEERING</h4>
-          <ul>
-            <li><a href="https://rns-forge.github.io/RNS_Professional_Profile/" target="_blank">Candidate Portfolio</a></li>
-            <li><a href="https://github.com/RNS-Forge/BioTailr-AI" target="_blank">Web App GitHub</a></li>
-            <li><a href="https://github.com/RNS-Forge/BioTailr-AI-Extension" target="_blank">Extension GitHub</a></li>
-            <li><a href="ats-rules.html">Parsing Architecture</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>SPECIFICATION</h4>
-          <p style="font-size: 0.82rem; line-height: 1.5; color: #94a3b8;">
-            Dual Engine: Google Gemini 2.5 Flash with Groq Llama 3.3 70B Failover. Strict 1-Page A4 Precision guarantee.
-          </p>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <div>&copy; 2026 BioTailr AI &mdash; Engineered by Sanjay N. All rights reserved.</div>
-        <div>100% ATS Parsing Guarantee &bull; Manifest V3 Certified</div>
-      </div>
-    </footer>
-  </main>
-
-  <!-- =========================================================
-       SCREEN 4: STUDIO (Two-Column Workspace & Live ATS Gauge)
-       ========================================================= -->
-  <main id="screen-studio" class="view-screen">
-    <!-- Header Bar -->
-    <!-- Unified Executive Studio Navbar -->
-    <header class="studio-header">
-      <!-- Static Pinned Brand Logo (Never Scrolls) -->
-      <div class="studio-brand-fixed">
-        <a href="#" class="brand-link btn-home-nav">
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <a href="index.html" class="brand-link" style="margin-bottom: 1rem; display: inline-flex; text-decoration: none;">
           <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
           <div class="brand-text-logo">
-            <span class="navy">BioTailr</span><span class="teal"> AI</span>
-          </div>
-        </a>
-        <div class="nav-v-divider"></div>
-      </div>
-
-      <!-- Horizontally Scrollable Navbar Controls -->
-      <div class="studio-nav-scroll-wrap" id="studio-nav-scroll-wrap">
-        <div class="studio-nav-left">
-          <button class="role-switch-badge" id="btn-change-role" title="Click to Change Target Job Role">
-            <span class="role-badge-prefix">Role:</span>
-            <strong id="studio-role-badge">AI Engineer &amp; Software Developer</strong>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-          </button>
-
-          <div class="nav-v-divider"></div>
-
-          <!-- 4 Raw Resumes Dropdown in Nav -->
-          <div class="raw-resumes-dropdown-wrap">
-            <button class="raw-nav-trigger" id="btn-raw-resumes-menu" title="View & Download 4 Raw Authentic Resumes">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-              <span>4 Raw Resumes</span>
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-
-            <!-- Dropdown Panel -->
-            <div class="raw-resumes-dropdown-panel" id="raw-resumes-panel">
-              <div class="raw-dropdown-header">
-                <h4>Authentic Base Resumes (Sanjay N)</h4>
-                <p>Unedited source files with direct view &amp; download</p>
-              </div>
-              
-              <div class="raw-dropdown-list">
-                <!-- Resume 1: Developer -->
-                <div class="raw-resume-row">
-                  <div class="raw-row-info">
-                    <div class="raw-row-title">
-                      <span class="raw-badge">TRACK 01</span>
-                      <strong>Developer Resume (AI &amp; Software)</strong>
-                    </div>
-                    <span class="raw-filename">resume html/Developer Resume.html</span>
-                  </div>
-                  <div class="raw-row-actions">
-                    <button class="btn-raw-action btn-raw-view" data-archetype="developer" title="View Raw in Studio">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      <span>View</span>
-                    </button>
-                    <a href="resume html/Developer Resume.html" download="Sanjay_N_Developer_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                      <span>HTML</span>
-                    </a>
-                    <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="developer" title="Download Raw as PDF">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                      <span>PDF</span>
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Resume 2: FSD -->
-                <div class="raw-resume-row">
-                  <div class="raw-row-info">
-                    <div class="raw-row-title">
-                      <span class="raw-badge">TRACK 02</span>
-                      <strong>Full Stack Web Developer</strong>
-                    </div>
-                    <span class="raw-filename">resume html/FSD Resume.html</span>
-                  </div>
-                  <div class="raw-row-actions">
-                    <button class="btn-raw-action btn-raw-view" data-archetype="fsd" title="View Raw in Studio">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      <span>View</span>
-                    </button>
-                    <a href="resume html/FSD Resume.html" download="Sanjay_N_FSD_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                      <span>HTML</span>
-                    </a>
-                    <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="fsd" title="Download Raw as PDF">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                      <span>PDF</span>
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Resume 3: Communication -->
-                <div class="raw-resume-row">
-                  <div class="raw-row-info">
-                    <div class="raw-row-title">
-                      <span class="raw-badge">TRACK 03</span>
-                      <strong>Communication &amp; BA Resume</strong>
-                    </div>
-                    <span class="raw-filename">resume html/Communication Resume.html</span>
-                  </div>
-                  <div class="raw-row-actions">
-                    <button class="btn-raw-action btn-raw-view" data-archetype="communication" title="View Raw in Studio">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      <span>View</span>
-                    </button>
-                    <a href="resume html/Communication Resume.html" download="Sanjay_N_Communication_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                      <span>HTML</span>
-                    </a>
-                    <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="communication" title="Download Raw as PDF">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                      <span>PDF</span>
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Resume 4: Manufacturing -->
-                <div class="raw-resume-row">
-                  <div class="raw-row-info">
-                    <div class="raw-row-title">
-                      <span class="raw-badge">TRACK 04</span>
-                      <strong>Manufacturing &amp; QC Resume</strong>
-                    </div>
-                    <span class="raw-filename">resume html/Manufacturing.html</span>
-                  </div>
-                  <div class="raw-row-actions">
-                    <button class="btn-raw-action btn-raw-view" data-archetype="manufacturing" title="View Raw in Studio">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                      <span>View</span>
-                    </button>
-                    <a href="resume html/Manufacturing.html" download="Sanjay_N_Manufacturing_Resume_Raw.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                      <span>HTML</span>
-                    </a>
-                    <button class="btn-raw-action btn-raw-dl-pdf" data-archetype="manufacturing" title="Download Raw as PDF">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                      <span>PDF</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Center: Mode Toggle (100% ATS Tailored vs Original Raw Resume) -->
-        <div class="studio-nav-center">
-          <div class="mode-segmented-bar">
-            <button class="seg-btn active" id="btn-mode-tailored" title="View 100% ATS Tailored Resume">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              <span>100% ATS Tailored</span>
-            </button>
-            <button class="seg-btn" id="btn-mode-raw" title="View Original Untouched Source Resume">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-              <span>Original Raw Resume</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Right: Model Indicator & Export Actions -->
-        <div class="studio-nav-right">
-          <a href="extension.html" target="_blank" class="btn btn-outline btn-sm btn-extension-trigger" id="btn-studio-extension" title="Explore Browser Extension">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-            <span>Extension</span>
-          </a>
-          <button class="btn btn-outline btn-sm btn-settings-icon" id="btn-studio-settings" title="API Key Settings">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            <span>Settings</span>
-          </button>
-          <button class="btn btn-outline btn-sm" id="btn-toggle-live-edit" title="Toggle Direct On-Page Live Editing">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-            <span id="live-edit-btn-text">Live Edit: OFF</span>
-          </button>
-          <button class="btn btn-outline btn-sm" id="btn-download-html" title="Download Clean ATS HTML Source">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            <span>Download HTML</span>
-          </button>
-          <button class="btn btn-outline btn-sm" id="btn-print-native" title="Print Directly">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-            <span>Print</span>
-          </button>
-          <button class="btn btn-teal btn-sm" id="btn-download-pdf" title="Download Accurate 100% ATS PDF">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-            <span>Download PDF</span>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <!-- Mobile Screen Tabs (< 992px) -->
-    <div class="mobile-section-tabs" id="studio-mobile-tabs">
-      <button class="mob-tab active" id="tab-btn-resume">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-        <span>Resume Preview</span>
-      </button>
-      <button class="mob-tab" id="tab-btn-ats">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-        <span>100% ATS &amp; Chat</span>
-      </button>
-    </div>
-
-    <!-- Workspace Grid -->
-    <div class="studio-main-grid">
-      <!-- Left Column: ATS Score & Feedback Chat -->
-      <!-- Left Column: ATS Score & Feedback Chat / Direct Resume Content Editor -->
-      <aside class="studio-left-sidebar" id="studio-left-sidebar">
-        <!-- Sidebar Navigation Tabs -->
-        <div class="sidebar-tab-bar">
-          <button class="s-tab-btn active" id="btn-stab-rules" type="button" title="View 100% ATS Ruleset & Optimization Status">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-            <span>100% ATS Rules</span>
-          </button>
-          <button class="s-tab-btn" id="btn-stab-editor" type="button" title="Edit Summary, Skills, Experience & Education Directly">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-            <span>Edit Content</span>
-          </button>
-        </div>
-
-        <!-- PANEL 1: ATS Ruleset & AI Refinements -->
-        <div class="sidebar-panel active" id="panel-sidebar-rules">
-          <!-- 100% ATS Score Dial -->
-          <div class="ats-score-card">
-            <div class="ats-circle-gauge">
-              <div class="ats-circle-inner">
-                <div class="gauge-score-value" id="ats-gauge-value">100%</div>
-                <div class="gauge-score-label">ATS SCORE</div>
-              </div>
-            </div>
-            <div class="ats-score-meta">
-              <h3 id="ats-gauge-heading">100% ATS Verified</h3>
-              <p id="ats-gauge-desc">Resume meets all 6 primary ATS parsing criteria for this position.</p>
-            </div>
-          </div>
-
-          <!-- ATS Checklist -->
-          <div class="ats-checklist-card">
-            <div class="checklist-title">ATS Ruleset Verification</div>
-            <div id="ats-checklist-items">
-              <!-- Dynamically rendered -->
-            </div>
-          </div>
-
-          <!-- Interactive Correction Assistant -->
-          <div class="correction-card">
-            <div class="correction-title">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1e1b78" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-              <span>AI Refinements &amp; Corrections</span>
-            </div>
-            <textarea 
-              id="textarea-corrections" 
-              class="correction-textarea" 
-              placeholder="e.g. 'Add Kubernetes and Vector Search to skills', 'Make summary sound more senior', 'Emphasize cloud cost reduction'"
-            ></textarea>
-            <button class="btn btn-update-resume" id="btn-submit-correction">Update with AI ➔</button>
-          </div>
-        </div>
-
-        <!-- PANEL 2: Interactive Resume Content Editor (Direct Edit Profile, Skills, Experience, Education) -->
-        <div class="sidebar-panel" id="panel-sidebar-editor" style="display: none;">
-          <div class="editor-header-bar">
-            <div class="editor-title-group">
-              <h3>Resume Editor</h3>
-              <p>Edit summary, skills, experience, and education directly.</p>
-            </div>
-            <button class="btn btn-teal btn-sm" id="btn-save-editor-top">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-              <span>Apply &amp; Re-Score</span>
-            </button>
-          </div>
-
-          <div class="editor-accordion">
-            <!-- 1. Profile Title & Contact -->
-            <details class="editor-section" open>
-              <summary class="editor-section-summary">
-                <span class="sec-title-text">Role Title &amp; Contact Info</span>
-                <span class="sec-pill">Header</span>
-              </summary>
-              <div class="editor-section-body">
-                <div class="form-group">
-                  <label>Target Job Title / Headline</label>
-                  <input type="text" id="edit-profile-title" class="form-input" placeholder="e.g. AI Engineer &amp; Software Developer">
-                </div>
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="edit-profile-name" class="form-input" value="SANJAY N">
-                  </div>
-                  <div class="form-group">
-                    <label>City / Location</label>
-                    <input type="text" id="edit-profile-location" class="form-input" placeholder="Coimbatore, Tamil Nadu">
-                  </div>
-                </div>
-                <div class="form-row-2">
-                  <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="edit-profile-email" class="form-input" placeholder="2005sanjaynrs@gmail.com">
-                  </div>
-                  <div class="form-group">
-                    <label>Phone</label>
-                    <input type="text" id="edit-profile-phone" class="form-input" placeholder="+91 93615 99018">
-                  </div>
-                </div>
-              </div>
-            </details>
-
-            <!-- 2. Summary -->
-            <details class="editor-section" open>
-              <summary class="editor-section-summary">
-                <span class="sec-title-text">Professional Summary</span>
-                <span class="sec-pill">Summary</span>
-              </summary>
-              <div class="editor-section-body">
-                <div class="form-group">
-                  <label>Summary Statement</label>
-                  <textarea id="edit-profile-summary" class="form-textarea" rows="4" placeholder="Enter tailored summary..."></textarea>
-                  <span class="form-hint">Highlight primary expertise, measurable metrics, and key technical stack.</span>
-                </div>
-              </div>
-            </details>
-
-            <!-- 3. Technical Skills -->
-            <details class="editor-section" open>
-              <summary class="editor-section-summary">
-                <span class="sec-title-text">Technical Skills &amp; Categories</span>
-                <span class="sec-pill">Skills</span>
-              </summary>
-              <div class="editor-section-body" id="editor-skills-container">
-                <!-- Dynamically populated category fields -->
-              </div>
-            </details>
-
-            <!-- 4. Work Experience -->
-            <details class="editor-section" open>
-              <summary class="editor-section-summary">
-                <span class="sec-title-text">Work Experience &amp; Positions</span>
-                <span class="sec-pill" id="editor-exp-count-pill">3 Roles</span>
-              </summary>
-              <div class="editor-section-body">
-                <div id="editor-experiences-container">
-                  <!-- Dynamically rendered experience cards with bullet point managers -->
-                </div>
-                <button type="button" class="btn btn-outline btn-sm btn-block" id="btn-add-experience-item" style="margin-top: 8px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  <span>+ Add Another Work Experience</span>
-                </button>
-              </div>
-            </details>
-
-            <!-- 5. Projects -->
-            <details class="editor-section">
-              <summary class="editor-section-summary">
-                <span class="sec-title-text">Key Projects</span>
-                <span class="sec-pill">Projects</span>
-              </summary>
-              <div class="editor-section-body">
-                <div id="editor-projects-container">
-                  <!-- Dynamically rendered project cards -->
-                </div>
-                <button type="button" class="btn btn-outline btn-sm btn-block" id="btn-add-project-item" style="margin-top: 8px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  <span>+ Add Project</span>
-                </button>
-              </div>
-            </details>
-
-            <!-- 6. Education -->
-            <details class="editor-section">
-              <summary class="editor-section-summary">
-                <span class="sec-title-text">Education &amp; Academics</span>
-                <span class="sec-pill">Education</span>
-              </summary>
-              <div class="editor-section-body" id="editor-education-container">
-                <!-- Dynamically rendered education fields -->
-              </div>
-            </details>
-          </div>
-
-          <div class="editor-bottom-bar">
-            <button class="btn btn-teal btn-block" id="btn-save-editor-bottom">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
-              <span>Apply Changes &amp; Verify 100% ATS</span>
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Draggable Splitter Divider between Ruleset (Left) & Resume Preview (Right) -->
-      <div class="studio-drag-splitter" id="studio-splitter" title="Drag to resize Ruleset & Resume Preview panels"></div>
-
-      <!-- Right Column: Live Rendered A4 Sheet (Full Page Clean Preview) -->
-      <main class="studio-right-canvas" id="studio-right-canvas">
-        <div class="a4-paper-container" id="resume-render-container">
-          <!-- Dynamic resume HTML will be injected here -->
-        </div>
-      </main>
-    </div>
-  
-    <!-- Executive Site Footer (Zero Emojis, High Contrast) -->
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <div class="footer-col">
-          <div class="brand-text-logo" style="margin-bottom: 1rem;">
             <span style="color: #ffffff; font-size: 1.35rem; font-weight: 800;">BioTailr</span><span style="color: #00b49f; font-size: 0.68rem; font-weight: 800; vertical-align: super; position: relative; top: -2px;"> AI</span>
           </div>
-          <p style="font-size: 0.88rem; line-height: 1.6; color: #94a3b8; max-width: 320px;">
-            Intelligent ATS-compliant resume tailoring engine calibrated on Sanjay N's 4 authentic career profiles. Built for 100% parser compliance and zero hallucinations.
-          </p>
-        </div>
-
-        <div class="footer-col">
-          <h4>PLATFORM</h4>
-          <ul>
-            <li><a href="index.html">Platform Overview</a></li>
-            <li><a href="studio.html">ATS Resume Studio</a></li>
-            <li><a href="ats-rules.html">100% ATS Ruleset</a></li>
-            <li><a href="extension.html">Browser Extension</a></li>
-            <li><a href="download.html">Download .ZIP Package</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>ENGINEERING</h4>
-          <ul>
-            <li><a href="https://rns-forge.github.io/RNS_Professional_Profile/" target="_blank">Candidate Portfolio</a></li>
-            <li><a href="https://github.com/RNS-Forge/BioTailr-AI" target="_blank">Web App GitHub</a></li>
-            <li><a href="https://github.com/RNS-Forge/BioTailr-AI-Extension" target="_blank">Extension GitHub</a></li>
-            <li><a href="ats-rules.html">Parsing Architecture</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>SPECIFICATION</h4>
-          <p style="font-size: 0.82rem; line-height: 1.5; color: #94a3b8;">
-            Dual Engine: Google Gemini 2.5 Flash with Groq Llama 3.3 70B Failover. Strict 1-Page A4 Precision guarantee.
-          </p>
-        </div>
+        </a>
+        <p style="font-size: 0.88rem; line-height: 1.6; color: #94a3b8; max-width: 320px; margin-top: 0.5rem;">
+          Intelligent ATS-compliant resume tailoring engine calibrated on Sanjay N's 4 authentic career profiles. Built for 100% parser compliance and zero hallucinations.
+        </p>
       </div>
 
-      <div class="footer-bottom">
-        <div>&copy; 2026 BioTailr AI &mdash; Engineered by Sanjay N. All rights reserved.</div>
-        <div>100% ATS Parsing Guarantee &bull; Manifest V3 Certified</div>
+      <div class="footer-col">
+        <h4>PLATFORM</h4>
+        <ul>
+          <li><a href="index.html">Platform Overview</a></li>
+          <li><a href="studio.html">ATS Resume Studio</a></li>
+          <li><a href="ats-rules.html">100% ATS Ruleset</a></li>
+          <li><a href="extension.html">Browser Extension</a></li>
+          <li><a href="download.html">Download .ZIP Package</a></li>
+        </ul>
       </div>
-    </footer>
+
+      <div class="footer-col">
+        <h4>ENGINEERING</h4>
+        <ul>
+          <li><a href="https://rns-forge.github.io/RNS_Professional_Profile/" target="_blank">Candidate Portfolio</a></li>
+          <li><a href="https://github.com/RNS-Forge/BioTailr-AI" target="_blank">Web App GitHub</a></li>
+          <li><a href="https://github.com/RNS-Forge/BioTailr-AI-Extension" target="_blank">Extension GitHub</a></li>
+          <li><a href="ats-rules.html">Parsing Architecture</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>SPECIFICATION</h4>
+        <p style="font-size: 0.82rem; line-height: 1.5; color: #94a3b8;">
+          Dual Engine: Google Gemini 2.5 Flash with Groq Llama 3.3 70B Failover. Strict 1-Page A4 Precision guarantee.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 BioTailr AI &mdash; Engineered by Sanjay N. All rights reserved.</div>
+      <div>100% ATS Parsing Guarantee &bull; Manifest V3 Certified</div>
+    </div>
+  </footer>
   </main>
 
   <!-- =========================================================

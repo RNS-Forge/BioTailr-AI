@@ -251,8 +251,12 @@ function bindNavigationEvents() {
   // Brand logo click -> go to landing
   document.querySelectorAll('.btn-home-nav').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      showView('landing');
+      if (document.getElementById('screen-landing')) {
+        e.preventDefault();
+        showView('landing');
+      } else {
+        // Allow default link navigation to index.html
+      }
     });
   });
 

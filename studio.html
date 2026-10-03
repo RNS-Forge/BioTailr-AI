@@ -34,7 +34,7 @@
     <header class="studio-header">
       <!-- Static Pinned Brand Logo (Never Scrolls) -->
       <div class="studio-brand-fixed">
-        <a href="#" class="brand-link btn-home-nav">
+        <a href="index.html" class="brand-link" title="Return to Main Landing Page" title="Return to Main Landing Page">
           <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
           <div class="brand-text-logo">
             <span class="navy">BioTailr</span><span class="teal"> AI</span>
@@ -190,10 +190,6 @@
 
         <!-- Right: Model Indicator & Export Actions -->
         <div class="studio-nav-right">
-          <a href="extension.html" target="_blank" class="btn btn-outline btn-sm btn-extension-trigger" id="btn-studio-extension" title="Explore Browser Extension">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-            <span>Extension</span>
-          </a>
           <button class="btn btn-outline btn-sm btn-settings-icon" id="btn-studio-settings" title="API Key Settings">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             <span>Settings</span>
@@ -427,51 +423,54 @@
     </div>
   
     <!-- Executive Site Footer (Zero Emojis, High Contrast) -->
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <div class="footer-col">
-          <div class="brand-text-logo" style="margin-bottom: 1rem;">
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <a href="index.html" class="brand-link" style="margin-bottom: 1rem; display: inline-flex; text-decoration: none;">
+          <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
+          <div class="brand-text-logo">
             <span style="color: #ffffff; font-size: 1.35rem; font-weight: 800;">BioTailr</span><span style="color: #00b49f; font-size: 0.68rem; font-weight: 800; vertical-align: super; position: relative; top: -2px;"> AI</span>
           </div>
-          <p style="font-size: 0.88rem; line-height: 1.6; color: #94a3b8; max-width: 320px;">
-            Intelligent ATS-compliant resume tailoring engine calibrated on Sanjay N's 4 authentic career profiles. Built for 100% parser compliance and zero hallucinations.
-          </p>
-        </div>
-
-        <div class="footer-col">
-          <h4>PLATFORM</h4>
-          <ul>
-            <li><a href="index.html">Platform Overview</a></li>
-            <li><a href="studio.html">ATS Resume Studio</a></li>
-            <li><a href="ats-rules.html">100% ATS Ruleset</a></li>
-            <li><a href="extension.html">Browser Extension</a></li>
-            <li><a href="download.html">Download .ZIP Package</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>ENGINEERING</h4>
-          <ul>
-            <li><a href="https://rns-forge.github.io/RNS_Professional_Profile/" target="_blank">Candidate Portfolio</a></li>
-            <li><a href="https://github.com/RNS-Forge/BioTailr-AI" target="_blank">Web App GitHub</a></li>
-            <li><a href="https://github.com/RNS-Forge/BioTailr-AI-Extension" target="_blank">Extension GitHub</a></li>
-            <li><a href="ats-rules.html">Parsing Architecture</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-col">
-          <h4>SPECIFICATION</h4>
-          <p style="font-size: 0.82rem; line-height: 1.5; color: #94a3b8;">
-            Dual Engine: Google Gemini 2.5 Flash with Groq Llama 3.3 70B Failover. Strict 1-Page A4 Precision guarantee.
-          </p>
-        </div>
+        </a>
+        <p style="font-size: 0.88rem; line-height: 1.6; color: #94a3b8; max-width: 320px; margin-top: 0.5rem;">
+          Intelligent ATS-compliant resume tailoring engine calibrated on Sanjay N's 4 authentic career profiles. Built for 100% parser compliance and zero hallucinations.
+        </p>
       </div>
 
-      <div class="footer-bottom">
-        <div>&copy; 2026 BioTailr AI &mdash; Engineered by Sanjay N. All rights reserved.</div>
-        <div>100% ATS Parsing Guarantee &bull; Manifest V3 Certified</div>
+      <div class="footer-col">
+        <h4>PLATFORM</h4>
+        <ul>
+          <li><a href="index.html">Platform Overview</a></li>
+          <li><a href="studio.html">ATS Resume Studio</a></li>
+          <li><a href="ats-rules.html">100% ATS Ruleset</a></li>
+          <li><a href="extension.html">Browser Extension</a></li>
+          <li><a href="download.html">Download .ZIP Package</a></li>
+        </ul>
       </div>
-    </footer>
+
+      <div class="footer-col">
+        <h4>ENGINEERING</h4>
+        <ul>
+          <li><a href="https://rns-forge.github.io/RNS_Professional_Profile/" target="_blank">Candidate Portfolio</a></li>
+          <li><a href="https://github.com/RNS-Forge/BioTailr-AI" target="_blank">Web App GitHub</a></li>
+          <li><a href="https://github.com/RNS-Forge/BioTailr-AI-Extension" target="_blank">Extension GitHub</a></li>
+          <li><a href="ats-rules.html">Parsing Architecture</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>SPECIFICATION</h4>
+        <p style="font-size: 0.82rem; line-height: 1.5; color: #94a3b8;">
+          Dual Engine: Google Gemini 2.5 Flash with Groq Llama 3.3 70B Failover. Strict 1-Page A4 Precision guarantee.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 BioTailr AI &mdash; Engineered by Sanjay N. All rights reserved.</div>
+      <div>100% ATS Parsing Guarantee &bull; Manifest V3 Certified</div>
+    </div>
+  </footer>
   </main>
 
   <!-- =========================================================
