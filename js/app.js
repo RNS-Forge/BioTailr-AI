@@ -514,51 +514,91 @@ function renderAtsChecklist() {
   const container = document.getElementById('ats-checklist-items');
   if (!container || !state.atsData) return;
 
-  const rules = state.atsData.rules;
-  container.innerHTML = `
-    <div class="check-item">
+  const rules = state.atsData.rules || {};
+  const checkSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`;
+  const warnSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+  container.innerHTML = Object.values(rules).map(r => `
+    <div class="check-item" title="${(r.detail || '').replace(/"/g, '&quot;')}">
       <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.keywordMatch.name}</span>
+        ${r.passed ? checkSvg : warnSvg}
+        <span>${r.name}</span>
       </div>
-      <span class="check-status">${rules.keywordMatch.score}% MATCH</span>
+      <span class="check-status" style="${r.passed ? '' : 'color: #f59e0b;'}">${r.badge || (r.score + '%')}</span>
     </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.metricQuantification.name}</span>
-      </div>
-      <span class="check-status">100% METRICS</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.actionVerbs.name}</span>
-      </div>
-      <span class="check-status">100% POWER VERBS</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.sectionHeaders.name}</span>
-      </div>
-      <span class="check-status">COMPLIANT</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.singleColumn.name}</span>
-      </div>
-      <span class="check-status">OPTIMAL</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>Contact &amp; Header Structural Integrity</span>
-      </div>
-      <span class="check-status">VERIFIED</span>
-    </div>
-  `;
+  `).join('');
+}
+
+/**
+ * Generates a clean, professional download filename matching the candidate name & Role on the PDF.
+ * Format: <Candidate_Name>_<Role>_Resume.<ext> (e.g. Sanjay_N_Software_Development_Engineer_Resume.pdf)
+ */
+export function getResumeDownloadFilename(extension = 'pdf', explicitArchetype = null) {
+  const resumeEl = document.getElementById('resume-document');
+
+  // 1. Role: extract from the rendered resume DOM, or active profile state
+  const roleEl = resumeEl?.querySelector('[data-editable-field="title"]') 
+              || resumeEl?.querySelector('.role');
+  let role = roleEl?.textContent?.trim() || '';
+
+  // If explicit archetype is provided (e.g. from raw dropdown click)
+  if (explicitArchetype && RESUME_ARCHETYPES[explicitArchetype]) {
+    role = RESUME_ARCHETYPES[explicitArchetype].defaultRole 
+        || RESUME_ARCHETYPES[explicitArchetype].profile?.title 
+        || role;
+  }
+
+  // Fallback to state if DOM is empty
+  if (!role) {
+    if (state.viewMode === 'raw' && state.selectedArchetypeId && RESUME_ARCHETYPES[state.selectedArchetypeId]) {
+      role = RESUME_ARCHETYPES[state.selectedArchetypeId].defaultRole 
+          || RESUME_ARCHETYPES[state.selectedArchetypeId].profile?.title 
+          || '';
+    } else {
+      role = state.currentProfile?.title || state.targetRole || '';
+    }
+  }
+
+  // Fallback to archetype default role if still empty
+  if (!role && state.selectedArchetypeId && RESUME_ARCHETYPES[state.selectedArchetypeId]) {
+    role = RESUME_ARCHETYPES[state.selectedArchetypeId].defaultRole || '';
+  }
+
+  // 2. Candidate name: extract from rendered resume DOM, or profile
+  const nameEl = resumeEl?.querySelector('[data-editable-field="fullName"]')
+              || resumeEl?.querySelector('h1');
+  let name = nameEl?.textContent?.trim() 
+          || state.currentProfile?.fullName 
+          || 'Sanjay N';
+
+  // Format clean name: "SANJAY N" -> "Sanjay_N"
+  const cleanName = name
+    .replace(/[^a-zA-Z0-9\s]/g, '')
+    .trim()
+    .split(/\s+/)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join('_') || 'Sanjay_N';
+
+  // Extract primary role if multiple titles are separated by '|'
+  let primaryRole = role.split('|')[0].trim() || role.trim();
+
+  // Clean role string: replace slashes with space, remove special chars, normalize whitespace to underscores
+  let cleanRole = primaryRole
+    .replace(/[/]/g, ' ')
+    .replace(/[^a-zA-Z0-9\s_-]/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .join('_');
+
+  if (!cleanRole) {
+    cleanRole = 'Professional';
+  }
+
+  const hasResumeInRole = cleanRole.toLowerCase().endsWith('resume');
+  const roleWithResume = hasResumeInRole ? cleanRole : `${cleanRole}_Resume`;
+  const ext = extension.replace(/^\./, '');
+
+  return `${cleanName}_${roleWithResume}.${ext}`;
 }
 
 /**
@@ -569,10 +609,7 @@ function bindStudioEvents() {
   const btnDownloadPdf = document.getElementById('btn-download-pdf');
   if (btnDownloadPdf) {
     btnDownloadPdf.addEventListener('click', () => {
-      const isRaw = state.viewMode === 'raw';
-      const filename = isRaw 
-        ? `Sanjay_N_${state.selectedArchetypeId}_Raw.pdf`
-        : `Sanjay_N_${state.targetRole.replace(/[^a-zA-Z0-9]/g, '_')}_ATS100.pdf`;
+      const filename = getResumeDownloadFilename('pdf');
       downloadResumeAsPdf('resume-document', filename);
     });
   }
@@ -581,10 +618,7 @@ function bindStudioEvents() {
   const btnDownloadHtml = document.getElementById('btn-download-html');
   if (btnDownloadHtml) {
     btnDownloadHtml.addEventListener('click', () => {
-      const isRaw = state.viewMode === 'raw';
-      const filename = isRaw 
-        ? `Sanjay_N_${state.selectedArchetypeId}_Raw.html`
-        : `Sanjay_N_${state.targetRole.replace(/[^a-zA-Z0-9]/g, '_')}_ATS100.html`;
+      const filename = getResumeDownloadFilename('html');
       downloadResumeAsHtml('resume-document', filename);
     });
   }
@@ -720,7 +754,7 @@ function bindStudioEvents() {
       panelRaw?.classList.remove('active');
       btnRawMenu?.classList.remove('active');
       setResumeViewMode('raw');
-      const filename = `Sanjay_N_${arch}_Raw.pdf`;
+      const filename = getResumeDownloadFilename('pdf', arch);
       setTimeout(() => {
         downloadResumeAsPdf('resume-document', filename);
       }, 250);
@@ -1262,7 +1296,7 @@ function syncLiveEditToState() {
   sheet.querySelectorAll('.exp-entry').forEach((expEl, eIdx) => {
     if (p.experience && p.experience[eIdx]) {
       const bullets = [];
-      expEl.querySelectorAll('.exp-bullets li').forEach(bEl => {
+      expEl.querySelectorAll('li[data-bullet-index], .exp-bullets li, ul li').forEach(bEl => {
         bullets.push(bEl.textContent.trim());
       });
       if (bullets.length > 0) p.experience[eIdx].highlights = bullets;
@@ -1328,7 +1362,7 @@ function setResumeViewMode(mode) {
     }
     if (scoreValEl) scoreValEl.textContent = '100%';
     if (headingEl) headingEl.textContent = '100% ATS Verified';
-    if (descEl) descEl.textContent = 'Resume meets all 6 primary ATS parsing criteria for this position.';
+    if (descEl) descEl.textContent = 'Resume meets all 7 enterprise ATS parsing criteria for this position.';
 
     // Preserve existing tailored profile or optimize from base if none exists yet
     if (!state.currentProfile) {
