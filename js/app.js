@@ -457,7 +457,29 @@ function bindTryNowEvents() {
 }
 
 /**
- * Client-Side PDF Resume Upload Event Bindings (Zero Backend)
+ * Validates active demo session before allowing PDF resume upload
+ */
+function guardUploadAction(action) {
+  const check = requireActiveDemo();
+  if (!check.allowed) {
+    if (check.reason === 'expired') {
+      alert('Your 4-day demo has expired. Please sign in or register a new trial to upload resumes.');
+      window.location.href = 'login.html?expired=1';
+    } else if (check.reason === 'unverified') {
+      alert('Please verify your email address to enable PDF resume upload.');
+      window.location.href = `login.html?verify=${encodeURIComponent(check.email || '')}`;
+    } else {
+      alert('Sign-In Required: You must be signed in to upload and parse your resume. Please sign in or start your free 4-day demo.');
+      window.location.href = 'login.html?redirect=upload';
+    }
+    return false;
+  }
+  if (typeof action === 'function') action(check.user);
+  return true;
+}
+
+/**
+ * Client-Side PDF Resume Upload Event Bindings (Zero Backend, Auth Gated)
  */
 function bindPdfUploadEvents() {
   const landingInput = document.getElementById('input-landing-pdf');
@@ -475,25 +497,49 @@ function bindPdfUploadEvents() {
   const studioInput = document.getElementById('input-studio-pdf');
   const btnStudioUpload = document.getElementById('btn-studio-upload-pdf');
 
-  // Trigger file dialogs
-  btnBrowseLanding?.addEventListener('click', (e) => { e.stopPropagation(); landingInput?.click(); });
-  landingDropzone?.addEventListener('click', () => landingInput?.click());
+  // Trigger file dialogs - guarded by active authentication
+  btnBrowseLanding?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (guardUploadAction()) landingInput?.click();
+  });
+  landingDropzone?.addEventListener('click', () => {
+    if (guardUploadAction()) landingInput?.click();
+  });
   landingInput?.addEventListener('change', (e) => {
+    if (!guardUploadAction()) {
+      e.target.value = '';
+      return;
+    }
     if (e.target.files?.[0]) handleUploadedPdfFile(e.target.files[0], 'landing');
   });
 
-  btnBrowseTrynow?.addEventListener('click', (e) => { e.stopPropagation(); trynowInput?.click(); });
-  trynowDropzone?.addEventListener('click', () => trynowInput?.click());
+  btnBrowseTrynow?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (guardUploadAction()) trynowInput?.click();
+  });
+  trynowDropzone?.addEventListener('click', () => {
+    if (guardUploadAction()) trynowInput?.click();
+  });
   trynowInput?.addEventListener('change', (e) => {
+    if (!guardUploadAction()) {
+      e.target.value = '';
+      return;
+    }
     if (e.target.files?.[0]) handleUploadedPdfFile(e.target.files[0], 'trynow');
   });
 
-  btnStudioUpload?.addEventListener('click', () => studioInput?.click());
+  btnStudioUpload?.addEventListener('click', () => {
+    if (guardUploadAction()) studioInput?.click();
+  });
   studioInput?.addEventListener('change', (e) => {
+    if (!guardUploadAction()) {
+      e.target.value = '';
+      return;
+    }
     if (e.target.files?.[0]) handleUploadedPdfFile(e.target.files[0], 'studio');
   });
 
-  // Drag & drop handlers
+  // Drag & drop handlers - guarded by active authentication
   const setupDragDrop = (card, input, prefix) => {
     if (!card) return;
     ['dragenter', 'dragover'].forEach(name => {
@@ -511,6 +557,11 @@ function bindPdfUploadEvents() {
       });
     });
     card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      card.classList.remove('drag-over');
+      if (!guardUploadAction()) return;
+
       const file = e.dataTransfer?.files?.[0];
       if (file && file.type === 'application/pdf') {
         handleUploadedPdfFile(file, prefix);
@@ -544,6 +595,8 @@ function bindPdfUploadEvents() {
  * Handles PDF File selection and executes pure frontend extraction
  */
 async function handleUploadedPdfFile(file, context = 'landing') {
+  if (!guardUploadAction()) return;
+
   if (!file || file.type !== 'application/pdf') {
     alert('Please select a valid PDF file.');
     return;
@@ -2243,37 +2296,82 @@ function bindReviewEvents() {
     addReviewEducationItem();
   });
 
-  // Save profile to storage & Supabase
+  // Save profile to storage & Supabase (Auth Gated)
   document.getElementById('btn-review-save-only')?.addEventListener('click', async () => {
+    const authCheck = requireActiveDemo();
+    if (!authCheck.allowed) {
+      if (authCheck.reason === 'expired') {
+        alert('Your 4-day demo has expired. Please sign in or register to save your profile.');
+        window.location.href = 'login.html?expired=1';
+      } else {
+        alert('Authentication Required: Please sign in or start a free 4-day demo to save your profile locally and sync to the Supabase database.');
+        window.location.href = 'login.html?redirect=review';
+      }
+      return;
+    }
+
+    const activeUser = authCheck.user;
     const updatedProfile = collectReviewFormData();
+
+    // Associate candidate profile with the authenticated user
+    updatedProfile.userId = activeUser.id;
+    updatedProfile.userEmail = activeUser.email;
+    updatedProfile.savedBy = activeUser.fullName || activeUser.email;
+
     state.customProfile = updatedProfile;
     state.targetRole = updatedProfile.title || state.targetRole;
 
-    updateReviewSyncStatus('Saving to temporary storage and Supabase cloud...', true);
+    updateReviewSyncStatus(`Saving profile to local storage & Supabase for ${activeUser.email}...`, true);
 
     try {
       localStorage.setItem('biotailr_candidate_profile', JSON.stringify(updatedProfile));
       localStorage.setItem('biotailr_dynamic_user_profile', JSON.stringify(updatedProfile));
+      localStorage.setItem(`biotailr_user_${activeUser.id}_profile`, JSON.stringify(updatedProfile));
     } catch (e) {
       console.warn('Storage error:', e);
     }
 
-    await saveProfileToSupabase(updatedProfile);
+    const syncRes = await saveProfileToSupabase(updatedProfile);
     updateDynamicUploadUi(updatedProfile);
-    updateReviewSyncStatus('✓ Profile securely saved to session storage & Supabase cloud!', false);
+
+    if (syncRes && syncRes.cloudError) {
+      updateReviewSyncStatus(`✓ Profile saved locally for ${activeUser.email} (Database offline: local fallback active)`, false);
+    } else {
+      updateReviewSyncStatus(`✓ Profile securely saved to local storage & Supabase database for ${activeUser.email}!`, false);
+    }
   });
 
-  // Save profile and proceed to 100% ATS Studio
+  // Save profile and proceed to 100% ATS Studio (Auth Gated)
   document.getElementById('btn-review-proceed-studio')?.addEventListener('click', async () => {
+    const authCheck = requireActiveDemo();
+    if (!authCheck.allowed) {
+      if (authCheck.reason === 'expired') {
+        alert('Your 4-day demo has expired. Please sign in to launch Studio.');
+        window.location.href = 'login.html?expired=1';
+      } else {
+        alert('Authentication Required: Please sign in or start a free 4-day demo to continue to ATS Studio.');
+        window.location.href = 'login.html?redirect=review';
+      }
+      return;
+    }
+
+    const activeUser = authCheck.user;
     const updatedProfile = collectReviewFormData();
+
+    // Associate candidate profile with the authenticated user
+    updatedProfile.userId = activeUser.id;
+    updatedProfile.userEmail = activeUser.email;
+    updatedProfile.savedBy = activeUser.fullName || activeUser.email;
+
     state.customProfile = updatedProfile;
     state.targetRole = updatedProfile.title || state.targetRole;
 
-    updateReviewSyncStatus('Finalizing profile and launching ATS Studio...', true);
+    updateReviewSyncStatus(`Finalizing profile for ${activeUser.email} and launching ATS Studio...`, true);
 
     try {
       localStorage.setItem('biotailr_candidate_profile', JSON.stringify(updatedProfile));
       localStorage.setItem('biotailr_dynamic_user_profile', JSON.stringify(updatedProfile));
+      localStorage.setItem(`biotailr_user_${activeUser.id}_profile`, JSON.stringify(updatedProfile));
     } catch (e) {}
 
     await saveProfileToSupabase(updatedProfile);

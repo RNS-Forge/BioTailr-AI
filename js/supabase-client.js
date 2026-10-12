@@ -68,8 +68,10 @@ export async function saveProfileToSupabase(profile, resumeHtml = '') {
     const candidateId = profile.id || `cand_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     const payload = {
       id: candidateId,
+      user_id: profile.userId || profile.user_id || null,
+      user_email: profile.userEmail || profile.user_email || profile.email || '',
       full_name: profile.fullName || 'Candidate',
-      email: profile.email || '',
+      email: profile.email || profile.userEmail || '',
       phone: profile.phone || '',
       title: profile.title || '',
       location: profile.location || '',
