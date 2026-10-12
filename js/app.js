@@ -1890,7 +1890,7 @@ function bindExtensionBridge() {
  * Observes platform cards for scroll-in fade & slide-up animations
  */
 function initPlatformScrollAnimations() {
-  const cards = document.querySelectorAll('.platform-card');
+  const cards = document.querySelectorAll('.platform-logo-link, .platform-card');
   if (!cards.length) return;
 
   if ('IntersectionObserver' in window) {

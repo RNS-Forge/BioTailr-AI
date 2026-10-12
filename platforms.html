@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supported Platforms & Automation Architecture — BioTailr AI</title>
+  <meta name="description" content="Explore how BioTailr AI automates job applications across LinkedIn, Y Combinator, Naukri, Indeed, and Foundit with 100% ATS compliance.">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <style>
+    .platforms-page {
+      background: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Nav */
+    .plat-nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      padding: 16px 36px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .plat-nav-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .plat-nav-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Hero */
+    .plat-hero {
+      text-align: center;
+      padding: 60px 24px 40px;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .plat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(13, 148, 136, 0.1);
+      border: 1px solid rgba(13, 148, 136, 0.3);
+      color: #0d9488;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .plat-badge .dot {
+      width: 7px;
+      height: 7px;
+      background: #0d9488;
+      border-radius: 50%;
+    }
+
+    .plat-hero h1 {
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .plat-hero p {
+      font-size: 1.1rem;
+      color: #64748b;
+      line-height: 1.6;
+      max-width: 720px;
+      margin: 0 auto 32px;
+    }
+
+    /* Platform Selection Bar */
+    .platform-tabs-bar {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+      padding: 0 16px;
+    }
+
+    .plat-tab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+      text-decoration: none;
+    }
+
+    .plat-tab-btn img {
+      height: 22px;
+      width: auto;
+      max-width: 85px;
+      object-fit: contain;
+    }
+
+    .plat-tab-btn:hover {
+      transform: translateY(-2px);
+      border-color: #cbd5e1;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .plat-tab-btn.active {
+      background: #0f172a;
+      border-color: #0f172a;
+      color: #ffffff;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    }
+
+    .plat-tab-btn.active img {
+      filter: brightness(0) invert(1);
+    }
+
+    /* Main Detail Panels */
+    .platform-details-container {
+      max-width: 1100px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    .platform-panel {
+      display: none;
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 24px;
+      padding: 44px 48px;
+      box-shadow: 0 12px 40px rgba(15, 23, 42, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .platform-panel.active {
+      display: block;
+      animation: panelFadeIn 0.35s ease forwards;
+    }
+
+    @keyframes panelFadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-top-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding-bottom: 32px;
+      border-bottom: 1.5px solid #f1f5f9;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+    }
+
+    .panel-brand-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .panel-logo-box {
+      height: 64px;
+      width: auto;
+      min-width: 120px;
+      padding: 10px 20px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel-logo-box img {
+      max-height: 40px;
+      max-width: 120px;
+      object-fit: contain;
+    }
+
+    .panel-brand-info h2 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .panel-brand-info p {
+      color: #64748b;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .panel-meta-tags {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .meta-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      color: #334155;
+    }
+
+    .meta-tag.online {
+      background: rgba(16, 185, 129, 0.12);
+      color: #047857;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-tag.online .pulse {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+
+    /* Grid Sections inside Panel */
+    .panel-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      margin-bottom: 36px;
+    }
+
+    .panel-card-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px 28px;
+    }
+
+    .panel-card-box h3 {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #1e1b78;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-card-box p {
+      font-size: 0.92rem;
+      color: #475569;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .workflow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .wf-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .wf-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #0d9488;
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .wf-step-content h4 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 2px 0;
+    }
+
+    .wf-step-content p {
+      font-size: 0.85rem;
+      color: #64748b;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .features-pill-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .feat-pill {
+      font-size: 0.82rem;
+      font-weight: 600;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      color: #1e293b;
+    }
+
+    /* Code Snippet Box */
+    .code-box {
+      background: #0f172a;
+      border-radius: 14px;
+      padding: 20px 24px;
+      color: #f8fafc;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin-top: 14px;
+    }
+
+    .code-box .comment { color: #64748b; }
+    .code-box .keyword { color: #38bdf8; }
+    .code-box .string { color: #4ade80; }
+
+    @media (max-width: 860px) {
+      .plat-nav { padding: 14px 18px; }
+      .panel-grid-2 { grid-template-columns: 1fr; }
+      .platform-panel { padding: 28px 20px; }
+      .panel-top-banner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body class="platforms-page">
+  <!-- Top Navigation -->
+  <nav class="plat-nav">
+    <div class="plat-nav-left">
+      <a href="index.html" class="brand-link" title="BioTailr AI Home">
+        <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
+        <div class="brand-text-logo">
+          <span style="color: #1e1b78; font-size: 1.35rem; font-weight: 800;">BioTailr</span><span style="color: #0d9488; font-size: 0.68rem; font-weight: 800; vertical-align: super; position: relative; top: -2px;"> AI</span>
+        </div>
+      </a>
+      <span class="plat-nav-title">Platform Architecture Standard</span>
+    </div>
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <a href="index.html" class="btn btn-outline" style="font-size: 0.85rem; padding: 8px 16px;">
+        &larr; Back to Overview
+      </a>
+      <a href="index.html#try-now" class="btn btn-primary btn-launch-try-now" style="font-size: 0.85rem; padding: 8px 16px;">
+        Tailor Resume &rarr;
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="plat-hero">
+    <div class="plat-badge">
+      <span class="dot"></span>
+      <span>AUTOMATED PLATFORM SOLVER MECHANICS</span>
+    </div>
+    <h1>Supported <span style="background: linear-gradient(135deg, #0a66c2 0%, #ff6600 35%, #2164f3 70%, #0d9488 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Platforms</span> &amp; Architecture</h1>
+    <p>
+      BioTailr AI features dedicated platform engines that automate application workflows, answer complex screener questionnaires, and deliver pixel-perfect 100% ATS resumes.
+    </p>
+
+    <!-- Platform Selector Tabs -->
+    <div class="platform-tabs-bar">
+      <a href="#linkedin" class="plat-tab-btn active" data-target="linkedin">
+        <img src="assets/logos/linkedin.svg" alt="LinkedIn">
+        <span>LinkedIn</span>
+      </a>
+      <a href="#yc" class="plat-tab-btn" data-target="yc">
+        <img src="assets/logos/yc.svg" alt="Y Combinator">
+        <span>Y Combinator</span>
+      </a>
+      <a href="#naukri" class="plat-tab-btn" data-target="naukri">
+        <img src="assets/logos/naukri.png" alt="Naukri">
+        <span>Naukri</span>
+      </a>
+      <a href="#indeed" class="plat-tab-btn" data-target="indeed">
+        <img src="assets/logos/indeed.png" alt="Indeed">
+        <span>Indeed</span>
+      </a>
+      <a href="#foundit" class="plat-tab-btn" data-target="foundit">
+        <img src="assets/logos/foundit.png" alt="Foundit">
+        <span>Foundit</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Detail Panels Container -->
+  <main class="platform-details-container">
+    <!-- 1. LinkedIn -->
+    <section id="panel-linkedin" class="platform-panel active">
+      <div class="panel-top-banner">
+        <div class="panel-brand-header">
+          <div class="panel-logo-box">
+            <img src="assets/logos/linkedin.svg" alt="LinkedIn Official Logo">
+          </div>
+          <div class="panel-brand-info">
+            <h2>LinkedIn Easy Apply Engine</h2>
+            <p>Domain: linkedin.com/jobs &bull; Multi-Page Modal Traversal &amp; Answering</p>
+          </div>
+        </div>
+        <div class="panel-meta-tags">
+          <span class="meta-tag">Chrome &amp; Standby</span>
+          <span class="meta-tag online"><span class="pulse"></span> 100% Active</span>
+        </div>
+      </div>
+
+      <div class="panel-grid-2">
+        <div class="panel-card-box">
+          <h3>Workflow &amp; Mechanics</h3>
+          <div class="workflow-steps">
+            <div class="wf-step">
+              <span class="wf-step-num">1</span>
+              <div class="wf-step-content">
+                <h4>Easy Apply Button Detection</h4>
+                <p>Detects Easy Apply listings in both feed cards and the unified right-hand detail pane, distinguishing them from external redirect links.</p>
+              </div>
+            </div>
+            <div class="wf-step">
+              <span class="wf-step-num">2</span>
+              <div class="wf-step-content">
+                <h4>Multi-Step Modal Solver</h4>
+                <p>Steps through contact information, work history, and custom recruiter questionnaires without getting stuck on required validation fields.</p>
+              </div>
+            </div>
+            <div class="wf-step">
+              <span class="wf-step-num">3</span>
+              <div class="wf-step-content">
+                <h4>Dynamic Resume Dispatch</h4>
+                <p>Injects freshly compiled 100% ATS PDF matching the role's required skill keywords directly into the file input element.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card-box">
+          <h3>Screening &amp; Form Fields Handled</h3>
+          <p>The LinkedIn solver auto-fills complex screening criteria using the candidate's dynamic profile:</p>
+          <div class="features-pill-list">
+            <span class="feat-pill">Work Authorization &amp; Visa Status</span>
+            <span class="feat-pill">Years of Experience by Keyword</span>
+            <span class="feat-pill">Phone &amp; Contact Info</span>
+            <span class="feat-pill">Notice Period &amp; Immediate Availability</span>
+            <span class="feat-pill">Highest Degree &amp; Education</span>
+            <span class="feat-pill">Remote / Relocation Preferences</span>
+          </div>
+          <div class="code-box">
+<span class="comment">// CDP &amp; Extension Modal Execution snippet</span>
+<span class="keyword">const</span> modal = document.querySelector(<span class="string">'.jobs-easy-apply-modal'</span>);
+<span class="keyword">const</span> inputs = modal.querySelectorAll(<span class="string">'input, select, textarea'</span>);
+solveStepInputs(inputs, candidateProfile);
+modal.querySelector(<span class="string">'button[aria-label="Continue to next step"]'</span>)?.click();
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Y Combinator -->
+    <section id="panel-yc" class="platform-panel">
+      <div class="panel-top-banner">
+        <div class="panel-brand-header">
+          <div class="panel-logo-box">
+            <img src="assets/logos/yc.svg" alt="Y Combinator Official Logo">
+          </div>
+          <div class="panel-brand-info">
+            <h2>Y Combinator Work at a Startup Engine</h2>
+            <p>Domain: workatastartup.com &amp; ycombinator.com/jobs &bull; Founder Intro Generator</p>
+          </div>
+        </div>
+        <div class="panel-meta-tags">
+          <span class="meta-tag">YC Network Standard</span>
+          <span class="meta-tag online"><span class="pulse"></span> 100% Active</span>
+        </div>
+      </div>
+
+      <div class="panel-grid-2">
+        <div class="panel-card-box">
+          <h3>Workflow &amp; Mechanics</h3>
+          <div class="workflow-steps">
+            <div class="wf-step">
+              <span class="wf-step-num">1</span>
+              <div class="wf-step-content">
+                <h4>Role &amp; Startup Mission Analysis</h4>
+                <p>Scrapes startup description, stage (Seed / Series A / B), and primary tech stack requirements from the Work at a Startup job view.</p>
+              </div>
+            </div>
+            <div class="wf-step">
+              <span class="wf-step-num">2</span>
+              <div class="wf-step-content">
+                <h4>Custom Founder Intro Pitch</h4>
+                <p>Composes a concise, high-impact intro note addressing the founders directly, highlighting shipping velocity and product impact.</p>
+              </div>
+            </div>
+            <div class="wf-step">
+              <span class="wf-step-num">3</span>
+              <div class="wf-step-content">
+                <h4>1-Click Submission</h4>
+                <p>Submits the candidate's profile, links, and tailored pitch directly through the YC application modal.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card-box">
+          <h3>Founder Outreach Features</h3>
+          <p>Built specifically for fast-moving startup environments where high signal and concise communication win interviews:</p>
+          <div class="features-pill-list">
+            <span class="feat-pill">Direct Founder Note Generation</span>
+            <span class="feat-pill">Startup Mission Alignment</span>
+            <span class="feat-pill">GitHub &amp; Portfolio Verification</span>
+            <span class="feat-pill">Full-Stack &amp; AI Stack Highlights</span>
+            <span class="feat-pill">Zero Boilerplate Guarantee</span>
+          </div>
+          <div class="code-box">
+<span class="comment">// YC Founder Message Dispatch</span>
+<span class="keyword">const</span> note = generateFounderPitch(startup, candidateProfile);
+textarea.value = note;
+textarea.dispatchEvent(<span class="keyword">new</span> Event(<span class="string">'input'</span>, { bubbles: <span class="keyword">true</span> }));
+submitButton.click();
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Naukri -->
+    <section id="panel-naukri" class="platform-panel">
+      <div class="panel-top-banner">
+        <div class="panel-brand-header">
+          <div class="panel-logo-box">
+            <img src="assets/logos/naukri.png" alt="Naukri Official Logo">
+          </div>
+          <div class="panel-brand-info">
+            <h2>Naukri Fast Apply &amp; CTC Engine</h2>
+            <p>Domain: naukri.com &bull; 1-Click Fast Apply &amp; Recruiter Chatbot Solver</p>
+          </div>
+        </div>
+        <div class="panel-meta-tags">
+          <span class="meta-tag">India Tech Ecosystem</span>
+          <span class="meta-tag online"><span class="pulse"></span> 100% Active</span>
+        </div>
+      </div>
+
+      <div class="panel-grid-2">
+        <div class="panel-card-box">
+          <h3>Workflow &amp; Mechanics</h3>
+          <div class="workflow-steps">
+            <div class="wf-step">
+              <span class="wf-step-num">1</span>
+              <div class="wf-step-content">
+                <h4>Fast Apply Trigger</h4>
+                <p>Identifies 1-click Fast Apply opportunities across search results and detail pages, bypassing unneeded recruiter redirects.</p>
+              </div>
+            </div>
+            <div class="wf-step">
+              <span class="wf-step-num">2</span>
+              <div class="wf-step-content">
+                <h4>Compensation &amp; Notice Period Handling</h4>
+                <p>Fills in Current CTC, Expected CTC, and Notice Period fields according to the candidate's dynamic profile standards.</p>
+              </div>
+            </div>
+            <div class="wf-step">
+              <span class="wf-step-num">3</span>
+              <div class="wf-step-content">
+                <h4>Recruiter Bot / Questionnaire Traversal</h4>
+                <p>Handles post-apply question popups and confirmation modals automatically.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card-box">
+          <h3>Specific Fields Automated</h3>
+          <p>Optimized for the specific nuances of Indian tech recruitment portals:</p>
+          <div class="features-pill-list">
+            <span class="feat-pill">Current &amp; Expected CTC Negotiation</span>
+            <span class="feat-pill">Notice Period (15 Days / Immediate)</span>
+            <span class="feat-pill">Location Preference (Bangalore, Pune, Hyderabad, Remote)</span>
+            <span class="feat-pill">Primary Skillset Matching</span>
+            <span class="feat-pill">Chatbot Screener Responses</span>
+          </div>
+          <div class="code-box">
+<span class="comment">// Naukri Compensation &amp; Availability Handling</span>
+<span class="keyword">if</span> (label.includes(<span class="string">'ctc'</span>)) el.value = <span class="string">'Competitive / Market Standard'</span>;
+<span class="keyword">if</span> (label.includes(<span class="string">'notice'</span>)) el.value = <span class="string">'15 Days / Immediate'</span>;
+el.dispatchEvent(<span class="keyword">new</span> Event(<span class="string">'change'</span>, { bubbles: <span class="keyword">true</span> }));
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Indeed -->
+    <section id="panel-indeed" class="platform-panel">
+      <div class="panel-top-banner">
+        <div class="panel-brand-header">
+          <div class="panel-logo-box">
+            <img src="assets/logos/indeed.png" alt="Indeed Official Logo">
+          </div>
+          <div class="panel-brand-info">
+            <h2>Indeed Assessment &amp; Apply Engine</h2>
+            <p>Domain: indeed.com &bull; Multi-Step Employer Screener &amp; Direct Application</p>
+          </div>
+        </div>
+        <div class="panel-meta-tags">
+          <span class="meta-tag">Global Direct Standard</span>
+          <span class="meta-tag online"><span class="pulse"></span> 100% Active</span>
+        </div>
+      </div>
+
+      <div class="panel-grid-2">
+        <div class="panel-card-box">
+          <h3>Workflow &amp; Mechanics</h3>
+          <div class="workflow-steps">
+            <div class="wf-step">
+              <span class="wf-step-num">1</span>
+              <div class="wf-step-content">
+                <h4>Indeed Apply Detection</h4>
+                <p>Hooks directly into `#indeedApplyButton` and `.ia-IndeedApplyButton` containers embedded within employer job posts.</p>
+              </div>
+            </div>
+            <div class="wf-step">
+              <span class="wf-step-num">2</span>
+              <div class="wf-step-content">
+                <h4>Screener Question Answering</h4>
+                <p>Solves employer question pages, qualification checkboxes, and years of experience fields based on candidate resume data.</p>
+              </div>
+            </div>
+            <div class="wf-step">
+              <span class="wf-step-num">3</span>
+              <div class="wf-step-content">
+                <h4>Final Review &amp; Dispatch</h4>
+                <p>Advances past review screens and submits the application, generating proof of application status.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card-box">
+          <h3>Assessment &amp; Questionnaire Solving</h3>
+          <p>Navigates Indeed's structured employer screener questionnaires:</p>
+          <div class="features-pill-list">
+            <span class="feat-pill">Experience Verification per Skill</span>
+            <span class="feat-pill">Work Authorization Checks</span>
+            <span class="feat-pill">Direct PDF Resume Upload</span>
+            <span class="feat-pill">Radio &amp; Checkbox Validation</span>
+            <span class="feat-pill">Multi-page Form Progression</span>
+          </div>
+          <div class="code-box">
+<span class="comment">// Indeed Form Container Solver</span>
+<span class="keyword">const</span> formContainer = document.querySelector(<span class="string">'.ia-BasePage, .ia-Container'</span>);
+fillVisibleFields(formContainer, candidateProfile);
+<span class="keyword">const</span> submitBtn = findButtonByText(formContainer, [<span class="string">/submit/i</span>]);
+submitBtn?.click();
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Foundit -->
+    <section id="panel-foundit" class="platform-panel">
+      <div class="panel-top-banner">
+        <div class="panel-brand-header">
+          <div class="panel-logo-box">
+            <img src="assets/logos/foundit.png" alt="Foundit Official Logo">
+          </div>
+          <div class="panel-brand-info">
+            <h2>Foundit (Monster) Quick Apply Engine</h2>
+            <p>Domain: foundit.in, foundit.sg, monsterindia.com &bull; Quick Apply Talent Network</p>
+          </div>
+        </div>
+        <div class="panel-meta-tags">
+          <span class="meta-tag">APAC Talent Network</span>
+          <span class="meta-tag online"><span class="pulse"></span> 100% Active</span>
+        </div>
+      </div>
+
+      <div class="panel-grid-2">
+        <div class="panel-card-box">
+          <h3>Workflow &amp; Mechanics</h3>
+          <div class="workflow-steps">
+            <div class="wf-step">
+              <span class="wf-step-num">1</span>
+              <div class="wf-step-content">
+                <h4>Quick Apply Modal Launch</h4>
+                <p>Identifies `.applyBtn` and `[data-testid="quick-apply-btn"]` selectors to trigger the Foundit talent network modal.</p>
+              </div>
+            </div>
+            <div class="wf-step">
+              <span class="wf-step-num">2</span>
+              <div class="wf-step-content">
+                <h4>Competency &amp; Profile Mapping</h4>
+                <p>Matches candidate competencies, verified email/phone, and expected compensation to employer requirements.</p>
+              </div>
+            </div>
+            <div class="wf-step">
+              <span class="wf-step-num">3</span>
+              <div class="wf-step-content">
+                <h4>Submission &amp; Confirmation</h4>
+                <p>Dispatches complete application and confirms successful recruiter receipt.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card-box">
+          <h3>Foundit Features &amp; Coverage</h3>
+          <p>Seamless coverage across Southeast Asia and Indian recruitment markets:</p>
+          <div class="features-pill-list">
+            <span class="feat-pill">Foundit Quick Apply Automation</span>
+            <span class="feat-pill">Monster Network Integration</span>
+            <span class="feat-pill">Compensation Auto-fill</span>
+            <span class="feat-pill">Contact Info Verification</span>
+            <span class="feat-pill">Recruiter Acknowledgement Confirmation</span>
+          </div>
+          <div class="code-box">
+<span class="comment">// Foundit Quick Apply Runner</span>
+<span class="keyword">const</span> modal = document.querySelector(<span class="string">'.quick-apply-modal, [role="dialog"]'</span>);
+solveFounditInputs(modal, candidateProfile);
+submitButton.click();
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Executive Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <a href="index.html" class="brand-link" style="margin-bottom: 1rem; display: inline-flex; text-decoration: none;">
+          <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
+          <div class="brand-text-logo">
+            <span style="color: #ffffff; font-size: 1.35rem; font-weight: 800;">BioTailr</span><span style="color: #00b49f; font-size: 0.68rem; font-weight: 800; vertical-align: super; position: relative; top: -2px;"> AI</span>
+          </div>
+        </a>
+        <p style="font-size: 0.88rem; line-height: 1.6; color: #94a3b8; max-width: 320px; margin-top: 0.5rem;">
+          Intelligent ATS-compliant resume tailoring engine calibrated on dynamic career profiles. Built for 100% parser compliance and zero hallucinations.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>PLATFORM</h4>
+        <ul>
+          <li><a href="index.html">Platform Overview</a></li>
+          <li><a href="platforms.html">Supported Platforms</a></li>
+          <li><a href="ats-rules.html">100% ATS Ruleset</a></li>
+          <li><a href="extension.html">Browser Extension</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>PLATFORMS SUPPORTED</h4>
+        <ul>
+          <li><a href="platforms.html#linkedin">LinkedIn Easy Apply</a></li>
+          <li><a href="platforms.html#yc">Y Combinator Startups</a></li>
+          <li><a href="platforms.html#naukri">Naukri Fast Apply</a></li>
+          <li><a href="platforms.html#indeed">Indeed Assessments</a></li>
+          <li><a href="platforms.html#foundit">Foundit Quick Apply</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>SPECIFICATION</h4>
+        <p style="font-size: 0.82rem; line-height: 1.5; color: #94a3b8;">
+          Dual Engine: Google Gemini 2.5 Flash with Groq Llama 3.3 70B Failover. Multi-platform automation standard.
+        </p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 BioTailr AI. All rights reserved.</div>
+      <div>100% ATS Parsing Guarantee &bull; Multi-Platform Certified</div>
+    </div>
+  </footer>
+
+  <script>
+    // Tab Switching Logic (URL Query Param & Hash Support)
+    function switchPlatform(platformId) {
+      if (!platformId) return;
+
+      document.querySelectorAll('.plat-tab-btn').forEach(btn => {
+        if (btn.dataset.target === platformId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      document.querySelectorAll('.platform-panel').forEach(panel => {
+        if (panel.id === `panel-${platformId}`) {
+          panel.classList.add('active');
+        } else {
+          panel.classList.remove('active');
+        }
+      });
+
+      // Update URL hash without jumping
+      history.replaceState(null, null, `#${platformId}`);
+    }
+
+    document.querySelectorAll('.plat-tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        switchPlatform(btn.dataset.target);
+      });
+    });
+
+    // Handle initial URL param ?p=... or hash #...
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialParam = urlParams.get('p') || urlParams.get('platform') || window.location.hash.replace('#', '');
+    if (initialParam && ['linkedin', 'yc', 'naukri', 'indeed', 'foundit'].includes(initialParam.toLowerCase())) {
+      switchPlatform(initialParam.toLowerCase());
+    }
+  </script>
+</body>
+</html>
