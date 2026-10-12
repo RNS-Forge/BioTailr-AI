@@ -15,6 +15,7 @@
   <!-- Core Styles -->
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/profile-component.css">
   <style>
     .platforms-page {
       background: #f8fafc;
@@ -436,15 +437,10 @@
       <a href="pricing.html" class="btn btn-outline" style="font-size: 0.85rem; padding: 8px 16px; border-color: #00b49f; color: #007a6c; font-weight: 700;">
         Pricing Plans
       </a>
-      <a href="login.html" class="btn btn-outline" style="font-size: 0.85rem; padding: 8px 16px;">
-        Sign In
-      </a>
       <a href="index.html" class="btn btn-outline" style="font-size: 0.85rem; padding: 8px 16px;">
         &larr; Back to Overview
       </a>
-      <a href="index.html#try-now" class="btn btn-primary btn-launch-try-now" style="font-size: 0.85rem; padding: 8px 16px;">
-        Tailor Resume &rarr;
-      </a>
+      <div id="plat-nav-auth-container"></div>
     </div>
   </nav>
 
@@ -909,6 +905,12 @@ submitButton.click();
     if (initialParam && ['linkedin', 'yc', 'naukri', 'indeed', 'foundit'].includes(initialParam.toLowerCase())) {
       switchPlatform(initialParam.toLowerCase());
     }
+  </script>
+  <script type="module">
+    import { initProfileNavbar } from './js/profile-component.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      initProfileNavbar('plat-nav-auth-container');
+    });
   </script>
 </body>
 </html>

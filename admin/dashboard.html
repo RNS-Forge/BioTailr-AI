@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard — BioTailr AI & RNS Solutions</title>
+  <title>Admin Dashboard — BioTailr AI Candidates & Passes</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,11 +19,11 @@
         <img src="../assets/logo.png" alt="BioTailr AI Logo">
         <span class="admin-brand-title">BioTailr AI</span>
       </a>
-      <span class="admin-badge-portal">Executive Admin Console</span>
+      <span class="admin-badge-portal">Executive Operations Console</span>
     </div>
 
     <div class="admin-nav-right">
-      <button id="btn-trigger-boss-updater" style="font-size: 0.78rem; padding: 6px 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; background: #e6f8f5; border: 1.5px solid #00b49f; color: #007a6c; border-radius: 9999px; font-weight: 700; font-family: inherit;">
+      <button id="btn-trigger-boss-updater" class="btn-boss-briefing" title="Dispatch 1:00 AM daily briefing on demand">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
         <span>Send Boss Briefing</span>
       </button>
@@ -31,7 +31,7 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
         <span id="admin-user-display">admin@rnssolutions.com</span>
       </div>
-      <a href="../index.html" style="font-size: 0.82rem; color: #475569; text-decoration: none; font-weight: 600;">Public Site</a>
+      <a href="../index.html" class="nav-public-link">Public Site</a>
       <button class="btn-admin-logout" id="btn-admin-logout">Sign Out</button>
     </div>
   </header>
@@ -43,7 +43,7 @@
     <section class="admin-stats-grid">
       <div class="admin-stat-card">
         <div>
-          <div class="stat-label">Total Requests</div>
+          <div class="stat-label">Total Candidates</div>
           <div class="stat-value" id="stat-total-count">0</div>
         </div>
         <div class="stat-icon-wrap navy">
@@ -53,21 +53,21 @@
 
       <div class="admin-stat-card">
         <div>
-          <div class="stat-label">Active Plans</div>
-          <div class="stat-value" id="stat-active-count" style="color: #10b981;">0</div>
+          <div class="stat-label">First 500 Free Tier</div>
+          <div class="stat-value" id="stat-free-500-count" style="color: #4338ca;">0</div>
         </div>
-        <div class="stat-icon-wrap emerald">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <div class="stat-icon-wrap navy">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
         </div>
       </div>
 
       <div class="admin-stat-card">
         <div>
-          <div class="stat-label">Pending Calls</div>
-          <div class="stat-value" id="stat-pending-count" style="color: #d97706;">0</div>
+          <div class="stat-label">Active Sprint Passes</div>
+          <div class="stat-value" id="stat-active-count" style="color: #10b981;">0</div>
         </div>
-        <div class="stat-icon-wrap amber">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+        <div class="stat-icon-wrap emerald">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
         </div>
       </div>
 
@@ -82,48 +82,139 @@
       </div>
     </section>
 
-    <!-- Controls, Tabs & Data Table -->
-    <div class="admin-controls-card">
-      <div class="admin-toolbar-header">
-        <!-- 5 Tabs: All, 1 Day, 1 Week, 1 Month, 1 Year -->
-        <div class="admin-plan-tabs">
-          <button class="admin-tab-btn active" data-tab="all">All Requests</button>
-          <button class="admin-tab-btn" data-tab="1_day">1 Day (₹5)</button>
-          <button class="admin-tab-btn" data-tab="1_week">1 Week (₹30)</button>
-          <button class="admin-tab-btn" data-tab="1_month">1 Month (₹115)</button>
-          <button class="admin-tab-btn" data-tab="1_year">1 Year (₹1000)</button>
+    <!-- Enterprise Table Panel (Matching UI Layout) -->
+    <div class="enterprise-table-panel">
+      
+      <!-- Top Enterprise Action Bar -->
+      <div class="enterprise-top-bar">
+        <div class="top-bar-left">
+          <h2 class="enterprise-title">CANDIDATES &amp; PASSES</h2>
+          <div class="group-drag-placeholder">
+            <span>Drag here to group by</span>
+          </div>
         </div>
 
-        <!-- Column Search & Filter Toolbar -->
-        <div class="admin-search-wrapper">
-          <div class="admin-search-box">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <input type="text" id="admin-search-input" placeholder="Search name, email, phone...">
-          </div>
+        <div class="top-bar-right">
+          <!-- Refresh Button -->
+          <button type="button" class="btn-tool-pill btn-icon-only" id="btn-table-refresh" title="Refresh Table Data">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
 
-          <select class="admin-status-filter" id="admin-status-filter">
-            <option value="all">All Statuses</option>
-            <option value="pending">Pending Call</option>
-            <option value="active">Active</option>
-            <option value="deactivated">Deactivated</option>
-          </select>
+          <!-- Duplicate / Views -->
+          <button type="button" class="btn-tool-pill btn-icon-only" id="btn-table-view-toggle" title="View Options">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+
+          <!-- Export to Excel -->
+          <button type="button" class="btn-tool-pill" id="btn-export-excel" title="Download Excel / CSV">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
+            <span>Export to Excel</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+
+          <!-- Bulk Upload -->
+          <button type="button" class="btn-tool-pill" id="btn-bulk-upload" title="Batch Candidate Upload">
+            <span>Bulk Upload</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+
+          <!-- Add Pass -->
+          <button type="button" class="btn-add-inward" id="btn-add-candidate" title="Add New Candidate Pass">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>+ Add Pass</span>
+          </button>
+
+          <!-- Column Search Toggle Switch -->
+          <div class="col-search-toggle-wrap">
+            <span class="toggle-label">Column Search</span>
+            <label class="switch-toggle" title="Toggle Per-Column Search Inputs">
+              <input type="checkbox" id="toggle-column-search" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
         </div>
       </div>
 
-      <!-- Data Table -->
-      <div class="admin-table-wrapper">
-        <table class="admin-table">
+      <!-- Plan Filter Tabs: All, Free (1st 500), Free Tier (4 Days), Day, Week, Month, Year -->
+      <div class="enterprise-tabs-strip">
+        <div class="plan-tabs-list" id="admin-plan-tabs">
+          <button type="button" class="tab-pill-btn active" data-tab="all">All</button>
+          <button type="button" class="tab-pill-btn" data-tab="free">Free (1st 500)</button>
+          <button type="button" class="tab-pill-btn" data-tab="free_tier">Free Tier (4 Days)</button>
+          <button type="button" class="tab-pill-btn" data-tab="day">Day (₹5)</button>
+          <button type="button" class="tab-pill-btn" data-tab="week">Week (₹30)</button>
+          <button type="button" class="tab-pill-btn" data-tab="month">Month (₹115)</button>
+          <button type="button" class="tab-pill-btn" data-tab="year">Year (₹1,000)</button>
+        </div>
+
+        <div class="global-quick-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="global-search-input" placeholder="Quick filter all records...">
+        </div>
+      </div>
+
+      <!-- Data Table with Column Search -->
+      <div class="enterprise-table-scroll">
+        <table class="enterprise-data-table" id="enterprise-table">
           <thead>
-            <tr>
-              <th>ID</th>
-              <th>Candidate Name</th>
-              <th>Email</th>
-              <th>Phone Number</th>
-              <th>Plan Tier</th>
-              <th>Amount</th>
-              <th>Requested At</th>
-              <th>Status</th>
-              <th style="text-align: center;">Actions (3-Mode)</th>
+            <!-- Primary Column Header Row -->
+            <tr class="table-header-row">
+              <th style="min-width: 220px;">Candidate Name</th>
+              <th style="min-width: 140px;">Date</th>
+              <th style="min-width: 160px;">Contact / Phone</th>
+              <th style="min-width: 160px;">Plan Tier</th>
+              <th style="min-width: 130px;">Amount</th>
+              <th style="min-width: 150px;">Valid Until</th>
+              <th style="min-width: 140px;">Status</th>
+              <th style="min-width: 130px; text-align: center;">Action</th>
+            </tr>
+
+            <!-- Column Search Input Row (Toggled via Switch) -->
+            <tr class="column-search-row" id="column-search-row">
+              <th>
+                <div class="col-input-box">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" class="col-filter-input" data-col="name" placeholder="Search name...">
+                </div>
+              </th>
+              <th>
+                <div class="col-input-box">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" class="col-filter-input" data-col="date" placeholder="Search date...">
+                  <svg class="col-cal-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                </div>
+              </th>
+              <th>
+                <div class="col-input-box">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" class="col-filter-input" data-col="phone" placeholder="Search phone...">
+                </div>
+              </th>
+              <th>
+                <div class="col-input-box">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" class="col-filter-input" data-col="tier" placeholder="Filter tier...">
+                </div>
+              </th>
+              <th>
+                <div class="col-input-box">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" class="col-filter-input" data-col="amount" placeholder="Search amt...">
+                </div>
+              </th>
+              <th>
+                <div class="col-input-box">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" class="col-filter-input" data-col="validity" placeholder="Search expiry...">
+                </div>
+              </th>
+              <th>
+                <div class="col-input-box">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                  <input type="text" class="col-filter-input" data-col="status" placeholder="Filter status...">
+                </div>
+              </th>
+              <th style="background: #f4f1fd;"></th>
             </tr>
           </thead>
           <tbody id="subscriptions-table-body">
@@ -131,6 +222,30 @@
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination Footer Bar -->
+      <div class="enterprise-pagination-bar">
+        <div class="pagination-info" id="pagination-info-text">
+          Showing 1 to 10 of 0 entries
+        </div>
+
+        <div class="pagination-controls-right">
+          <div class="rows-per-page-selector">
+            <span>Rows per page:</span>
+            <select id="select-rows-per-page">
+              <option value="10" selected>10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+
+          <div class="page-nav-btns" id="pagination-buttons-container">
+            <!-- Dynamic page buttons: Prev, 1, 2, Next -->
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </main>

@@ -11,6 +11,7 @@ import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml, buildStan
 import { parsePdfResume, getSavedDynamicProfile, clearDynamicProfile } from './resume-parser.js';
 import { saveProfileToSupabase, fetchProfileFromSupabase, getSupabaseClient } from './supabase-client.js';
 import { requireActiveDemo, getActiveUser, getDemoStatus, logoutUser, getEarlyAdopterStats } from './auth-service.js';
+import { initProfileNavbar } from './profile-component.js';
 
 // Application State
 const state = {
@@ -373,44 +374,7 @@ function initAuthUi() {
   if (r2) r2.textContent = early.remaining;
   if (r3) r3.textContent = early.remaining;
 
-  const container = document.getElementById('nav-auth-status-container');
-  if (!container) return;
-
-  const user = getActiveUser();
-  if (user) {
-    const demo = getDemoStatus(user);
-    if (demo.isExpired) {
-      container.innerHTML = `
-        <div class="user-demo-pill pill-expired" title="Trial expired. Account deactivated.">
-          <span class="demo-status-dot"></span>
-          <span>${demo.formatted}</span>
-          <button type="button" class="btn-user-logout" id="btn-header-logout">Sign Out</button>
-        </div>
-      `;
-    } else {
-      container.innerHTML = `
-        <div class="user-demo-pill" title="${user.email}">
-          <span class="demo-status-dot"></span>
-          <span>${demo.formatted}</span>
-          <button type="button" class="btn-user-logout" id="btn-header-logout">Sign Out</button>
-        </div>
-      `;
-    }
-
-    document.getElementById('btn-header-logout')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      logoutUser();
-      initAuthUi();
-      window.location.reload();
-    });
-  } else {
-    container.innerHTML = `
-      <a href="login.html" class="btn btn-outline" id="btn-nav-signin" style="font-size: 0.85rem; padding: 7px 14px;">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-        <span>Sign In</span>
-      </a>
-    `;
-  }
+  initProfileNavbar('nav-auth-status-container');
 }
 
 /**

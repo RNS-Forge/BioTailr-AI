@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/landing.css">
   <link rel="stylesheet" href="css/studio.css">
+  <link rel="stylesheet" href="css/profile-component.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -263,8 +264,9 @@
     </ul>
 
     <div class="nav-right-actions">
-      <a href="login.html" class="btn btn-outline" style="font-size: 0.85rem; padding: 7px 14px;">
-        <span>Sign In</span>
+      <div id="ats-nav-auth-container"></div>
+      <a href="pricing.html" class="btn btn-outline" style="font-size: 0.85rem; padding: 7px 14px; color: #00b49f; border-color: #00b49f; font-weight: 700;">
+        <span>Pricing</span>
       </a>
       <a href="extension.html" class="btn btn-outline btn-extension-trigger" title="Explore Browser Extension">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -495,5 +497,11 @@
       <div>100% ATS Parsing Guarantee &bull; Manifest V3 Certified</div>
     </div>
   </footer>
+  <script type="module">
+    import { initProfileNavbar } from './js/profile-component.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      initProfileNavbar('ats-nav-auth-container');
+    });
+  </script>
 </body>
 </html>

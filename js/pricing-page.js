@@ -1,4 +1,5 @@
 import { getActiveUser, logoutUser, getEarlyAdopterStats } from './auth-service.js';
+import { initProfileNavbar } from './profile-component.js';
 
 // Plan Definitions (Zero Emojis)
 const PLANS = {
@@ -10,25 +11,25 @@ const PLANS = {
   },
   '1_day': {
     id: '1_day',
-    name: '1-Day Sprint',
+    name: 'Day Sprint',
     price: 5,
     period: '24 Hours Access'
   },
   '1_week': {
     id: '1_week',
-    name: '1-Week Sprint',
+    name: 'Week Sprint',
     price: 30,
     period: '7 Days Access'
   },
   '1_month': {
     id: '1_month',
-    name: '1-Month Campaign',
+    name: 'Month Campaign',
     price: 115,
     period: '30 Days Access'
   },
   '1_year': {
     id: '1_year',
-    name: '1-Year Career Pass',
+    name: 'Year Career Pass',
     price: 1000,
     period: '365 Days Access'
   }
@@ -39,46 +40,12 @@ let currentUser = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   currentUser = getActiveUser();
-  setupNavbarAuth();
+  initProfileNavbar('user-auth-badge');
   updateEarlyAdopterCounter();
   setupPlanTriggers();
   setupModals();
   checkUrlParams();
 });
-
-/**
- * Configure Navbar Auth Status
- */
-function setupNavbarAuth() {
-  const container = document.getElementById('user-auth-badge');
-  if (!container) return;
-
-  if (currentUser && currentUser.verified) {
-    const isExpired = currentUser.isActive === false;
-    const roleBadge = currentUser.role === 'admin' ? '<a href="admin/dashboard.html" style="margin-left: 8px; color: #6366f1; text-decoration: underline; font-weight: 700;">Admin Panel</a>' : '';
-
-    container.innerHTML = `
-      <div class="user-status-pill">
-        <span style="width: 7px; height: 7px; border-radius: 50%; background: ${isExpired ? '#ef4444' : '#10b981'};"></span>
-        <span>${currentUser.fullName || currentUser.email.split('@')[0]}</span>
-        ${roleBadge}
-        <button id="btn-pricing-logout" style="background: none; border: none; color: #64748b; cursor: pointer; padding: 0 4px; font-weight: 600; text-decoration: underline;">Logout</button>
-      </div>
-    `;
-
-    document.getElementById('btn-pricing-logout')?.addEventListener('click', () => {
-      logoutUser();
-      window.location.reload();
-    });
-  } else {
-    container.innerHTML = `
-      <a href="login.html" class="btn-pill-outline">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-        <span>Sign In</span>
-      </a>
-    `;
-  }
-}
 
 /**
  * Update dynamic spots remaining counter
