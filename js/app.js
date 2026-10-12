@@ -10,6 +10,7 @@ import { evaluateAtsScore, optimizeProfileFor100Ats } from './ats-engine.js';
 import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml, buildStandaloneResumeHtml } from './pdf-export.js';
 import { parsePdfResume, getSavedDynamicProfile, clearDynamicProfile } from './resume-parser.js';
 import { saveProfileToSupabase, fetchProfileFromSupabase, getSupabaseClient } from './supabase-client.js';
+import { requireActiveDemo, getActiveUser, getDemoStatus, logoutUser } from './auth-service.js';
 
 // Application State
 const state = {
@@ -40,6 +41,7 @@ function initApp() {
   bindExtensionBridge();
   initPlatformScrollAnimations();
   bindExtensionGuideEvents();
+  initAuthUi();
 
   // Check if a dynamic custom resume was previously uploaded and stored
   const savedProfile = getSavedDynamicProfile();
@@ -98,10 +100,12 @@ function initApp() {
       return;
     }
     if (hashView === 'try-now') {
-      showView('try-now');
-      setTimeout(() => {
-        document.getElementById('input-target-role')?.focus();
-      }, 150);
+      verifyDemoAccessBeforeAction(() => {
+        showView('try-now');
+        setTimeout(() => {
+          document.getElementById('input-target-role')?.focus();
+        }, 150);
+      });
       return;
     }
   }
@@ -288,11 +292,13 @@ function bindNavigationEvents() {
     });
   });
 
-  // "Try Now" buttons -> go to Try Now role input screen
+  // "Try Now" buttons -> go to Try Now role input screen (4-day demo gate)
   document.querySelectorAll('.btn-launch-try-now').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
-      showView('try-now');
+      verifyDemoAccessBeforeAction(() => {
+        showView('try-now');
+      });
     });
   });
 
@@ -331,9 +337,71 @@ function bindNavigationEvents() {
       const defaultRole = RESUME_ARCHETYPES[archId].defaultRole;
       const roleInput = document.getElementById('input-target-role');
       if (roleInput) roleInput.value = defaultRole;
-      showView('try-now');
+      verifyDemoAccessBeforeAction(() => {
+        showView('try-now');
+      });
     });
   });
+}
+
+/**
+ * Validates 4-Day Demo access before allowing access to Try Now / Studio
+ */
+function verifyDemoAccessBeforeAction(onSuccess) {
+  const check = requireActiveDemo();
+  if (check.allowed) {
+    onSuccess();
+  } else {
+    if (check.reason === 'expired') {
+      window.location.href = 'login.html?expired=1';
+    } else {
+      window.location.href = 'login.html?redirect=try-now';
+    }
+  }
+}
+
+/**
+ * Initializes navbar auth state and 4-Day Demo pill
+ */
+function initAuthUi() {
+  const container = document.getElementById('nav-auth-status-container');
+  if (!container) return;
+
+  const user = getActiveUser();
+  if (user) {
+    const demo = getDemoStatus(user);
+    if (demo.isExpired) {
+      container.innerHTML = `
+        <div class="user-demo-pill pill-expired" title="Demo expired. Account deactivated.">
+          <span class="demo-status-dot"></span>
+          <span>4-Day Demo Expired</span>
+          <button type="button" class="btn-user-logout" id="btn-header-logout">Sign Out</button>
+        </div>
+      `;
+    } else {
+      container.innerHTML = `
+        <div class="user-demo-pill" title="${user.email}">
+          <span class="demo-status-dot"></span>
+          <span>${demo.formatted}</span>
+          <button type="button" class="btn-user-logout" id="btn-header-logout">Sign Out</button>
+        </div>
+      `;
+    }
+
+    document.getElementById('btn-header-logout')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      logoutUser();
+      initAuthUi();
+      window.location.reload();
+    });
+  } else {
+    container.innerHTML = `
+      <a href="login.html" class="btn btn-outline" id="btn-nav-signin" style="font-size: 0.85rem; padding: 7px 14px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    `;
+  }
 }
 
 /**

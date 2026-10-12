@@ -1293,3 +1293,64 @@ section.extension-showcase-section {
   }
 }
 
+/* =========================================================
+   NAVBAR USER AUTH STATUS & 4-DAY DEMO PILL
+   ========================================================= */
+.nav-auth-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-demo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #e6f8f5;
+  border: 1.5px solid #a3e8df;
+  border-radius: 9999px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #009382;
+  box-shadow: 0 2px 8px rgba(0, 180, 159, 0.12);
+}
+
+.user-demo-pill.pill-expired {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #9f1239;
+}
+
+.user-demo-pill .demo-status-dot {
+  width: 7px;
+  height: 7px;
+  background: #00b49f;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(0, 180, 159, 0.7);
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+.user-demo-pill.pill-expired .demo-status-dot {
+  background: #e11d48;
+  box-shadow: 0 0 6px rgba(225, 29, 72, 0.6);
+  animation: none;
+}
+
+.user-demo-pill .btn-user-logout {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 4px;
+  text-decoration: underline;
+  transition: color 0.15s ease;
+  font-family: inherit;
+}
+
+.user-demo-pill .btn-user-logout:hover {
+  color: #991b1b;
+}
+

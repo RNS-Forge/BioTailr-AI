@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In &amp; 4-Day Demo Access &mdash; BioTailr AI</title>
+  <meta name="description" content="Sign in or register for a 4-day verified demo account on BioTailr AI. 100% ATS resume tailoring and automated multi-platform job application engine.">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Core Styles -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/auth.css">
+
+  <!-- EmailJS CDN for pure client-side email verification (No Backend) -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <!-- Supabase Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="auth-body">
+  <!-- Ambient Grid Background -->
+  <div class="bg-canvas-grid"></div>
+
+  <!-- Top Navigation Header -->
+  <header class="auth-top-nav">
+    <div class="auth-nav-left">
+      <a href="index.html" class="brand-link" title="Return to BioTailr AI Home">
+        <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
+        <div class="brand-text-logo">
+          <span class="navy">BioTailr</span><span class="teal"> AI</span>
+        </div>
+      </a>
+      <span class="auth-demo-badge">
+        <span class="pulse-dot"></span>
+        <span>4-Day Demo Security Gate</span>
+      </span>
+    </div>
+
+    <div class="auth-nav-right">
+      <a href="index.html" class="btn btn-outline" style="font-size: 0.85rem; padding: 7px 16px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        <span>Back to Overview</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Split Interactive Auth Container -->
+  <main class="auth-main-wrapper">
+    <!-- Sliding Card Stage (mode-login by default, changes to mode-signup) -->
+    <div class="auth-card-stage mode-login" id="auth-card-stage">
+      
+      <!-- =======================================================
+           PANEL 1: BRAND SHOWCASE & 4-DAY DEMO HIGHLIGHTS
+           (Left side in Login Mode | Right side in Sign Up Mode)
+           ======================================================= -->
+      <aside class="auth-panel-half auth-showcase-panel" id="auth-showcase-panel">
+        <div class="showcase-content-box">
+          <div class="showcase-badge-pill" id="showcase-badge-pill">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="showcase-badge-text">4-Day Verified Trial</span>
+          </div>
+
+          <h2 class="showcase-headline" id="showcase-title">
+            Tailor Your Career History with <span class="teal-text">100% ATS Score.</span>
+          </h2>
+
+          <p class="showcase-subtext" id="showcase-description">
+            Experience enterprise-grade automated resume tailoring. Powered by Google Gemini 2.5 Flash with Groq failover and 1-click execution across LinkedIn, Indeed, Naukri, YC, and Foundit.
+          </p>
+
+          <ul class="showcase-perks-list">
+            <li class="showcase-perk-item">
+              <div class="showcase-perk-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <span>Dual-Engine AI Semantic keyword alignment</span>
+            </li>
+            <li class="showcase-perk-item">
+              <div class="showcase-perk-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <span>Strict 1-Page A4 ATS layout guarantee</span>
+            </li>
+            <li class="showcase-perk-item">
+              <div class="showcase-perk-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <span>Verified Email Access &bull; 4-day active demo</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="showcase-footer-box">
+          <div class="showcase-demo-card">
+            <div>
+              <div class="showcase-demo-title">Automated Demo Policy</div>
+              <div class="showcase-demo-desc">Auto-deactivates after 4 full days</div>
+            </div>
+            <div class="showcase-demo-days">
+              4
+              <span>Days Full Access</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- =======================================================
+           PANEL 2: INTERACTIVE FORM PANEL
+           (Right side in Login Mode | Left side in Sign Up Mode)
+           ======================================================= -->
+      <section class="auth-panel-half auth-form-panel" id="auth-form-panel">
+        
+        <!-- Alerts Container -->
+        <div id="auth-alert-container"></div>
+
+        <!-- -----------------------------------------------------
+             VIEW A: SIGN IN FORM (Default View)
+             ----------------------------------------------------- -->
+        <div class="auth-form-inner" id="view-login">
+          <h1 class="form-header-title">Welcome Back</h1>
+          <p class="form-header-sub">Sign in to resume tailoring in your 4-day demo workspace.</p>
+
+          <form id="form-login" autocomplete="on">
+            <div class="auth-input-group">
+              <label for="login-email">Email Address</label>
+              <div class="auth-input-field-wrap">
+                <span class="auth-input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </span>
+                <input type="email" id="login-email" required placeholder="alex.morgan@company.com" autocomplete="email">
+              </div>
+            </div>
+
+            <div class="auth-input-group">
+              <label for="login-password">Password</label>
+              <div class="auth-input-field-wrap">
+                <span class="auth-input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </span>
+                <input type="password" id="login-password" required placeholder="••••••••••••" autocomplete="current-password">
+                <button type="button" class="btn-toggle-pwd" data-target="login-password" title="Show or hide password">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-form-options">
+              <label class="remember-label">
+                <input type="checkbox" id="login-remember" checked>
+                <span>Remember this device</span>
+              </label>
+            </div>
+
+            <button type="submit" class="auth-submit-btn" id="btn-submit-login">
+              <span>Sign In to Studio</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+
+            <div class="auth-switch-prompt">
+              <span>Don't have a demo account?</span>
+              <button type="button" class="btn-auth-switch" id="btn-go-signup">Sign up for 4-day demo &rarr;</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- -----------------------------------------------------
+             VIEW B: SIGN UP FORM
+             ----------------------------------------------------- -->
+        <div class="auth-form-inner" id="view-signup" style="display: none;">
+          <h1 class="form-header-title">Create Demo Account</h1>
+          <p class="form-header-sub">Verify your email to unlock 4 full days of 100% ATS Studio access.</p>
+
+          <form id="form-signup" autocomplete="on">
+            <div class="auth-input-group">
+              <label for="signup-name">Full Name</label>
+              <div class="auth-input-field-wrap">
+                <span class="auth-input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </span>
+                <input type="text" id="signup-name" required placeholder="Alex Morgan" autocomplete="name">
+              </div>
+            </div>
+
+            <div class="auth-input-group">
+              <label for="signup-email">Work / Personal Email</label>
+              <div class="auth-input-field-wrap">
+                <span class="auth-input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </span>
+                <input type="email" id="signup-email" required placeholder="alex.morgan@company.com" autocomplete="email">
+              </div>
+            </div>
+
+            <div class="auth-input-group">
+              <label for="signup-password">Create Password</label>
+              <div class="auth-input-field-wrap">
+                <span class="auth-input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </span>
+                <input type="password" id="signup-password" required minlength="6" placeholder="At least 6 characters" autocomplete="new-password">
+                <button type="button" class="btn-toggle-pwd" data-target="signup-password" title="Show or hide password">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="auth-input-group">
+              <label for="signup-confirm-password">Confirm Password</label>
+              <div class="auth-input-field-wrap">
+                <span class="auth-input-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </span>
+                <input type="password" id="signup-confirm-password" required minlength="6" placeholder="Repeat your password" autocomplete="new-password">
+              </div>
+            </div>
+
+            <button type="submit" class="auth-submit-btn" id="btn-submit-signup">
+              <span>Send Verification Code &rarr;</span>
+            </button>
+
+            <div class="auth-switch-prompt">
+              <span>Already have an account?</span>
+              <button type="button" class="btn-auth-switch" id="btn-go-login">Sign in here &rarr;</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- -----------------------------------------------------
+             VIEW C: EMAIL OTP VERIFICATION STEP
+             ----------------------------------------------------- -->
+        <div class="auth-form-inner auth-verify-container" id="view-verify">
+          <div class="verify-badge-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+
+          <h2 class="form-header-title">Verify Your Email</h2>
+          <p class="form-header-sub">
+            We sent a 6-digit confirmation code to <strong id="verify-email-display" style="color: #1e1b78;"></strong>. Enter the code below to activate your 4-day demo access.
+          </p>
+
+          <!-- Instant Code Display / EmailJS notification -->
+          <div class="instant-code-hint" id="instant-code-hint">
+            <span>Security Verification Code:</span>
+            <strong id="display-otp-code">------</strong>
+          </div>
+
+          <form id="form-verify">
+            <input 
+              type="text" 
+              id="input-verify-otp" 
+              class="verify-otp-input" 
+              maxlength="6" 
+              placeholder="000000" 
+              autocomplete="one-time-code"
+              required
+            >
+
+            <button type="submit" class="auth-submit-btn" id="btn-submit-verify">
+              <span>Verify &amp; Activate 4-Day Demo</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+
+            <div class="auth-switch-prompt" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
+              <button type="button" class="btn-auth-switch" id="btn-resend-otp">Resend Code</button>
+              <button type="button" class="btn-auth-switch" id="btn-back-to-signup" style="color: #64748b;">Change Email</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- -----------------------------------------------------
+             VIEW D: DEACTIVATED / DEMO EXPIRED NOTICE
+             ----------------------------------------------------- -->
+        <div class="auth-deactivated-card" id="view-deactivated">
+          <div class="auth-deactivated-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>4-Day Demo Period Has Ended</span>
+          </div>
+          <p style="font-size: 0.84rem; line-height: 1.5; margin-bottom: 10px;">
+            Your account has been automatically deactivated after completing the 4-day trial period. To continue using BioTailr AI, please register a new demo email.
+          </p>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-re-register" style="border-color: #fda4af; color: #9f1239; background: #ffffff;">
+            Create New Demo Account
+          </button>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- Auth Controller Script -->
+  <script type="module" src="js/auth-page.js"></script>
+</body>
+</html>
