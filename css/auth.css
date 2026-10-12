@@ -37,6 +37,52 @@
   gap: 1.5rem;
 }
 
+.auth-nav-left .brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.auth-nav-left .brand-logo-img,
+.brand-logo-img {
+  width: 36px !important;
+  height: 36px !important;
+  max-width: 36px !important;
+  max-height: 36px !important;
+  object-fit: contain !important;
+  flex-shrink: 0;
+}
+
+.brand-text-logo {
+  display: inline-flex;
+  align-items: flex-start;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.brand-text-logo .navy {
+  color: #1e1b78;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.brand-text-logo .teal {
+  color: #00b49f;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: super;
+  position: relative;
+  top: -4px;
+}
+
 .auth-demo-badge {
   display: inline-flex;
   align-items: center;
@@ -103,26 +149,22 @@
 */
 .auth-card-stage.mode-login .auth-showcase-panel {
   transform: translateX(0%);
-  order: 1;
 }
 
 .auth-card-stage.mode-login .auth-form-panel {
   transform: translateX(0%);
-  order: 2;
 }
 
 /* Mode: Signup
-   - Left side: Form Panel (Swapped to order 1 / sliding)
-   - Right side: Showcase Panel (Swapped to order 2 / sliding)
+   - Left side: Form Panel (translateX -100%)
+   - Right side: Showcase Panel (translateX 100%)
 */
 .auth-card-stage.mode-signup .auth-form-panel {
   transform: translateX(-100%);
-  order: 1;
 }
 
 .auth-card-stage.mode-signup .auth-showcase-panel {
   transform: translateX(100%);
-  order: 2;
 }
 
 /* =========================================================

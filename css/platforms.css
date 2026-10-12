@@ -188,18 +188,18 @@
 .platform-logo-link:hover {
   transform: translateY(-6px);
   border-color: var(--plat-accent, #0d9488);
-  box-shadow: 0 16px 36px var(--plat-shadow, rgba(15, 23, 42, 0.08)), 0 0 0 1px var(--plat-accent, #0d9488);
+  box-shadow: 0 16px 36px var(--plat-shadow, rgba(15, 23, 42, 0.08)), 0 0 0 1.5px var(--plat-accent, #0d9488);
 }
 
 .platform-logo-link:hover::after {
   opacity: 1;
 }
 
-.platform-logo-link[data-platform="linkedin"] { --plat-accent: #0a66c2; --plat-shadow: rgba(10, 102, 194, 0.18); }
-.platform-logo-link[data-platform="yc"] { --plat-accent: #ff6600; --plat-shadow: rgba(255, 102, 0, 0.18); }
-.platform-logo-link[data-platform="naukri"] { --plat-accent: #1e3a8a; --plat-shadow: rgba(30, 58, 138, 0.18); }
-.platform-logo-link[data-platform="indeed"] { --plat-accent: #2164f3; --plat-shadow: rgba(33, 100, 243, 0.18); }
-.platform-logo-link[data-platform="foundit"] { --plat-accent: #8b5cf6; --plat-shadow: rgba(139, 92, 246, 0.18); }
+.platform-logo-link[data-platform="linkedin"] { --plat-accent: #0a66c2; --plat-shadow: rgba(10, 102, 194, 0.28); }
+.platform-logo-link[data-platform="yc"] { --plat-accent: #ff6600; --plat-shadow: rgba(255, 102, 0, 0.28); }
+.platform-logo-link[data-platform="naukri"] { --plat-accent: #1e3a8a; --plat-shadow: rgba(30, 58, 138, 0.28); }
+.platform-logo-link[data-platform="indeed"] { --plat-accent: #2164f3; --plat-shadow: rgba(33, 100, 243, 0.28); }
+.platform-logo-link[data-platform="foundit"] { --plat-accent: #8b5cf6; --plat-shadow: rgba(139, 92, 246, 0.32); }
 
 .platform-logo-img-wrap {
   height: 48px;
@@ -217,7 +217,7 @@
 }
 
 .platform-logo-link:hover .platform-logo-img-wrap img {
-  transform: scale(1.05);
+  transform: scale(1.12);
 }
 
 .platform-logo-title {
@@ -225,6 +225,11 @@
   font-weight: 800;
   color: #0f172a;
   margin-bottom: 4px;
+  transition: color 0.25s ease;
+}
+
+.platform-logo-link:hover .platform-logo-title {
+  color: var(--plat-accent, #0f172a);
 }
 
 .platform-action-hint {
@@ -234,11 +239,39 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  transition: gap 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .platform-logo-link:hover .platform-action-hint {
   gap: 7px;
+  color: var(--plat-accent, #0d9488);
+}
+
+/* Platform-Specific Marquee Item Hover States */
+.marquee-item[href*="foundit"]:hover {
+  border-color: #8b5cf6;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25);
+  color: #8b5cf6;
+}
+.marquee-item[href*="indeed"]:hover {
+  border-color: #2164f3;
+  box-shadow: 0 8px 24px rgba(33, 100, 243, 0.25);
+  color: #2164f3;
+}
+.marquee-item[href*="linkedin"]:hover {
+  border-color: #0a66c2;
+  box-shadow: 0 8px 24px rgba(10, 102, 194, 0.25);
+  color: #0a66c2;
+}
+.marquee-item[href*="yc"]:hover {
+  border-color: #ff6600;
+  box-shadow: 0 8px 24px rgba(255, 102, 0, 0.25);
+  color: #ff6600;
+}
+.marquee-item[href*="naukri"]:hover {
+  border-color: #1e3a8a;
+  box-shadow: 0 8px 24px rgba(30, 58, 138, 0.25);
+  color: #1e3a8a;
 }
 
 @media (max-width: 768px) {

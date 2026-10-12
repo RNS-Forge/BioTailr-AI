@@ -73,6 +73,52 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Global Brand Logo & Header Elements */
+.brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.brand-logo-img {
+  width: 36px !important;
+  height: 36px !important;
+  max-width: 36px !important;
+  max-height: 36px !important;
+  object-fit: contain !important;
+  flex-shrink: 0;
+}
+
+.brand-text-logo {
+  display: inline-flex;
+  align-items: flex-start;
+  font-family: var(--font-brand);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.brand-text-logo .navy {
+  color: var(--brand-navy, #1e1b78);
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.brand-text-logo .teal {
+  color: var(--brand-teal, #00b49f);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: super;
+  position: relative;
+  top: -4px;
+}
+
 /* Base Buttons */
 .btn {
   display: inline-flex;

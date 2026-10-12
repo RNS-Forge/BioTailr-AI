@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.disabled = true;
 
     try {
-      const result = loginUser({ email, password });
+      const result = await loginUser({ email, password });
 
       if (result.success) {
         showAlert(`Welcome back, ${result.user.fullName || 'Candidate'}! (${result.demo.formatted})`, 'success');
