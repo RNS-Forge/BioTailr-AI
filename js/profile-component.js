@@ -175,6 +175,16 @@ function injectModalsOnce() {
             <input type="text" id="prof-input-role" class="profile-field-input" placeholder="e.g. Senior Full-Stack Engineer">
           </div>
 
+          <div class="profile-field-group">
+            <label for="prof-input-location">Location (City, State, Country)</label>
+            <input type="text" id="prof-input-location" class="profile-field-input" placeholder="e.g. Coimbatore, Tamil Nadu, India">
+          </div>
+
+          <div class="profile-field-group">
+            <label for="prof-input-linkedin">LinkedIn Profile URL</label>
+            <input type="url" id="prof-input-linkedin" class="profile-field-input" placeholder="e.g. https://www.linkedin.com/in/candidate">
+          </div>
+
           <!-- Membership & Access Badge -->
           <div class="membership-tier-card" id="modal-membership-card">
             <div class="tier-title" id="modal-tier-title">First 500 Early Adopter Plan</div>
@@ -303,6 +313,10 @@ function openProfileModal() {
   if (emailInput) emailInput.value = user.email || '';
   if (phoneInput) phoneInput.value = user.phone || '';
   if (roleInput) roleInput.value = user.targetRole || '';
+  const locInput = document.getElementById('prof-input-location');
+  if (locInput) locInput.value = user.location || user.fullLocation || (user.city ? `${user.city}, ${user.state || 'Tamil Nadu'}, ${user.country || 'India'}` : 'Coimbatore, Tamil Nadu, India');
+  const lkdInput = document.getElementById('prof-input-linkedin');
+  if (lkdInput) lkdInput.value = user.linkedinUrl || user.linkedin || 'https://www.linkedin.com/in/candidate';
 
   const demo = getDemoStatus(user);
   if (tierTitle) {
@@ -422,10 +436,24 @@ function bindModalActions() {
     const newName = document.getElementById('prof-input-name')?.value.trim();
     const newPhone = document.getElementById('prof-input-phone')?.value.trim();
     const newRole = document.getElementById('prof-input-role')?.value.trim();
+    const newLocation = document.getElementById('prof-input-location')?.value.trim();
+    const newLinkedin = document.getElementById('prof-input-linkedin')?.value.trim();
 
     user.fullName = newName || user.fullName;
     user.phone = newPhone || user.phone;
     user.targetRole = newRole || user.targetRole;
+    if (newLocation) {
+      user.location = newLocation;
+      user.fullLocation = newLocation;
+      user.address = newLocation;
+      const parts = newLocation.split(',').map(s => s.trim()).filter(Boolean);
+      user.city = parts[0] || user.city;
+      if (parts.length > 1) user.state = parts[1];
+      if (parts.length > 2) user.country = parts[2];
+    }
+    if (newLinkedin) {
+      user.linkedinUrl = newLinkedin;
+    }
     user.avatar = currentUploadedBase64; // Base64 string or null
 
     // 1. Update in active user session & all registered users map
@@ -437,6 +465,11 @@ function bindModalActions() {
         fullName: user.fullName,
         phone: user.phone,
         targetRole: user.targetRole,
+        location: user.location,
+        city: user.city,
+        state: user.state,
+        country: user.country,
+        linkedinUrl: user.linkedinUrl,
         avatar: user.avatar
       };
       saveUsersMap(allUsers);

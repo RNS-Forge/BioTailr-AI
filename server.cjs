@@ -189,6 +189,20 @@ const server = http.createServer((req, res) => {
           const exp = incoming.experience || {};
           const edu = incoming.education || {};
 
+          // Dynamic location and geographic derivation from user profile
+          const userCity = p.city || (p.location ? p.location.split(',')[0].trim() : (current.personal?.city || ''));
+          const locParts = (p.location || p.fullLocation || p.address || '').split(',').map(s => s.trim()).filter(Boolean);
+          const userState = p.state || (locParts.length > 1 ? locParts[1] : (current.personal?.state || ''));
+          const userCountry = p.country || (locParts.length > 2 ? locParts[2] : (current.personal?.country || 'India'));
+          
+          let dynamicLocation = p.fullLocation || p.location || p.address || '';
+          if (!dynamicLocation && userCity) {
+            dynamicLocation = [userCity, userState, userCountry].filter(Boolean).join(', ');
+          }
+          if (!dynamicLocation) {
+            dynamicLocation = current.personal?.location || current.personal?.fullLocation || '';
+          }
+
           const mapped = {
             personal: {
               ...(current.personal || {}),
@@ -197,13 +211,13 @@ const server = http.createServer((req, res) => {
               lastName: p.lastName || (p.fullName && p.fullName.split(' ').length > 1 ? p.fullName.split(' ').slice(1).join(' ') : (current.personal?.lastName || '')),
               email: p.email || current.personal?.email || '',
               phone: p.phone || current.personal?.phone || '',
-              city: p.city || (p.location ? p.location.split(',')[0].trim() : (current.personal?.city || '')),
-              state: p.state || current.personal?.state || 'Karnataka',
-              country: p.country || current.personal?.country || 'India',
-              postalCode: p.postalCode || current.personal?.postalCode || '560001',
-              location: p.location || current.personal?.location || 'Bangalore, Karnataka, India',
-              fullLocation: p.fullLocation || p.location || current.personal?.fullLocation || 'Bangalore, Karnataka, India',
-              address: p.address || p.location || current.personal?.address || 'Bangalore, Karnataka, India',
+              city: userCity,
+              state: userState,
+              country: userCountry,
+              postalCode: p.postalCode || current.personal?.postalCode || '',
+              location: dynamicLocation,
+              fullLocation: dynamicLocation,
+              address: dynamicLocation,
               linkedinUrl: p.linkedinUrl || p.linkedin || current.personal?.linkedinUrl || 'https://www.linkedin.com/in/candidate',
               githubUrl: p.githubUrl || p.github || current.personal?.githubUrl || 'https://github.com/candidate',
               portfolioUrl: p.portfolioUrl || p.portfolio || current.personal?.portfolioUrl || 'https://candidate.portfolio.dev'
