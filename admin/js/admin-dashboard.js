@@ -15,6 +15,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('btn-admin-logout')?.addEventListener('click', logoutAdmin);
 
+  // Boss Updater Manual Dispatch
+  document.getElementById('btn-trigger-boss-updater')?.addEventListener('click', async () => {
+    const btn = document.getElementById('btn-trigger-boss-updater');
+    btn.disabled = true;
+    btn.innerHTML = '<span>Dispatching Briefing...</span>';
+    try {
+      const res = await fetch('/api/admin/trigger-boss-updater');
+      const data = await res.json();
+      if (data.success) {
+        showToast('Daily briefing successfully sent to 2005sanjaynrs@gmail.com');
+      } else {
+        showToast(`Dispatch note: ${data.error || 'Server error'}`);
+      }
+    } catch (e) {
+      showToast('Error dispatching briefing.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> <span>Send Boss Briefing</span>`;
+    }
+  });
+
   // Initialize UI controls
   setupTabs();
   setupSearchAndFilters();
@@ -158,7 +179,7 @@ function renderTable() {
         </td>
         <td>
           <strong style="font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: #0284c7;">
-            <a href="tel:${escapeHtml(item.phone)}" style="color: inherit; text-decoration: none;">📞 ${escapeHtml(item.phone || 'N/A')}</a>
+            <a href="tel:${escapeHtml(item.phone)}" style="color: inherit; text-decoration: none;">${escapeHtml(item.phone || 'N/A')}</a>
           </strong>
         </td>
         <td>
@@ -179,13 +200,16 @@ function renderTable() {
         <td style="text-align: center;">
           <div class="action-buttons-group">
             <button class="btn-action btn-activate btn-row-activate" data-id="${item.id}" title="Activate Subscription" ${item.status === 'active' ? 'disabled style="opacity: 0.45; cursor: default;"' : ''}>
-              ✓ Activate
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              <span>Activate</span>
             </button>
             <button class="btn-action btn-deactivate btn-row-deactivate" data-id="${item.id}" title="Deactivate Access" ${item.status === 'deactivated' ? 'disabled style="opacity: 0.45; cursor: default;"' : ''}>
-              ⏸ Deactivate
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+              <span>Deactivate</span>
             </button>
             <button class="btn-action btn-delete btn-row-delete" data-id="${item.id}" title="Delete Record">
-              ✕ Delete
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              <span>Delete</span>
             </button>
           </div>
         </td>

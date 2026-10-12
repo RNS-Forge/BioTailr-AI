@@ -10,7 +10,7 @@ import { evaluateAtsScore, optimizeProfileFor100Ats } from './ats-engine.js';
 import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml, buildStandaloneResumeHtml } from './pdf-export.js';
 import { parsePdfResume, getSavedDynamicProfile, clearDynamicProfile } from './resume-parser.js';
 import { saveProfileToSupabase, fetchProfileFromSupabase, getSupabaseClient } from './supabase-client.js';
-import { requireActiveDemo, getActiveUser, getDemoStatus, logoutUser } from './auth-service.js';
+import { requireActiveDemo, getActiveUser, getDemoStatus, logoutUser, getEarlyAdopterStats } from './auth-service.js';
 
 // Application State
 const state = {
@@ -361,9 +361,18 @@ function verifyDemoAccessBeforeAction(onSuccess) {
 }
 
 /**
- * Initializes navbar auth state and 4-Day Demo pill
+ * Initializes navbar auth state, 4-Day Demo pill, and Early Adopter ticker
  */
 function initAuthUi() {
+  // Update Early Adopter Ticker Remaining Count
+  const early = getEarlyAdopterStats();
+  const r1 = document.getElementById('ticker-remaining-count');
+  const r2 = document.getElementById('ticker-remaining-count-2');
+  const r3 = document.getElementById('ticker-remaining-count-3');
+  if (r1) r1.textContent = early.remaining;
+  if (r2) r2.textContent = early.remaining;
+  if (r3) r3.textContent = early.remaining;
+
   const container = document.getElementById('nav-auth-status-container');
   if (!container) return;
 
@@ -372,9 +381,9 @@ function initAuthUi() {
     const demo = getDemoStatus(user);
     if (demo.isExpired) {
       container.innerHTML = `
-        <div class="user-demo-pill pill-expired" title="Demo expired. Account deactivated.">
+        <div class="user-demo-pill pill-expired" title="Trial expired. Account deactivated.">
           <span class="demo-status-dot"></span>
-          <span>4-Day Demo Expired</span>
+          <span>${demo.formatted}</span>
           <button type="button" class="btn-user-logout" id="btn-header-logout">Sign Out</button>
         </div>
       `;

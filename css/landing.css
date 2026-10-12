@@ -117,6 +117,57 @@ html, body {
 /* ---------------------------------------------------------
    2. Landing Page Navigation Bar
    --------------------------------------------------------- */
+/* =========================================================
+   Early Adopter Top Announcement Ticker Bar (First 500 Free)
+   ========================================================= */
+.early-adopter-ticker-bar {
+  background: #1e1b78;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 180, 159, 0.3);
+  position: relative;
+  z-index: 102;
+  width: 100%;
+}
+
+.early-adopter-ticker-bar strong {
+  color: #00b49f;
+  letter-spacing: 0.04em;
+}
+
+.ticker-track {
+  display: inline-flex;
+  gap: 3.5rem;
+  white-space: nowrap;
+  will-change: transform;
+  animation: scrollTicker 32s linear infinite;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-link {
+  color: #99e6dc;
+  font-weight: 700;
+  text-decoration: underline;
+  margin-left: 6px;
+  cursor: pointer;
+}
+
+.ticker-link:hover {
+  color: #ffffff;
+}
+
 header.landing-nav {
   display: flex;
   align-items: center;

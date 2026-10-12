@@ -9,7 +9,8 @@ import {
   verifyEmailOtp, 
   resendVerificationOtp, 
   getActiveUser,
-  getDemoStatus 
+  getDemoStatus,
+  getEarlyAdopterStats 
 } from './auth-service.js';
 
 let currentPendingEmail = '';
@@ -254,6 +255,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // -----------------------------------------------------------
   // Mode Switch Helpers
   // -----------------------------------------------------------
+  function updateTopGateBadge() {
+    const topBadge = document.querySelector('.top-nav-badge');
+    const early = getEarlyAdopterStats();
+    if (topBadge) {
+      if (early.remaining > 0) {
+        topBadge.innerHTML = `<span class="pulse-dot"></span> FIRST 500 USERS: 2 WEEKS FREE + 24/7 SUPPORT (${early.remaining} SPOTS LEFT)`;
+      } else {
+        topBadge.innerHTML = `<span class="pulse-dot"></span> 4-DAY DEMO SECURITY GATE`;
+      }
+    }
+  }
+
   function setLoginMode() {
     clearAlert();
     stage.classList.remove('mode-signup');
@@ -264,9 +277,17 @@ document.addEventListener('DOMContentLoaded', () => {
     viewVerify.style.display = 'none';
     viewVerify.classList.remove('active');
 
-    showcaseTitle.innerHTML = 'Tailor Your Career History with <span class="teal-text">100% ATS Score.</span>';
-    showcaseDesc.textContent = 'Automated resume calibration and instant multi-platform solver across LinkedIn, Indeed, Naukri, YC, and Foundit.';
-    showcaseBadgeText.textContent = '4-Day Verified Access';
+    updateTopGateBadge();
+    const early = getEarlyAdopterStats();
+    if (early.remaining > 0) {
+      showcaseTitle.innerHTML = 'Tailor Your Career History with <span class="teal-text">100% ATS Score.</span>';
+      showcaseDesc.textContent = `First 500 candidates unlock 2 full weeks of free access with 24/7 customer support. Only ${early.remaining} of 500 early spots remain.`;
+      showcaseBadgeText.textContent = `2 Weeks Free Access • ${early.remaining} Spots Left`;
+    } else {
+      showcaseTitle.innerHTML = 'Tailor Your Career History with <span class="teal-text">100% ATS Score.</span>';
+      showcaseDesc.textContent = 'Automated resume calibration and instant multi-platform solver across LinkedIn, Indeed, Naukri, YC, and Foundit.';
+      showcaseBadgeText.textContent = '4-Day Verified Access';
+    }
   }
 
   function setSignupMode() {
@@ -279,9 +300,17 @@ document.addEventListener('DOMContentLoaded', () => {
     viewVerify.style.display = 'none';
     viewVerify.classList.remove('active');
 
-    showcaseTitle.innerHTML = 'Start Your Free <span class="teal-text">4-Day Full Demo.</span>';
-    showcaseDesc.textContent = 'Instant verified access to automated ATS tailoring and 1-click platform solvers with complete client-side privacy.';
-    showcaseBadgeText.textContent = 'Instant 4-Day Trial';
+    updateTopGateBadge();
+    const early = getEarlyAdopterStats();
+    if (early.remaining > 0) {
+      showcaseTitle.innerHTML = 'Start Your Free <span class="teal-text">2-Week Trial.</span>';
+      showcaseDesc.textContent = `Claim 14 days of unrestricted ATS tailoring and automated solvers with 24/7 customer support. Only ${early.remaining} spots left!`;
+      showcaseBadgeText.textContent = `First 500 Privilege • 2 Weeks Free`;
+    } else {
+      showcaseTitle.innerHTML = 'Start Your Free <span class="teal-text">4-Day Full Demo.</span>';
+      showcaseDesc.textContent = 'Instant verified access to automated ATS tailoring and 1-click platform solvers with complete client-side privacy.';
+      showcaseBadgeText.textContent = 'Instant 4-Day Trial';
+    }
   }
 
   function setVerifyMode(email, otpCode) {

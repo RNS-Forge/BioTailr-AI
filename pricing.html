@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pricing Plans & Sprint Passes — BioTailr AI</title>
-  <meta name="description" content="Affordable and instant career acceleration. 1 Day (₹5), 1 Week (₹30), 1 Month (₹115), and 1 Year (₹1000) passes for 100% ATS score tailoring across LinkedIn, Indeed, Naukri, YC, and Foundit.">
+  <meta name="description" content="Transparent, affordable career passes. First 500 users get 2 weeks free. 1 Day (₹5), 1 Week (₹30), 1 Month (₹115), and 1 Year (₹1000) for 100% ATS score tailoring across LinkedIn, Indeed, Naukri, YC, and Foundit.">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +16,7 @@
 </head>
 <body class="pricing-page-body">
 
-  <!-- Navigation Bar -->
+  <!-- Header Navbar -->
   <header class="pricing-navbar">
     <a href="index.html" class="brand-logo-wrap" title="BioTailr AI Homepage">
       <img src="assets/logo.png" alt="BioTailr AI Logo" class="brand-logo-img">
@@ -27,184 +27,209 @@
 
     <ul class="nav-links-menu">
       <li><a href="index.html">Platform Overview</a></li>
-      <li><a href="platforms.html">Platforms & Automation</a></li>
+      <li><a href="platforms.html">Platforms &amp; Automation</a></li>
       <li><a href="ats-rules.html">ATS Ruleset</a></li>
       <li><a href="pricing.html" class="active">Pricing Plans</a></li>
     </ul>
 
     <div class="nav-actions-wrap" id="nav-actions-container">
       <div id="user-auth-badge"></div>
-      <a href="index.html" class="btn-pill-primary">
+      <a href="index.html#try-now" class="btn-pill-primary">
         <span>Open Studio</span>
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </a>
     </div>
   </header>
 
-  <!-- Hero Section -->
+  <!-- Hero Header -->
   <section class="pricing-hero">
     <div class="pricing-badge-pill">
-      <span>⚡ UNBEATABLE MARKET-DISRUPTING VALUE • 100% ATS GUARANTEE</span>
+      <span>TRANSPARENT VALUE &bull; 100% ATS COMPLIANCE</span>
     </div>
-    <h1>Affordable Career Acceleration.<br><span class="highlight-teal">Pay As You Apply.</span></h1>
-    <p>Tailor your resume for LinkedIn, Indeed, Naukri, YC, and Foundit with 100% ATS score compliance. No recurring traps. Instant activation via dedicated phone support.</p>
+    <h1>Simple Career Passes.<br><span class="teal-highlight">Pay As You Apply.</span></h1>
+    <p>Tailor your resume for LinkedIn, Indeed, Naukri, YC, and Foundit with verified 100% ATS score compliance. No automatic recurring traps. Dedicated activation assistance.</p>
   </section>
 
-  <!-- 4 Pricing Cards Grid -->
+  <!-- Early Adopter Privilege Banner (First 500 Free for 2 Weeks + 24/7 Support) -->
+  <section class="early-adopter-hero-card">
+    <div class="early-adopter-banner-box">
+      <div class="early-banner-content">
+        <div class="early-banner-badge">
+          <span>EARLY ADOPTER ACCESS &bull; 24/7 CUSTOMER SUPPORT</span>
+        </div>
+        <div class="early-banner-title">First 500 Users: 2 Weeks Free Access</div>
+        <div class="early-banner-desc">
+          Complimentary 14 days of full studio tailoring, multi-platform solvers, and round-the-clock priority customer support. Reserved for the first 500 registered candidates.
+        </div>
+      </div>
+      <div class="early-banner-actions">
+        <div class="early-counter-block">
+          <div class="early-counter-num" id="early-adopter-remaining-spots">366</div>
+          <div class="early-counter-sub">Spots Remaining</div>
+        </div>
+        <button class="btn-early-claim btn-plan-trigger" data-plan-id="early_adopter">
+          <span>Claim 2-Week Free Pass</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Core Paid Cards Grid -->
   <main class="pricing-grid-container">
 
     <!-- Plan 1: 1 Day Pass (₹5) -->
-    <div class="pricing-card" data-plan="1_day" data-name="1 Day Sprint Pass" data-price="5">
-      <div class="card-tier-name">1 Day Sprint</div>
-      <div class="card-tier-desc">Ideal for urgent single-job submissions or quick ATS validation before an interview deadline.</div>
+    <div class="pricing-card" data-plan="1_day">
+      <div class="card-tier-title">1-Day Sprint</div>
+      <div class="card-tier-summary">Urgent single-job applications or quick pre-interview ATS score validation.</div>
       
-      <div class="card-price-wrap">
-        <span class="card-currency">₹</span>
-        <span class="card-amount">5</span>
-        <span class="card-period">/ 1 Day</span>
+      <div class="card-price-row">
+        <span class="card-price-currency">₹</span>
+        <span class="card-price-value">5</span>
+        <span class="card-price-cycle">/ 24 Hours</span>
       </div>
-      <span class="card-savings-pill">⚡ Instant 24h Pass</span>
+      <span class="card-savings-pill">24-Hour Access</span>
 
-      <ul class="card-features-list">
+      <ul class="card-checklist">
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
           <span><strong>24-Hour Full Access</strong> to BioTailr Studio</span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>All 5 Platforms (LinkedIn, Indeed, Naukri, YC, Foundit)</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>All 5 Platforms: LinkedIn, Indeed, Naukri, YC, Foundit</span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>100% ATS Score Calibration & Clean PDF Export</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>100% ATS Score Calibration &amp; PDF Export</span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Zero Server Storage & Complete Local Privacy</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Client-Side Privacy &amp; Zero Cloud Storage</span>
         </li>
       </ul>
 
-      <button class="btn-card-subscribe btn-sub-secondary btn-plan-trigger" data-plan-id="1_day">
-        <span>Get 1-Day Pass (₹5)</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      <button class="btn-card-action btn-secondary btn-plan-trigger" data-plan-id="1_day">
+        <span>Get 1-Day Pass</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
     </div>
 
     <!-- Plan 2: 1 Week Pass (₹30) -->
-    <div class="pricing-card" data-plan="1_week" data-name="1 Week Sprint Pass" data-price="30">
-      <div class="card-floating-badge purple">SAVE 15% • ₹4.2 / DAY</div>
-      <div class="card-tier-name">1 Week Sprint</div>
-      <div class="card-tier-desc">Designed for active candidates applying to 10-20 target companies over a focused 7-day push.</div>
+    <div class="pricing-card" data-plan="1_week">
+      <div class="card-badge navy">SAVE 15%</div>
+      <div class="card-tier-title">1-Week Sprint</div>
+      <div class="card-tier-summary">Designed for active candidates applying to 10 to 20 positions over one week.</div>
 
-      <div class="card-price-wrap">
-        <span class="card-currency">₹</span>
-        <span class="card-amount">30</span>
-        <span class="card-period">/ 7 Days</span>
+      <div class="card-price-row">
+        <span class="card-price-currency">₹</span>
+        <span class="card-price-value">30</span>
+        <span class="card-price-cycle">/ 7 Days</span>
       </div>
-      <span class="card-savings-pill">🔥 Best for Interview Week</span>
+      <span class="card-savings-pill">₹4.2 / Day</span>
 
-      <ul class="card-features-list">
+      <ul class="card-checklist">
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span><strong>7 Full Days</strong> Unlimited AI Tailoring</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span><strong>7 Days Unlimited</strong> AI Resume Tailoring</span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Dual AI Engines: Gemini 2.5 Flash & Groq LLaMA 3.3</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Dual AI Engines: Gemini 2.5 Flash &amp; Groq LLaMA 3.3</span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
           <span>1-Click Platform Solver Assistance</span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Hard Skills Matching & Resume Keyword Injections</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Hard Skills Matching &amp; Resume Keyword Injection</span>
         </li>
       </ul>
 
-      <button class="btn-card-subscribe btn-sub-secondary btn-plan-trigger" data-plan-id="1_week">
-        <span>Get 1-Week Pass (₹30)</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      <button class="btn-card-action btn-secondary btn-plan-trigger" data-plan-id="1_week">
+        <span>Get 1-Week Pass</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
     </div>
 
     <!-- Plan 3: 1 Month Plan (₹115) - PROMINENTLY HIGHLIGHTED -->
-    <div class="pricing-card featured-card" data-plan="1_month" data-name="1 Month Pro Campaign" data-price="115">
-      <div class="card-floating-badge">⭐ MOST POPULAR • MAXIMUM VALUE</div>
-      <div class="card-tier-name">1 Month Campaign</div>
-      <div class="card-tier-desc">The complete 30-day job hunt campaign. Apply daily with bespoke tailored resumes across all portals.</div>
+    <div class="pricing-card featured-card" data-plan="1_month">
+      <div class="card-badge">MOST POPULAR</div>
+      <div class="card-tier-title">1-Month Campaign</div>
+      <div class="card-tier-summary">Comprehensive 30-day job hunt campaign with bespoke applications across portals.</div>
 
-      <div class="card-price-wrap">
-        <span class="card-currency">₹</span>
-        <span class="card-amount">115</span>
-        <span class="card-period">/ 30 Days</span>
+      <div class="card-price-row">
+        <span class="card-price-currency">₹</span>
+        <span class="card-price-value">115</span>
+        <span class="card-price-cycle">/ 30 Days</span>
       </div>
-      <span class="card-savings-pill">💎 Just ₹3.8 / Day • Save 60%</span>
+      <span class="card-savings-pill">Save 60% &bull; ₹3.8 / Day</span>
 
-      <ul class="card-features-list">
+      <ul class="card-checklist">
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
           <span><strong>30 Days Full Unlimited Tailoring</strong></span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Automated Solvers for LinkedIn, Indeed, Naukri, YC & Foundit</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Automated Solvers for LinkedIn, Indeed, Naukri, YC &amp; Foundit</span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Uncapped AI Generations & Dynamic ATS Calibration</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Zero AI Throttling &amp; Dynamic ATS Scoring</span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Dedicated Onboarding & Instant Activation Call</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Dedicated Phone Onboarding &amp; Fast Activation</span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Cloud Profile Backup & Multi-Device Sync</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Cloud Profile Backup &amp; Multi-Device Sync</span>
         </li>
       </ul>
 
-      <button class="btn-card-subscribe btn-sub-primary btn-plan-trigger" data-plan-id="1_month">
-        <span>Subscribe to 1-Month Plan (₹115)</span>
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      <button class="btn-card-action btn-primary btn-plan-trigger" data-plan-id="1_month">
+        <span>Subscribe to 1-Month Plan</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
     </div>
 
     <!-- Plan 4: 1 Year Plan (₹1000) -->
-    <div class="pricing-card" data-plan="1_year" data-name="1 Year Career Pass" data-price="1000">
-      <div class="card-floating-badge gold">👑 BEST VALUE • ₹83 / MONTH</div>
-      <div class="card-tier-name">1 Year Career Pass</div>
-      <div class="card-tier-desc">Continuous career growth and job-switch insurance. Stay ready for high-paying offers all year long.</div>
+    <div class="pricing-card" data-plan="1_year">
+      <div class="card-badge navy">BEST VALUE</div>
+      <div class="card-tier-title">1-Year Career Pass</div>
+      <div class="card-tier-summary">Year-round career security and ongoing readiness for competitive job opportunities.</div>
 
-      <div class="card-price-wrap">
-        <span class="card-currency">₹</span>
-        <span class="card-amount">1000</span>
-        <span class="card-period">/ 365 Days</span>
+      <div class="card-price-row">
+        <span class="card-price-currency">₹</span>
+        <span class="card-price-value">1,000</span>
+        <span class="card-price-cycle">/ 365 Days</span>
       </div>
-      <span class="card-savings-pill">🏆 Save 75% • VIP Support</span>
+      <span class="card-savings-pill">Save 75% &bull; ₹83 / Month</span>
 
-      <ul class="card-features-list">
+      <ul class="card-checklist">
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
           <span><strong>365 Days Unrestricted All-Access</strong></span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>All Future Job Platforms & Browser Extension Updates</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>All Future Platform Engines &amp; Extension Releases</span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Priority LLM Queue & Dedicated Bandwidth</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Priority LLM Queue &amp; Dedicated Bandwidth</span>
         </li>
         <li>
-          <svg class="feature-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Personal 1-on-1 ATS Review & Onboarding Call</span>
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>1-on-1 Career Support &amp; Review Specialist</span>
         </li>
       </ul>
 
-      <button class="btn-card-subscribe btn-sub-secondary btn-plan-trigger" data-plan-id="1_year">
-        <span>Claim 1-Year Pass (₹1000)</span>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      <button class="btn-card-action btn-secondary btn-plan-trigger" data-plan-id="1_year">
+        <span>Claim 1-Year Pass</span>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
     </div>
 
@@ -214,7 +239,7 @@
   <section class="pricing-trust-strip">
     <div class="trust-item">
       <div class="trust-icon-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
       </div>
       <div>
         <strong>Verified Phone Onboarding</strong>
@@ -223,16 +248,16 @@
     </div>
     <div class="trust-item">
       <div class="trust-icon-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </div>
       <div>
         <strong>100% ATS Compliance</strong>
-        <span>Passes Workday, Taleo, Greenhouse & Lever</span>
+        <span>Calibrated for Workday, Taleo, Greenhouse &amp; Lever</span>
       </div>
     </div>
     <div class="trust-item">
       <div class="trust-icon-box">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
       </div>
       <div>
         <strong>Zero Data Lock-in</strong>
@@ -241,37 +266,35 @@
     </div>
   </section>
 
-  <!-- MODAL: LOGIN REQUIRED (if guest clicks subscribe) -->
+  <!-- MODAL: LOGIN REQUIRED -->
   <div class="modal-overlay" id="modal-auth-required">
     <div class="modal-card">
-      <button class="modal-close-btn" id="btn-close-auth-modal">✕</button>
+      <button class="modal-close-btn" id="btn-close-auth-modal">&times;</button>
       <h3 class="modal-title">Sign In to Subscribe</h3>
-      <p class="modal-desc">To book your subscription call and activate your plan, please sign in or register with your email.</p>
+      <p class="modal-desc">Please sign in or register to book your subscription call and activate this plan.</p>
       
-      <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 14px; padding: 1.25rem; text-align: center; margin-bottom: 1.5rem;">
-        <div style="font-weight: 700; color: #1e1b78; margin-bottom: 0.25rem;" id="auth-modal-plan-title">Selected Plan</div>
-        <div style="font-size: 1.5rem; font-weight: 800; color: #00b49f;" id="auth-modal-plan-price">₹115</div>
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.1rem; text-align: center; margin-bottom: 1.25rem;">
+        <div style="font-size: 0.82rem; font-weight: 700; color: #1e1b78;" id="auth-modal-plan-title">Selected Plan</div>
+        <div style="font-size: 1.4rem; font-weight: 800; color: #00b49f;" id="auth-modal-plan-price">₹115</div>
       </div>
 
-      <div style="display: flex; gap: 10px;">
-        <a href="login.html" id="btn-go-to-login" class="btn-card-subscribe btn-sub-primary">
-          <span>Sign In / Create Account →</span>
-        </a>
-      </div>
+      <a href="login.html" id="btn-go-to-login" class="btn-card-action btn-primary" style="text-align: center;">
+        <span>Sign In / Create Account &rarr;</span>
+      </a>
     </div>
   </div>
 
   <!-- MODAL: SCHEDULE SUBSCRIPTION CALL -->
   <div class="modal-overlay" id="modal-book-call">
     <div class="modal-card">
-      <button class="modal-close-btn" id="btn-close-book-modal">✕</button>
+      <button class="modal-close-btn" id="btn-close-book-modal">&times;</button>
       <h3 class="modal-title">Book Subscription Call</h3>
-      <p class="modal-desc">Confirm your phone number below. Our team will call you within 15 minutes to verify payment and instantly activate your plan.</p>
+      <p class="modal-desc">Confirm your phone number below. Our executive will call you within 15 minutes to verify payment and activate your plan.</p>
 
       <div class="modal-plan-summary-box">
         <div>
-          <div class="plan-summary-label" id="summary-plan-name">1 Month Pro Campaign</div>
-          <div style="font-size: 0.8rem; color: #64748b;" id="summary-plan-period">30 Days Full Access</div>
+          <div class="plan-summary-label" id="summary-plan-name">1-Month Campaign</div>
+          <div style="font-size: 0.78rem; color: #64748b;" id="summary-plan-period">30 Days Full Access</div>
         </div>
         <div class="plan-summary-price" id="summary-plan-price">₹115</div>
       </div>
@@ -279,7 +302,7 @@
       <form id="form-book-call">
         <div class="modal-form-group">
           <label>Full Name</label>
-          <input type="text" id="input-book-name" required placeholder="Alex Morgan">
+          <input type="text" id="input-book-name" required placeholder="Candidate Name">
         </div>
         <div class="modal-form-group">
           <label>Email Address</label>
@@ -290,43 +313,42 @@
           <input type="tel" id="input-book-phone" required placeholder="+91 98765 43210">
         </div>
         <div class="modal-form-group">
-          <label>Notes / Preferred Call Time (Optional)</label>
-          <input type="text" id="input-book-notes" placeholder="Call me after 2 PM / UPI payment ready">
+          <label>Notes / Preferred Time (Optional)</label>
+          <input type="text" id="input-book-notes" placeholder="Call after 2 PM / UPI payment ready">
         </div>
 
-        <button type="submit" class="btn-card-subscribe btn-sub-primary" style="margin-top: 1.25rem;">
-          <span id="btn-submit-call-text">Confirm & Book Subscription Call →</span>
+        <button type="submit" class="btn-card-action btn-primary" style="margin-top: 1.1rem;">
+          <span id="btn-submit-call-text">Confirm &amp; Book Subscription Call &rarr;</span>
         </button>
       </form>
     </div>
   </div>
 
-  <!-- MODAL: SUCCESS NOTIFICATION BANNER -->
+  <!-- MODAL: CALL BOOKED SUCCESS NOTIFICATION -->
   <div class="modal-overlay" id="modal-call-booked-success">
     <div class="modal-card booking-notification-modal">
-      <button class="modal-close-btn" id="btn-close-success-modal">✕</button>
+      <button class="modal-close-btn" id="btn-close-success-modal">&times;</button>
       <div class="success-check-badge">
-        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </div>
       <h3 class="notification-headline">Subscription call is booked!</h3>
       <p class="notification-details" id="success-notification-text">
         Your subscription activation call has been booked. Our executive will call your phone number shortly to verify payment and activate your access immediately.
       </p>
 
-      <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 14px; padding: 1.1rem; text-align: left; margin-bottom: 1.75rem;">
-        <div style="font-size: 0.8rem; color: #166534; font-weight: 700; text-transform: uppercase;">Request Confirmation</div>
-        <div style="font-size: 1.05rem; font-weight: 800; color: #1e1b78; margin-top: 4px;" id="conf-plan-info">1 Month Pro Campaign — ₹115</div>
-        <div style="font-size: 0.82rem; color: #475569; margin-top: 3px;" id="conf-contact-info">Phone: +91 98765 43210</div>
-        <div style="font-size: 0.76rem; color: #009382; font-weight: 700; margin-top: 6px;">Status: Call Scheduled • Pending Verification</div>
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 1rem; text-align: left; margin-bottom: 1.5rem;">
+        <div style="font-size: 0.74rem; color: #166534; font-weight: 700; text-transform: uppercase;">Request Confirmation</div>
+        <div style="font-size: 0.95rem; font-weight: 800; color: #1e1b78; margin-top: 3px;" id="conf-plan-info">1-Month Campaign — ₹115</div>
+        <div style="font-size: 0.8rem; color: #475569; margin-top: 2px;" id="conf-contact-info">Phone: +91 98765 43210</div>
+        <div style="font-size: 0.74rem; color: #009382; font-weight: 700; margin-top: 5px;">Status: Call Scheduled &bull; Pending Verification</div>
       </div>
 
-      <button class="btn-card-subscribe btn-sub-primary" id="btn-done-success">
-        <span>Done & Return to Studio</span>
+      <button class="btn-card-action btn-primary" id="btn-done-success">
+        <span>Done &amp; Return to Studio</span>
       </button>
     </div>
   </div>
 
-  <!-- Script logic -->
   <script type="module" src="js/pricing-page.js"></script>
 </body>
 </html>

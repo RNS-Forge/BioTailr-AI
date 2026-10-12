@@ -1,28 +1,34 @@
-import { getActiveUser, logoutUser } from './auth-service.js';
+import { getActiveUser, logoutUser, getEarlyAdopterStats } from './auth-service.js';
 
-// Plan Definitions
+// Plan Definitions (Zero Emojis)
 const PLANS = {
+  'early_adopter': {
+    id: 'early_adopter',
+    name: '2-Week Early Access Pass',
+    price: 0,
+    period: '14 Days Free Access + 24/7 Support'
+  },
   '1_day': {
     id: '1_day',
-    name: '1 Day Sprint Pass',
+    name: '1-Day Sprint',
     price: 5,
-    period: '24-Hour Access'
+    period: '24 Hours Access'
   },
   '1_week': {
     id: '1_week',
-    name: '1 Week Sprint Pass',
+    name: '1-Week Sprint',
     price: 30,
     period: '7 Days Access'
   },
   '1_month': {
     id: '1_month',
-    name: '1 Month Pro Campaign',
+    name: '1-Month Campaign',
     price: 115,
     period: '30 Days Access'
   },
   '1_year': {
     id: '1_year',
-    name: '1 Year Career Pass',
+    name: '1-Year Career Pass',
     price: 1000,
     period: '365 Days Access'
   }
@@ -34,6 +40,7 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', () => {
   currentUser = getActiveUser();
   setupNavbarAuth();
+  updateEarlyAdopterCounter();
   setupPlanTriggers();
   setupModals();
   checkUrlParams();
@@ -74,12 +81,23 @@ function setupNavbarAuth() {
 }
 
 /**
+ * Update dynamic spots remaining counter
+ */
+function updateEarlyAdopterCounter() {
+  const stats = getEarlyAdopterStats();
+  const counterEl = document.getElementById('early-adopter-remaining-spots');
+  if (counterEl) {
+    counterEl.textContent = stats.remaining;
+  }
+}
+
+/**
  * Setup Plan Action Click Handlers
  */
 function setupPlanTriggers() {
   const buttons = document.querySelectorAll('.btn-plan-trigger');
   buttons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', () => {
       const planId = btn.getAttribute('data-plan-id');
       const plan = PLANS[planId] || PLANS['1_month'];
       handlePlanSelection(plan);
@@ -112,7 +130,7 @@ function showAuthRequiredModal(plan) {
   const loginLink = document.getElementById('btn-go-to-login');
 
   if (titleEl) titleEl.textContent = plan.name;
-  if (priceEl) priceEl.textContent = `₹${plan.price}`;
+  if (priceEl) priceEl.textContent = plan.price === 0 ? 'Free (First 500 Only)' : `₹${plan.price}`;
   if (loginLink) loginLink.href = `login.html?redirect=pricing.html&plan=${plan.id}`;
 
   modal.classList.add('active');
@@ -133,7 +151,7 @@ function showBookCallModal(plan) {
 
   if (nameEl) nameEl.textContent = plan.name;
   if (periodEl) periodEl.textContent = plan.period;
-  if (priceEl) priceEl.textContent = `₹${plan.price}`;
+  if (priceEl) priceEl.textContent = plan.price === 0 ? 'Free' : `₹${plan.price}`;
 
   if (inputName) inputName.value = currentUser?.fullName || '';
   if (inputEmail) inputEmail.value = currentUser?.email || '';
@@ -151,7 +169,6 @@ function showBookCallModal(plan) {
  * Setup Modal Events and Submit Handler
  */
 function setupModals() {
-  // Close buttons
   document.getElementById('btn-close-auth-modal')?.addEventListener('click', () => {
     document.getElementById('modal-auth-required')?.classList.remove('active');
   });
@@ -168,7 +185,6 @@ function setupModals() {
     window.location.href = 'index.html';
   });
 
-  // Close upon overlay click
   ['modal-auth-required', 'modal-book-call', 'modal-call-booked-success'].forEach(id => {
     const el = document.getElementById(id);
     el?.addEventListener('click', (e) => {
@@ -187,7 +203,7 @@ function setupModals() {
     const notes = document.getElementById('input-book-notes').value.trim();
 
     if (!phone) {
-      alert('Please provide a phone number for the subscription verification call.');
+      alert('Please provide a phone number for the verification call.');
       return;
     }
 
@@ -236,7 +252,7 @@ function setupModals() {
 }
 
 /**
- * Display "Subscription call is booked!" Notification
+ * Display "Subscription call is booked!" Notification (No Emojis)
  */
 function showSuccessNotification(sub) {
   const modal = document.getElementById('modal-call-booked-success');
@@ -245,17 +261,17 @@ function showSuccessNotification(sub) {
   const contactInfoEl = document.getElementById('conf-contact-info');
 
   if (detailsEl) {
-    detailsEl.textContent = `Your subscription activation call for the ${sub.planName} has been booked! Our executive will call ${sub.phone} within 15 minutes to verify payment and activate your account.`;
+    detailsEl.textContent = `Your subscription activation call for the ${sub.planName} has been booked. Our executive will call ${sub.phone} within 15 minutes to verify payment and activate your access immediately.`;
   }
 
-  if (planInfoEl) planInfoEl.textContent = `${sub.planName} — ₹${sub.amount}`;
+  if (planInfoEl) planInfoEl.textContent = `${sub.planName} — INR ${sub.amount}`;
   if (contactInfoEl) contactInfoEl.textContent = `Contact: ${sub.phone} (${sub.email})`;
 
   modal.classList.add('active');
 }
 
 /**
- * Handle auto-selection via URL param (e.g., pricing.html?plan=1_month)
+ * Handle auto-selection via URL param
  */
 function checkUrlParams() {
   const params = new URLSearchParams(window.location.search);

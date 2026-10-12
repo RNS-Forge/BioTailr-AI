@@ -4,8 +4,11 @@ const USERS_STORAGE_KEY = 'biotailr_registered_users';
 const ACTIVE_USER_STORAGE_KEY = 'biotailr_active_user';
 const EMAILJS_CONFIG_KEY = 'biotailr_emailjs_config';
 
-// 4 Days in milliseconds: 4 * 24 * 60 * 60 * 1000 = 345,600,000 ms
-export const DEMO_DURATION_MS = 4 * 24 * 60 * 60 * 1000;
+// Free Tier Windows
+export const EARLY_ADOPTER_LIMIT = 500;
+export const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000; // 14 Days for First 500 Users
+export const FOUR_DAYS_MS = 4 * 24 * 60 * 60 * 1000;   // 4 Days for Regular Demo
+export const DEMO_DURATION_MS = FOUR_DAYS_MS;
 export const OTP_VALIDITY_MS = 15 * 60 * 1000; // 15 minutes
 export const MAX_LOGIN_ATTEMPTS = 5;
 export const LOCKOUT_DURATION_MS = 10 * 60 * 1000; // 10 minutes lockout
@@ -91,7 +94,7 @@ export function getAllUsers() {
 /**
  * Save users map to storage
  */
-function saveUsersMap(users) {
+export function saveUsersMap(users) {
   localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
 }
 
@@ -103,7 +106,23 @@ export function generateOtpCode() {
 }
 
 /**
- * Calculates remaining demo time for a user
+ * Returns dynamic Early Adopter capacity stats
+ */
+export function getEarlyAdopterStats() {
+  const users = getAllUsers();
+  const registeredCount = Object.keys(users).length;
+  // Starting seed count to demonstrate real live counter counting down from 500
+  const claimedCount = Math.min(500, Math.max(registeredCount, 134));
+  const remaining = Math.max(0, 500 - claimedCount);
+  return {
+    limit: 500,
+    claimed: claimedCount,
+    remaining: remaining
+  };
+}
+
+/**
+ * Calculates remaining demo time or subscription status for a user
  */
 export function getDemoStatus(user) {
   if (!user) return { isAuthenticated: false, isExpired: true, days: 0, hours: 0, formatted: 'Not Logged In' };
@@ -112,8 +131,33 @@ export function getDemoStatus(user) {
     return { isAuthenticated: true, isVerified: false, isExpired: false, days: 0, hours: 0, formatted: 'Email Unverified' };
   }
 
+  // 1. Paid Subscription: NO DAYS SHOWN
+  if (user.subscription && user.subscription.status === 'active') {
+    return {
+      isAuthenticated: true,
+      isVerified: true,
+      isExpired: false,
+      isSubscriber: true,
+      planName: user.subscription.planName || 'Active Subscription',
+      formatted: `${user.subscription.planName || 'Active Subscriber'}`
+    };
+  }
+
+  // 2. Admin User
+  if (user.role === 'admin' || user.email?.toLowerCase() === 'admin@rnssolutions.com') {
+    return {
+      isAuthenticated: true,
+      isVerified: true,
+      isExpired: false,
+      isAdmin: true,
+      formatted: 'System Administrator'
+    };
+  }
+
   const now = Date.now();
-  const expiresAt = user.expiresAt || (user.createdAt + DEMO_DURATION_MS);
+  const isEarly = !!user.isEarlyAdopter || (user.registrationIndex && user.registrationIndex <= 500);
+  const defaultDuration = isEarly ? TWO_WEEKS_MS : FOUR_DAYS_MS;
+  const expiresAt = user.expiresAt || (user.createdAt + defaultDuration);
   const remainingMs = expiresAt - now;
 
   if (remainingMs <= 0 || user.isActive === false) {
@@ -124,7 +168,7 @@ export function getDemoStatus(user) {
       days: 0,
       hours: 0,
       minutes: 0,
-      formatted: '4-Day Demo Expired (Deactivated)'
+      formatted: isEarly ? '2-Week Early Trial Ended' : '4-Day Demo Expired'
     };
   }
 
@@ -132,24 +176,25 @@ export function getDemoStatus(user) {
   const hours = Math.floor((remainingMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
   const minutes = Math.floor((remainingMs % (60 * 60 * 1000)) / (60 * 1000));
 
-  let formatted = '';
+  let timeString = '';
   if (days >= 1) {
-    formatted = `${days} Day${days > 1 ? 's' : ''} Left`;
+    timeString = `${days} Day${days > 1 ? 's' : ''} Left`;
   } else if (hours >= 1) {
-    formatted = `${hours}h Left`;
+    timeString = `${hours}h Left`;
   } else {
-    formatted = `${minutes}m Left`;
+    timeString = `${minutes}m Left`;
   }
 
   return {
     isAuthenticated: true,
     isVerified: true,
     isExpired: false,
+    isEarlyAdopter: isEarly,
     days,
     hours,
     minutes,
     remainingMs,
-    formatted: `Demo: ${formatted}`
+    formatted: isEarly ? `Early Access: ${timeString} (24/7 Support)` : `Demo: ${timeString}`
   };
 }
 
@@ -268,8 +313,10 @@ export async function registerUser({ fullName, email, password }) {
   }
 
   const otp = generateOtpCode();
-  const now = Date.now();
-  const expiresAt = now + DEMO_DURATION_MS; // Strict 4-Day Demo Window
+  const totalRegisteredCount = Object.keys(users).length;
+  const isEarlyAdopter = totalRegisteredCount < EARLY_ADOPTER_LIMIT;
+  const accessDuration = isEarlyAdopter ? TWO_WEEKS_MS : FOUR_DAYS_MS;
+  const expiresAt = now + accessDuration;
   const passwordHash = await hashPassword(password);
 
   // 1. Sync registration to Supabase database (GoTrue Auth)
@@ -283,7 +330,8 @@ export async function registerUser({ fullName, email, password }) {
         options: {
           data: {
             full_name: cleanName,
-            demo_expires_at: expiresAt
+            demo_expires_at: expiresAt,
+            is_early_adopter: isEarlyAdopter
           }
         }
       });
@@ -304,6 +352,8 @@ export async function registerUser({ fullName, email, password }) {
     fullName: cleanName,
     email: normalizedEmail,
     passwordHash: passwordHash,
+    isEarlyAdopter: isEarlyAdopter,
+    registrationIndex: totalRegisteredCount + 1,
     verified: false,
     otpCode: otp,
     otpExpiresAt: now + OTP_VALIDITY_MS,

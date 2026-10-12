@@ -154,6 +154,21 @@ const server = http.createServer((req, res) => {
     }
   }
 
+  // Trigger Boss Updater manually or on demand
+  if (reqPath === '/api/admin/trigger-boss-updater') {
+    const { runBossUpdater } = require('./scripts/boss-updater.cjs');
+    runBossUpdater()
+      .then(result => {
+        res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify(result));
+      })
+      .catch(err => {
+        res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      });
+    return;
+  }
+
   if (reqPath === '/') reqPath = '/index.html';
   
   let filePath;
@@ -176,6 +191,24 @@ const server = http.createServer((req, res) => {
   });
 });
 
+// Scheduler: Boss Updater at 1:00 AM daily
+function initBossUpdaterScheduler() {
+  const { runBossUpdater } = require('./scripts/boss-updater.cjs');
+  let lastRunDate = '';
+
+  setInterval(() => {
+    const now = new Date();
+    const currentDateStr = now.toISOString().split('T')[0];
+    // Check if it's 1:00 AM (hour === 1 && minute === 0) and not yet run today
+    if (now.getHours() === 1 && now.getMinutes() === 0 && lastRunDate !== currentDateStr) {
+      lastRunDate = currentDateStr;
+      console.log(`[Scheduler] 1:00 AM reached. Dispatching Boss Updater briefing for ${currentDateStr}...`);
+      runBossUpdater().catch(e => console.error('[Scheduler] Boss Updater error:', e.message));
+    }
+  }, 30000); // Check every 30 seconds
+}
+
 server.listen(PORT, () => {
   console.log(`BioTailr server running at http://localhost:${PORT}`);
+  initBossUpdaterScheduler();
 });
