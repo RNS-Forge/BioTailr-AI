@@ -156,6 +156,81 @@ const server = http.createServer((req, res) => {
     }
   }
 
+  // API Endpoint: Send email via SMTP (Nodemailer)
+  if (reqPath === '/api/send-email') {
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
+      res.end();
+      return;
+    }
+
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', async () => {
+        try {
+          const { to, name, otpCode, subject, html, text, smtpConfig } = JSON.parse(body || '{}');
+          if (!to || !otpCode) {
+            res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+            res.end(JSON.stringify({ success: false, error: 'Recipient email and OTP code required' }));
+            return;
+          }
+
+          const nodemailer = require('nodemailer');
+          const host = smtpConfig?.host || process.env.SMTP_HOST || 'smtp.gmail.com';
+          const port = Number(smtpConfig?.port || process.env.SMTP_PORT || 587);
+          const user = smtpConfig?.user || process.env.SMTP_USER || 'sanjay.n.ihub@snsgroups.com';
+          const pass = smtpConfig?.pass || process.env.SMTP_PASS || 'myiy typl poyy pnnj';
+          const from = smtpConfig?.from || process.env.SMTP_FROM || user;
+
+          const transporter = nodemailer.createTransport({
+            host,
+            port,
+            secure: port === 465,
+            auth: { user, pass }
+          });
+
+          const mailOptions = {
+            from: `"BioTailr AI Security" <${from}>`,
+            to,
+            subject: subject || `Your BioTailr AI Verification Code: ${otpCode}`,
+            text: text || `Hello ${name || 'Candidate'},\n\nYour 6-digit BioTailr AI verification code is: ${otpCode}\n\nUse this code to activate your 4-day verified demo access.\n\nThis code will expire in 15 minutes.\n\nBest regards,\nBioTailr AI Team`,
+            html: html || `
+              <div style="font-family: Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                  <h2 style="color: #0f172a; margin: 0 0 4px; font-size: 22px;">BioTailr <span style="color: #00b4ab;">AI</span></h2>
+                  <p style="color: #64748b; margin: 0; font-size: 13px;">Security &amp; Account Verification</p>
+                </div>
+                <p style="font-size: 14px; color: #1e293b; margin: 0 0 14px;">Hello <strong>${name || 'Candidate'}</strong>,</p>
+                <p style="font-size: 14px; color: #475569; line-height: 1.5; margin: 0 0 18px;">Use the verification code below to verify your email and activate your account:</p>
+                <div style="background: #f0fdfa; border: 1.5px solid #99f6e4; border-radius: 6px; padding: 14px; text-align: center; margin: 0 0 20px;">
+                  <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #0d9488; font-weight: 700; display: block; margin-bottom: 4px;">6-Digit Security Code</span>
+                  <strong style="font-size: 32px; letter-spacing: 0.25em; font-family: monospace; color: #0f766e;">${otpCode}</strong>
+                </div>
+                <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 0;">This code is valid for 15 minutes. If you did not request this, please disregard this email.</p>
+              </div>
+            `
+          };
+
+          const info = await transporter.sendMail(mailOptions);
+          console.log('[SMTP Server] Email delivered to:', to, 'MessageId:', info.messageId);
+
+          res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+          res.end(JSON.stringify({ success: true, messageId: info.messageId }));
+        } catch (err) {
+          console.error('[SMTP Server] Mail delivery failed:', err.message);
+          res.writeHead(500, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+          res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+      });
+      return;
+    }
+  }
+
   // StandBy Profile Bridge: Syncs candidate profile between webapp and StandBy
   if (reqPath === '/api/standby/profile') {
     const standbyProfilePath = path.join(__dirname, '..', 'BioTailr-AI-StandBy', 'candidate-profile.json');

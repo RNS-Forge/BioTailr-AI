@@ -254,37 +254,99 @@ export function logoutUser() {
  * Sends Verification Email using EmailJS with graceful fallback
  */
 export async function sendVerificationOtpEmail(email, fullName, otpCode) {
-  const cfg = getEmailJsConfig();
-  let sentViaEmailJs = false;
-  let emailJsError = null;
+  const smtp = getSmtpConfig();
+  const emailJsCfg = getEmailJsConfig();
+  let emailDispatched = false;
+  let deliveryMethod = 'none';
+  let lastError = null;
 
-  if (window.emailjs && cfg.publicKey && cfg.serviceId && cfg.templateId) {
+  // 1. Primary: SMTP Mailer via /api/send-email (uses credentials from config.csv)
+  try {
+    const res = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: email,
+        name: fullName || 'Candidate',
+        otpCode: otpCode,
+        smtpConfig: smtp
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success) {
+        console.log('[BioTailr Mail] Verification email dispatched via SMTP server');
+        emailDispatched = true;
+        deliveryMethod = 'smtp';
+      }
+    }
+  } catch (e) {
+    // Normal when running purely client-side on static hosting (e.g. GitHub Pages)
+  }
+
+  // 2. Secondary: EmailJS (if configured)
+  if (!emailDispatched && window.emailjs && emailJsCfg.publicKey && emailJsCfg.serviceId && emailJsCfg.templateId) {
     try {
-      window.emailjs.init(cfg.publicKey);
+      window.emailjs.init(emailJsCfg.publicKey);
       await window.emailjs.send(
-        cfg.serviceId,
-        cfg.templateId,
+        emailJsCfg.serviceId,
+        emailJsCfg.templateId,
         {
           to_email: email,
           to_name: fullName || 'Candidate',
           verification_code: otpCode,
           otp_code: otpCode,
           demo_duration: '4 Days',
-          support_email: 'sanjay.n.ihub@snsgroups.com'
+          support_email: smtp.from || 'sanjay.n.ihub@snsgroups.com'
         },
-        cfg.publicKey
+        emailJsCfg.publicKey
       );
-      sentViaEmailJs = true;
+      console.log('[BioTailr Mail] Verification email dispatched via EmailJS');
+      emailDispatched = true;
+      deliveryMethod = 'emailjs';
     } catch (err) {
       console.warn('[BioTailr EmailJS] Send attempt failed:', err);
-      emailJsError = err.text || err.message;
+      lastError = err.text || err.message;
+    }
+  }
+
+  // 3. Tertiary: Secure Client Relay for static deployments (GitHub Pages)
+  if (!emailDispatched) {
+    try {
+      const relayRes = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(email), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: `Your BioTailr AI Verification Code: ${otpCode}`,
+          _template: 'box',
+          _captcha: 'false',
+          name: 'BioTailr AI Security',
+          recipient: email,
+          verification_code: otpCode,
+          message: `Hello ${fullName || 'Candidate'},\n\nYour 6-digit BioTailr AI verification code is: ${otpCode}\n\nUse this code to activate your 4-day verified demo access.\n\nThis code will expire in 15 minutes.\n\nBest regards,\nBioTailr AI Team`
+        })
+      });
+      if (relayRes.ok) {
+        const d = await relayRes.json();
+        if (d.success === true || d.success === 'true') {
+          emailDispatched = true;
+          deliveryMethod = 'client-relay';
+          console.log('[BioTailr Mail] Verification email dispatched via client relay');
+        }
+      }
+    } catch (err) {
+      lastError = err.message;
     }
   }
 
   return {
     success: true,
-    sentViaEmailJs,
-    emailJsError,
+    emailDispatched,
+    deliveryMethod,
+    error: lastError,
     otpCode
   };
 }
