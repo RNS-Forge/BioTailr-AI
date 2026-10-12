@@ -173,12 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (result.success) {
         currentPendingEmail = email;
-        setVerifyMode(email, result.otpCode);
-        if (result.sentViaEmailJs) {
-          showAlert('Verification email dispatched via EmailJS! Please check your inbox.', 'success');
-        } else {
-          showAlert('Demo verification code generated! Enter the code below to activate your 4-day demo.', 'success');
-        }
+        setVerifyMode(email);
+        showAlert(`Verification code dispatched to ${email}! Please check your email inbox to activate your account.`, 'success');
       } else {
         showAlert(result.error, 'error');
       }
@@ -243,13 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const result = await resendVerificationOtp(currentPendingEmail);
     if (result.success) {
-      document.getElementById('display-otp-code').textContent = result.otpCode;
-      showAlert(
-        result.sentViaEmailJs 
-          ? 'New verification email dispatched via EmailJS.' 
-          : 'New verification code generated below.', 
-        'success'
-      );
+      showAlert(`A new 6-digit verification code has been dispatched to ${currentPendingEmail}. Please check your inbox.`, 'success');
     } else {
       showAlert(result.error, 'error');
     }
@@ -321,19 +311,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function setVerifyMode(email, otpCode) {
+  function setVerifyMode(email) {
     viewLogin.style.display = 'none';
     viewSignup.style.display = 'none';
     viewVerify.style.display = 'block';
     viewVerify.classList.add('active');
 
-    document.getElementById('verify-email-display').textContent = email;
-    if (otpCode) {
-      document.getElementById('display-otp-code').textContent = otpCode;
-    }
+    const emailDisplay = document.getElementById('verify-email-display');
+    if (emailDisplay) emailDisplay.textContent = email;
     const input = document.getElementById('input-verify-otp');
-    input.value = '';
-    input.focus();
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
   }
 
   function showAlert(msg, type = 'error') {

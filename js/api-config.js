@@ -133,66 +133,21 @@ if (typeof window !== "undefined") {
 export const API_KEY_FIELDS = [
   {
     id: "geminiKey",
-    label: "Gemini API Key",
-    placeholder: "AIza...",
+    label: "Google Gemini API Key",
+    placeholder: "AIzaSy...",
     helpUrl: "https://aistudio.google.com/app/apikey",
-    helpText: "Google AI Studio - Get API Key (free)",
-    required: true,
-    group: "AI Models (Required for Resume Tailoring)"
+    helpText: "Google AI Studio - Get Free Key",
+    required: false,
+    group: "AI Providers (Provide Gemini OR Groq - either one is enough)"
   },
   {
     id: "groqKey",
-    label: "Groq API Key",
+    label: "Groq API Key (Llama 3.3)",
     placeholder: "gsk_...",
     helpUrl: "https://console.groq.com/keys",
-    helpText: "Groq Console - API Keys (free)",
+    helpText: "Groq Console - Get Free Key",
     required: false,
-    group: "AI Models (Required for Resume Tailoring)"
-  },
-  {
-    id: "supabaseUrl",
-    label: "Custom Supabase URL",
-    placeholder: "https://xxxxx.supabase.co",
-    helpUrl: "https://supabase.com/dashboard/project/_/settings/api",
-    helpText: "Optional - leave blank to use the pre-configured project database",
-    required: false,
-    group: "Database (Pre-configured from config.csv)"
-  },
-  {
-    id: "supabasePublishableKey",
-    label: "Custom Supabase Anon Key",
-    placeholder: "sb_publishable_...",
-    helpUrl: "https://supabase.com/dashboard/project/_/settings/api",
-    helpText: "Optional - leave blank to use the pre-configured project database",
-    required: false,
-    group: "Database (Pre-configured from config.csv)"
-  },
-  {
-    id: "emailjsPublicKey",
-    label: "EmailJS Public Key",
-    placeholder: "Your EmailJS Public Key",
-    helpUrl: "https://dashboard.emailjs.com/admin/account",
-    helpText: "Optional - for custom OTP email routing",
-    required: false,
-    group: "Email Delivery"
-  },
-  {
-    id: "emailjsServiceId",
-    label: "EmailJS Service ID",
-    placeholder: "service_...",
-    helpUrl: "https://dashboard.emailjs.com/admin",
-    helpText: "Optional - EmailJS Dashboard",
-    required: false,
-    group: "Email Delivery"
-  },
-  {
-    id: "emailjsTemplateId",
-    label: "EmailJS Template ID",
-    placeholder: "template_...",
-    helpUrl: "https://dashboard.emailjs.com/admin/templates",
-    helpText: "Optional - EmailJS Dashboard",
-    required: false,
-    group: "Email Delivery"
+    group: "AI Providers (Provide Gemini OR Groq - either one is enough)"
   }
 ];
 
@@ -238,11 +193,12 @@ function resolve(key) {
 }
 
 /**
- * Returns true if the user has provided their Gemini API Key.
+ * Returns true if the user has provided either a Gemini OR a Groq API Key (either one is enough).
  */
 export function hasMinimumConfig() {
   const gemini = resolve("geminiKey");
-  return !!(gemini && gemini.length > 10);
+  const groq = resolve("groqKey");
+  return !!((gemini && gemini.length > 5) || (groq && groq.length > 5));
 }
 
 export function getGeminiKey() {

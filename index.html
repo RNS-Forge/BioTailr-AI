@@ -1310,24 +1310,20 @@
         <h3>AI Provider Configuration</h3>
         <button class="modal-close" id="btn-close-settings">&times;</button>
       </div>
-      <p style="font-size: 0.88rem; color: #64748b; margin-bottom: 1rem;">
-        Enter your own API keys below. Keys are stored only in your browser's localStorage and are never sent to any server.
-      </p>
-      <p style="font-size: 0.8rem; color: #0d9488; margin-bottom: 1.5rem; font-weight: 500;">
-        Need to configure Supabase or EmailJS as well?
-        <a href="#" class="btn-open-api-wizard" style="color: #0d9488; font-weight: 600; text-decoration: underline;">Open Full Setup Wizard</a>
+      <p style="font-size: 0.88rem; color: #64748b; margin-bottom: 1.25rem; line-height: 1.5;">
+        Provide either your <strong>Google Gemini API Key</strong> or <strong>Groq API Key</strong> to power AI resume tailoring. <em>Either one is sufficient.</em> Keys are stored exclusively in your browser's localStorage and never transmitted to any external server.
       </p>
 
       <div style="margin-bottom: 1rem;">
-        <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #1e1b78; margin-bottom: 0.35rem;">Google Gemini API Key <span style="color:#ef4444">*</span></label>
+        <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #1e1b78; margin-bottom: 0.35rem;">Google Gemini API Key</label>
         <input type="text" id="input-gemini-key" style="width: 100%; border: 1.5px solid #cbd5e1; padding: 0.6rem 0.8rem; font-family: monospace; font-size: 0.85rem; box-sizing: border-box;" placeholder="AIzaSy...">
-        <small style="color:#64748b; font-size: 0.75rem;">Get one free at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color:#0d9488;">Google AI Studio</a></small>
+        <small style="color:#64748b; font-size: 0.75rem;">Get free key at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="color:#0d9488;">Google AI Studio</a></small>
       </div>
 
       <div style="margin-bottom: 1.5rem;">
-        <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #1e1b78; margin-bottom: 0.35rem;">Groq API Key (Fallback, optional)</label>
+        <label style="display: block; font-size: 0.82rem; font-weight: 600; color: #1e1b78; margin-bottom: 0.35rem;">Groq API Key (Llama 3.3)</label>
         <input type="text" id="input-groq-key" style="width: 100%; border: 1.5px solid #cbd5e1; padding: 0.6rem 0.8rem; font-family: monospace; font-size: 0.85rem; box-sizing: border-box;" placeholder="gsk_...">
-        <small style="color:#64748b; font-size: 0.75rem;">Get one free at <a href="https://console.groq.com/keys" target="_blank" rel="noopener" style="color:#0d9488;">Groq Console</a></small>
+        <small style="color:#64748b; font-size: 0.75rem;">Get free key at <a href="https://console.groq.com/keys" target="_blank" rel="noopener" style="color:#0d9488;">Groq Console</a></small>
       </div>
 
       <div id="settings-feedback" style="display: none; margin-bottom: 1.25rem; padding: 0.65rem 0.85rem; font-size: 0.84rem; font-weight: 600; text-align: center;"></div>

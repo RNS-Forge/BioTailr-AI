@@ -1,4 +1,4 @@
-﻿/**
+/**
  * BioTailr AI - First-Time Setup Wizard
  * Renders a modal overlay prompting new users to enter their own API keys.
  * Triggered after first login if hasMinimumConfig() returns false.
@@ -206,17 +206,17 @@ export function showSetupWizard({ force = false, onComplete } = {}) {
   overlay.id = "bt-wizard-overlay";
   overlay.innerHTML = `
     <div id="bt-wizard-box" role="dialog" aria-modal="true" aria-labelledby="bt-wizard-title">
-      <h2 id="bt-wizard-title">Configure Your API Keys</h2>
+      <h2 id="bt-wizard-title">Configure Your AI Provider</h2>
       <p class="bt-wizard-sub">
-        BioTailr AI runs entirely with your own API accounts.<br>
-        Enter your keys below. They are saved locally in your browser and never shared.
+        BioTailr AI resume tailoring uses your personal AI key.<br>
+        Enter either your <strong>Google Gemini</strong> or <strong>Groq</strong> API key below. Either one is enough!
       </p>
       <div class="bt-wizard-notice">
-        Your keys are stored only in this browser's localStorage. They are not transmitted to any server.
-        You can update them anytime from your profile settings.
+        Your key is stored only in this browser's localStorage. It is never transmitted to any external server.
+        You can update it anytime from Settings.
       </div>
       ${fieldsHtml}
-      <div class="bt-wizard-error" id="bt-wizard-error">Please enter your Gemini API Key to continue.</div>
+      <div class="bt-wizard-error" id="bt-wizard-error">Please enter either a Gemini API Key or a Groq API Key to continue.</div>
       <div class="bt-wizard-actions">
         <button id="bt-wizard-save">Save and Continue</button>
         <button id="bt-wizard-skip" type="button">Skip for now</button>
@@ -228,20 +228,20 @@ export function showSetupWizard({ force = false, onComplete } = {}) {
 
   document.getElementById("bt-wizard-save").addEventListener("click", () => {
     const updates = {};
-    let hasGemini = false;
     API_KEY_FIELDS.forEach((f) => {
       const el = document.getElementById(`btw-${f.id}`);
       if (el) {
         const v = el.value.trim();
         if (v) {
           updates[f.id] = v;
-          if (f.id === "geminiKey") hasGemini = true;
         }
       }
     });
 
+    const hasAnyKey = !!((updates.geminiKey && updates.geminiKey.length > 5) || (updates.groqKey && updates.groqKey.length > 5));
     const errEl = document.getElementById("bt-wizard-error");
-    if (!hasGemini) {
+    if (!hasAnyKey) {
+      errEl.textContent = "Please enter either a Gemini API Key or a Groq API Key to continue.";
       errEl.style.display = "block";
       return;
     }
