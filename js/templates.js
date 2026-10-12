@@ -120,7 +120,7 @@ export const RESUME_ARCHETYPES = {
           institution: 'SNS College of Technology',
           year: 'Nov 2022 - Apr 2026',
           location: 'Coimbatore, Tamil Nadu',
-          details: 'CGPA: 8.38 / 10'
+          details: 'CGPA: 8.38 / 10.0 (First Class with Distinction) • Zero Active Backlogs'
         }
       ],
       certifications: [
@@ -246,7 +246,7 @@ export const RESUME_ARCHETYPES = {
           institution: 'SNS College of Technology',
           year: 'Nov 2022 - Jun 2026',
           location: 'Coimbatore, Tamil Nadu',
-          details: 'CGPA: 8.38 / 10'
+          details: 'CGPA: 8.38 / 10.0 (First Class with Distinction) • Zero Active Backlogs'
         }
       ],
       certifications: [
@@ -312,7 +312,7 @@ export const RESUME_ARCHETYPES = {
           institution: 'SNS COLLEGE OF TECHNOLOGY',
           year: 'Nov 2022 - Jun 2026',
           location: 'Coimbatore, Tamil Nadu',
-          details: 'Final CGPA: 8.38'
+          details: 'CGPA: 8.38 / 10.0 (First Class with Distinction) • Zero Active Backlogs'
         },
         {
           degree: 'Schooling (HSC & SSLC)',
@@ -386,7 +386,7 @@ export const RESUME_ARCHETYPES = {
           institution: 'SNS College of Technology',
           year: 'Nov 2022 - Jun 2026',
           location: 'Coimbatore, Tamil Nadu',
-          details: 'CGPA: 8.38 / 10'
+          details: 'CGPA: 8.38 / 10.0 (First Class with Distinction) • Zero Active Backlogs'
         },
         {
           degree: 'Schooling (HSC & SSLC)',
@@ -459,7 +459,7 @@ function generateManufacturingHtml(profile) {
     </section>
 
     <section>
-      <h2>Inspection &amp; Quality Skills</h2>
+      <h2>TECHNICAL SKILLS</h2>
       ${profile.skillCategories ? `
         <ul>
           ${Object.entries(profile.skillCategories).map(([cat, list]) => `
@@ -516,7 +516,7 @@ function generateCommunicationHtml(profile) {
     </header>
 
     <section class="sec s-sum">
-      <h2>SUMMARY</h2>
+      <h2>PROFESSIONAL SUMMARY</h2>
       <div class="body">
         <p class="summary" data-editable-field="summary">${escapeHtml(profile.summary)}</p>
       </div>

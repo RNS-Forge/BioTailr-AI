@@ -29,7 +29,9 @@ const MIME_TYPES = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
   '.svg': 'image/svg+xml',
-  '.json': 'application/json'
+  '.json': 'application/json',
+  '.zip': 'application/zip',
+  '.pdf': 'application/pdf'
 };
 
 const server = http.createServer((req, res) => {
@@ -50,7 +52,12 @@ const server = http.createServer((req, res) => {
 
   if (reqPath === '/') reqPath = '/index.html';
   
-  const filePath = path.join(__dirname, reqPath);
+  let filePath;
+  if (reqPath.startsWith('/ext/')) {
+    filePath = path.join(__dirname, '..', 'BioTailr-AI-Extension', reqPath.replace('/ext/', ''));
+  } else {
+    filePath = path.join(__dirname, reqPath);
+  }
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 

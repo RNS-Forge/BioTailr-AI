@@ -7,7 +7,7 @@
 import { RESUME_ARCHETYPES, generateResumeHtml } from './templates.js';
 import { tailorResumeWithAi, getStoredApiKeys, saveApiKeys, matchArchetype, fetchEnvKeys } from './ai-service.js';
 import { evaluateAtsScore, optimizeProfileFor100Ats } from './ats-engine.js';
-import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml } from './pdf-export.js';
+import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml, buildStandaloneResumeHtml } from './pdf-export.js';
 
 // Application State
 const state = {
@@ -30,7 +30,7 @@ function initApp() {
   bindTryNowEvents();
   bindStudioEvents();
   bindSettingsModalEvents();
-  bindEditorEvents();
+    bindEditorEvents();
   initStudioSplitter();
 
   // Pre-initialize default profile & ATS data so Studio is never blank
@@ -41,6 +41,30 @@ function initApp() {
   state.currentProfile = optimizeProfileFor100Ats(baseProfile, state.targetRole, state.selectedArchetypeId);
   state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
   window.showView = showView;
+
+  // ── Extension Communicator Mode ─────────────────────────────────────────
+  // When opened by the BioTailr extension with ?extjob=<id>, we hide the normal
+  // UI, listen for job data from the content-webapp.js bridge, run the full
+  // pipeline, and post the result back. The tab then closes itself.
+  const urlParams = new URLSearchParams(window.location.search);
+  const extJobId = urlParams.get('extjob');
+  const authKey = urlParams.get('authKey') || '';
+  if (extJobId) {
+    initExtensionJobMode(extJobId, authKey);
+    return;
+  }
+
+  // Handle URL query parameters (e.g. ?role=Senior+AI+Engineer from extension)
+  const roleParam = urlParams.get('role');
+  if (roleParam) {
+    const targetRole = decodeURIComponent(roleParam).trim();
+    state.targetRole = targetRole;
+    state.selectedArchetypeId = matchArchetype(targetRole);
+    setTimeout(() => {
+      executeTailoringFlow(targetRole);
+    }, 150);
+    return;
+  }
 
   // Handle direct hash navigation (e.g. #studio, #studio-editor, #try-now)
   if (window.location.hash) {
@@ -54,8 +78,15 @@ function initApp() {
       }
       return;
     }
-    if (['landing', 'try-now'].includes(hashView)) {
-      showView(hashView);
+    if (hashView === 'landing') {
+      showView('landing');
+      return;
+    }
+    if (hashView === 'try-now') {
+      showView('try-now');
+      setTimeout(() => {
+        document.getElementById('input-target-role')?.focus();
+      }, 150);
       return;
     }
   }
@@ -72,7 +103,121 @@ function initApp() {
       clearTimeout(entryTimeout);
       showView('landing');
     });
+  } else if (document.getElementById('screen-studio')) {
+    // Standalone Studio Page (studio.html)
+    showView('studio');
   }
+}
+
+/**
+ * BioTailr Extension Job Mode
+ * Processes a job from the extension without showing the normal web app UI.
+ * Receives job data via postMessage from content-webapp.js, runs the full pipeline,
+ * then posts the compiled HTML result back for the extension to download.
+ */
+async function initExtensionJobMode(extJobId, authKey = '') {
+  // Show a minimal processing indicator instead of the full landing UI
+  document.body.style.cssText = 'margin:0;padding:0;background:#0a0e1a;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:Inter,sans-serif;';
+  document.body.innerHTML = `
+    <div style="text-align:center;color:#ffffff;">
+      <div style="width:40px;height:40px;border:3px solid #1a2040;border-top-color:#00b49f;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;"></div>
+      <div style="font-size:14px;font-weight:600;color:#00b49f;letter-spacing:.5px;">BioTailr AI</div>
+      <div style="font-size:12px;color:#8892b0;margin-top:6px;">Securely generating tailored resume...</div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    </div>
+  `;
+
+  // Listen for job data from content-webapp.js bridge
+  window.addEventListener('message', async (event) => {
+    // 1. Strict Origin verification
+    if (event.origin !== window.location.origin) {
+      console.warn('[BioTailr Security] Untrusted message origin:', event.origin);
+      return;
+    }
+
+    if (!event.data || event.data.type !== 'BIOTAILR_EXT_JOB') return;
+    if (event.data.jobId !== extJobId) return;
+
+    // 2. Cryptographic Security Key Authentication
+    const messageAuthKey = event.data.authKey || '';
+    if (authKey && messageAuthKey !== authKey) {
+      console.error('[BioTailr Security] Authentication token mismatch! Dropping untrusted message.');
+      window.postMessage({
+        type: 'BIOTAILR_EXT_RESULT',
+        jobId: extJobId,
+        authKey: authKey,
+        error: 'Security authentication failed: invalid token.'
+      }, window.location.origin);
+      return;
+    }
+
+    const jobData = event.data.data;
+    if (!jobData) return;
+
+    try {
+      // Fetch API keys first
+      await fetchEnvKeys();
+
+      const targetRole = jobData.targetRole || 'Software Development Engineer';
+      const refinements = jobData.refinements || '';
+      const description = jobData.description || '';
+
+      // Step 1: Match archetype
+      const archetypeId = matchArchetype(targetRole, description);
+
+      // Step 2: Run AI tailoring (Gemini → Groq → Local fallback)
+      const aiResult = await tailorResumeWithAi(targetRole, refinements);
+      const resolvedArchetype = aiResult.archetypeId || archetypeId;
+
+      // Step 3: ATS Optimization
+      const optimizedProfile = optimizeProfileFor100Ats(aiResult.profile, targetRole, resolvedArchetype);
+      const atsData = evaluateAtsScore(optimizedProfile, targetRole, resolvedArchetype);
+
+      // Step 4: Generate HTML using the web app's own templates and strictly auto-balance to 1 A4 page
+      const rawHtml = generateResumeHtml(optimizedProfile, resolvedArchetype);
+      const balanceContainer = document.createElement('div');
+      balanceContainer.id = 'resume-render-container';
+      balanceContainer.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:210mm;background:#ffffff;';
+      balanceContainer.innerHTML = rawHtml;
+      document.body.appendChild(balanceContainer);
+      try {
+        autoBalanceResumeToOnePage();
+      } catch (balErr) {
+        console.warn('[BioTailr ExtMode] Auto-balance warning:', balErr);
+      }
+      const compiledHtml = balanceContainer.innerHTML;
+      document.body.removeChild(balanceContainer);
+
+      const fullDocumentHtml = buildStandaloneResumeHtml(compiledHtml, `${optimizedProfile.fullName || 'Sanjay N'} — 100% ATS Resume — ${targetRole}`);
+      const candidateName = optimizedProfile.fullName || 'Sanjay N';
+      const roleSlug = targetRole.replace(/[^a-zA-Z0-9]/g, '_');
+      const candidateSlug = candidateName.replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `${candidateSlug}_${roleSlug}_Resume`;
+
+      // Post authenticated result back to content-webapp.js bridge with targetOrigin scoping
+      window.postMessage({
+        type: 'BIOTAILR_EXT_RESULT',
+        jobId: extJobId,
+        authKey: authKey || messageAuthKey,
+        compiledHtml,
+        fullDocumentHtml,
+        filename,
+        archetypeId: resolvedArchetype,
+        targetRole,
+        atsScore: atsData?.totalScore || 100,
+        modelUsed: aiResult.modelUsed
+      }, window.location.origin);
+
+    } catch (err) {
+      console.error('[BioTailr ExtMode] Pipeline error:', err);
+      window.postMessage({
+        type: 'BIOTAILR_EXT_RESULT',
+        jobId: extJobId,
+        authKey: authKey || messageAuthKey,
+        error: err.message || 'Generation failed'
+      }, window.location.origin);
+    }
+  });
 }
 
 /**
@@ -112,8 +257,12 @@ function bindNavigationEvents() {
   // Brand logo click -> go to landing
   document.querySelectorAll('.btn-home-nav').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      showView('landing');
+      if (document.getElementById('screen-landing')) {
+        e.preventDefault();
+        showView('landing');
+      } else {
+        // Allow default link navigation to index.html
+      }
     });
   });
 
@@ -169,27 +318,30 @@ function bindNavigationEvents() {
  * Try Now Role Input & Go Button Bindings
  */
 function bindTryNowEvents() {
-  const roleInput = document.getElementById('input-target-role');
-  const btnGo = document.getElementById('btn-go-tailr');
-
   // Role Chips Quick Selection
   document.querySelectorAll('.role-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
       document.querySelectorAll('.role-chip').forEach(c => c.classList.remove('selected'));
       chip.classList.add('selected');
+      const selectedRole = chip.getAttribute('data-role') || chip.textContent.trim();
+      const roleInput = document.getElementById('input-target-role');
       if (roleInput) {
-        roleInput.value = chip.dataset.role || chip.textContent.trim();
+        roleInput.value = selectedRole;
         roleInput.focus();
       }
     });
   });
 
   // Go Button Click
+  const btnGo = document.getElementById('btn-go-tailr');
   if (btnGo) {
-    btnGo.addEventListener('click', () => {
+    btnGo.addEventListener('click', (e) => {
+      e.preventDefault();
+      const roleInput = document.getElementById('input-target-role');
       const role = roleInput ? roleInput.value.trim() : '';
       if (!role) {
-        alert('Please enter your target job role to tailor your resume.');
+        alert('Please enter or select a target job role to tailor your resume.');
         roleInput?.focus();
         return;
       }
@@ -197,12 +349,18 @@ function bindTryNowEvents() {
     });
   }
 
-  // Enter key inside input
+  // Enter key inside role input field
+  const roleInput = document.getElementById('input-target-role');
   if (roleInput) {
     roleInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        btnGo?.click();
+        const role = roleInput.value.trim();
+        if (role) {
+          executeTailoringFlow(role);
+        } else {
+          alert('Please enter a target job role.');
+        }
       }
     });
   }
@@ -315,7 +473,7 @@ export function autoBalanceResumeToOnePage() {
     s.style.paddingBottom = '';
   });
 
-  const targetA4Px = 1122.5; // Exactly 297mm at standard 96 DPI
+  const targetA4Px = 1090; // Strictly safe 1-page A4 threshold with breathing buffer
   const isManuf = resumeEl.classList.contains('archetype-manufacturing');
   const isComm = resumeEl.classList.contains('archetype-communication');
   const baseFontSize = isManuf ? 10 : (isComm ? 10.5 : 9.8);
@@ -372,51 +530,19 @@ function renderAtsChecklist() {
   const container = document.getElementById('ats-checklist-items');
   if (!container || !state.atsData) return;
 
-  const rules = state.atsData.rules;
-  container.innerHTML = `
-    <div class="check-item">
+  const rules = state.atsData.rules || {};
+  const checkSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`;
+  const warnSvg = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+  container.innerHTML = Object.values(rules).map(r => `
+    <div class="check-item" title="${(r.detail || '').replace(/"/g, '&quot;')}">
       <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.keywordMatch.name}</span>
+        ${r.passed ? checkSvg : warnSvg}
+        <span>${r.name}</span>
       </div>
-      <span class="check-status">${rules.keywordMatch.score}% MATCH</span>
+      <span class="check-status" style="${r.passed ? '' : 'color: #f59e0b;'}">${r.badge || (r.score + '%')}</span>
     </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.metricQuantification.name}</span>
-      </div>
-      <span class="check-status">100% METRICS</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.actionVerbs.name}</span>
-      </div>
-      <span class="check-status">100% POWER VERBS</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.sectionHeaders.name}</span>
-      </div>
-      <span class="check-status">COMPLIANT</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>${rules.singleColumn.name}</span>
-      </div>
-      <span class="check-status">OPTIMAL</span>
-    </div>
-    <div class="check-item">
-      <div class="check-name">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00b49f" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-        <span>Contact &amp; Header Structural Integrity</span>
-      </div>
-      <span class="check-status">VERIFIED</span>
-    </div>
-  `;
+  `).join('');
 }
 
 /**
@@ -1186,7 +1312,7 @@ function syncLiveEditToState() {
   sheet.querySelectorAll('.exp-entry').forEach((expEl, eIdx) => {
     if (p.experience && p.experience[eIdx]) {
       const bullets = [];
-      expEl.querySelectorAll('.exp-bullets li').forEach(bEl => {
+      expEl.querySelectorAll('li[data-bullet-index], .exp-bullets li, ul li').forEach(bEl => {
         bullets.push(bEl.textContent.trim());
       });
       if (bullets.length > 0) p.experience[eIdx].highlights = bullets;
@@ -1252,7 +1378,7 @@ function setResumeViewMode(mode) {
     }
     if (scoreValEl) scoreValEl.textContent = '100%';
     if (headingEl) headingEl.textContent = '100% ATS Verified';
-    if (descEl) descEl.textContent = 'Resume meets all 6 primary ATS parsing criteria for this position.';
+    if (descEl) descEl.textContent = 'Resume meets all 7 enterprise ATS parsing criteria for this position.';
 
     // Preserve existing tailored profile or optimize from base if none exists yet
     if (!state.currentProfile) {
@@ -1477,5 +1603,160 @@ function initStudioSplitter() {
       isDragging = false;
       grid.classList.remove('is-dragging');
     }
+  });
+}
+
+/**
+ * Extension Download & Installation Guide Controller
+ * Coordinates automatic .zip download and opens the installation walkthrough modal.
+ */
+function bindExtensionGuideEvents() {
+  const guideModal = document.getElementById('modal-extension-guide');
+  const closeBtn = document.getElementById('btn-close-ext-guide');
+  const doneBtn = document.getElementById('btn-done-ext-guide');
+
+  function triggerZipDownload() {
+    const link = document.createElement('a');
+    link.href = 'downloads/BioTailr-AI-Extension.zip';
+    link.download = 'BioTailr-AI-Extension.zip';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function openGuideModal(shouldDownload = false) {
+    if (!guideModal) return;
+    guideModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    if (shouldDownload) {
+      triggerZipDownload();
+    }
+  }
+
+  function closeGuideModal() {
+    if (!guideModal) return;
+    guideModal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Header navigation Extension trigger
+  const headerBtn = document.getElementById('btn-header-extension');
+  if (headerBtn) {
+    headerBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(true);
+    });
+  }
+
+  // Landing hero button
+  const landingHeroBtn = document.getElementById('btn-landing-extension');
+  if (landingHeroBtn) {
+    landingHeroBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(true);
+    });
+  }
+
+  // Studio navigation Extension button
+  const studioExtBtn = document.getElementById('btn-studio-extension');
+  if (studioExtBtn) {
+    studioExtBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(true);
+    });
+  }
+
+  // Showcase section primary CTA (Download .ZIP)
+  const bannerDownloadBtn = document.getElementById('btn-download-ext-banner');
+  if (bannerDownloadBtn) {
+    bannerDownloadBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(true);
+    });
+  }
+
+  // Showcase section secondary CTA (Open Guide without triggering re-download)
+  const openGuideOnlyBtn = document.getElementById('btn-open-ext-guide');
+  if (openGuideOnlyBtn) {
+    openGuideOnlyBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(false);
+    });
+  }
+
+  // Generic class-based triggers if any
+  document.querySelectorAll('.btn-download-ext-action').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(true);
+    });
+  });
+
+  document.querySelectorAll('.btn-trigger-ext-guide').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openGuideModal(false);
+    });
+  });
+
+  // Modal dismiss buttons
+  if (closeBtn) closeBtn.addEventListener('click', closeGuideModal);
+  if (doneBtn) doneBtn.addEventListener('click', closeGuideModal);
+
+  // Backdrop click dismiss
+  if (guideModal) {
+    guideModal.addEventListener('click', (e) => {
+      if (e.target === guideModal) {
+        closeGuideModal();
+      }
+    });
+  }
+
+  // Escape key dismiss
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && guideModal && guideModal.classList.contains('active')) {
+      closeGuideModal();
+    }
+  });
+
+  // Copy buttons with visual confirmation feedback
+  const copyChips = document.querySelectorAll('.btn-copy-chip[data-copy]');
+  copyChips.forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const textToCopy = btn.getAttribute('data-copy');
+      if (!textToCopy) return;
+
+      const markCopied = () => {
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(textToCopy);
+          markCopied();
+          return;
+        } catch (err) {
+          // Fall back to execCommand
+        }
+      }
+
+      try {
+        const input = document.createElement('input');
+        input.value = textToCopy;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        markCopied();
+      } catch (err) {
+        console.error('Clipboard copy failed:', err);
+      }
+    });
   });
 }
