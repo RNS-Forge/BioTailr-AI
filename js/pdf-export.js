@@ -146,7 +146,7 @@ export function downloadResumeAsHtml(targetElementId = 'resume-document', filena
     el.removeAttribute('spellcheck');
   });
 
-  const fullHtml = buildStandaloneResumeHtml(clone.outerHTML, document.title || 'Sanjay N – 100% ATS Resume');
+  const fullHtml = buildStandaloneResumeHtml(clone.outerHTML, document.title || 'Candidate Profile – 100% ATS Resume');
 
   const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8;' });
   const url = URL.createObjectURL(blob);

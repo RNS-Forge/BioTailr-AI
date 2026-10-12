@@ -203,8 +203,8 @@ async function initExtensionJobMode(extJobId, authKey = '') {
       const compiledHtml = balanceContainer.innerHTML;
       document.body.removeChild(balanceContainer);
 
-      const fullDocumentHtml = buildStandaloneResumeHtml(compiledHtml, `${optimizedProfile.fullName || 'Sanjay N'} — 100% ATS Resume — ${targetRole}`);
-      const candidateName = optimizedProfile.fullName || 'Sanjay N';
+      const candidateName = optimizedProfile.fullName || 'Candidate_Profile';
+      const fullDocumentHtml = buildStandaloneResumeHtml(compiledHtml, `${candidateName} — 100% ATS Resume — ${targetRole}`);
       const roleSlug = targetRole.replace(/[^a-zA-Z0-9]/g, '_');
       const candidateSlug = candidateName.replace(/[^a-zA-Z0-9]/g, '_');
       const filename = `${candidateSlug}_${roleSlug}_Resume`;
