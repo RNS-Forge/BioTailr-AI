@@ -1,5 +1,5 @@
 import { getSupabaseClient } from './supabase-client.js';
-import { getEmailJsConfig as _getEmailJsCfg, saveUserApiConfig } from './api-config.js';
+import { getEmailJsConfig as _getEmailJsCfg, getSmtpConfig as _getSmtpCfg, saveUserApiConfig } from './api-config.js';
 
 const USERS_STORAGE_KEY = 'biotailr_registered_users';
 const ACTIVE_USER_STORAGE_KEY = 'biotailr_active_user';
@@ -59,6 +59,13 @@ export function sanitizeInput(str) {
  */
 export function getEmailJsConfig() {
   return _getEmailJsCfg();
+}
+
+/**
+ * Returns SMTP mail configuration decoded from config.csv.
+ */
+export function getSmtpConfig() {
+  return _getSmtpCfg();
 }
 
 /**

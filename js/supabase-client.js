@@ -65,6 +65,13 @@ export function getSupabaseClient() {
   return supabaseClient;
 }
 
+if (typeof window !== 'undefined') {
+  window.addEventListener('biotailr:config-loaded', () => {
+    supabaseClient = null;
+    getSupabaseClient();
+  });
+}
+
 /**
  * Persist candidate profile and optional HTML resume to Supabase & local storage
  * @param {Object} profile - Extracted / edited candidate profile
