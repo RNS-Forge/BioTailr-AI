@@ -1,6 +1,6 @@
 /**
- * BioTailr AI - Authentic Resumes of Sanjay N
- * 4 Real Archetypes: AI Engineer, Full Stack Developer, Business Analyst, Quality Control Inspector.
+ * BioTailr AI - Candidate Archetype Templates
+ * 4 Industry Archetypes: AI Engineer, Full Stack Developer, Business Analyst, Quality Control Inspector.
  * Standard ATS Single-Column Layout, 100% Semantic HTML, Pure Black Ink (#000000), Zero Emojis.
  */
 
@@ -14,15 +14,15 @@ export const RESUME_ARCHETYPES = {
     defaultRole: 'Software Development Engineer | AI Engineer',
     baseFile: 'Developer Resume.html',
     profile: {
-      fullName: 'SANJAY N',
+      fullName: 'ALEX RIVERA',
       title: 'AI Engineer | Software Engineer',
-      email: '2005sanjaynrs@gmail.com',
-      phone: '+91 93615 99018',
-      location: 'Coimbatore, Tamil Nadu',
-      portfolio: 'https://rns-forge.github.io/RNS_Professional_Profile/',
-      github: 'https://github.com/RNS-Forge',
-      linkedin: 'www.linkedin.com/in/sanjay--n',
-      summary: 'Results-driven AI Engineer & Software Engineer specializing in Agentic AI, RAG architectures, LLM automation, document intelligence, and scalable enterprise systems. Proven track record across Axodian, Nexus Horizon, and SNS Square in developing high-throughput microservices, real-time banking integrations, and cutting API error rates by 30%.',
+      email: 'alex.rivera@example.com',
+      phone: '+1 (555) 234-5678',
+      location: 'San Francisco, CA',
+      portfolio: 'https://alexrivera.dev',
+      github: 'https://github.com/alexrivera',
+      linkedin: 'www.linkedin.com/in/alex-rivera',
+      summary: 'Results-driven AI Engineer & Software Engineer specializing in Agentic AI, RAG architectures, LLM automation, document intelligence, and scalable enterprise systems. Proven track record across high-impact technology engineering teams in developing high-throughput microservices, real-time banking integrations, and cutting API error rates by 30%.',
       skills: [
         'Python', 'LangChain', 'LangGraph', 'Crew AI', 'AutoGen',
         'TensorFlow', 'PyTorch', 'C#', 'JavaScript', 'TypeScript',
@@ -39,9 +39,9 @@ export const RESUME_ARCHETYPES = {
         {
           id: 'dev_exp_1',
           role: 'Software Engineer Intern',
-          company: 'Axodian',
+          company: 'CloudScale Technologies',
           project: 'OneDoc, OneCompliance',
-          companyUrl: 'https://axodian.com/',
+          companyUrl: 'https://example.com/',
           period: 'June 2026 - Present',
           location: 'Bangalore, KA (On-Site)',
           relevant: true,
@@ -85,25 +85,25 @@ export const RESUME_ARCHETYPES = {
       projects: [
         {
           name: 'Loan Eligibility Checker',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
+          url: 'https://github.com/candidate/Loan-Eligibility-System',
           tech: 'Python, ML, Scikit-learn, REST API',
           description: 'AI-based loan approval system that reduced manual verification by 12% and improved screening accuracy by 15% across 2,000+ applicants.'
         },
         {
           name: 'DocuMirror',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
+          url: 'https://github.com/candidate/DocuMirror',
           tech: 'LLM, LangChain, Python, PDF Extraction',
           description: 'AI document platform for document Q&A, management, image-to-HTML conversion, and editable PDF generation with 99.2% extraction precision.'
         },
         {
           name: 'Exam Paper Analyzer',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
+          url: 'https://github.com/candidate/Exam-Paper-Analyzer',
           tech: 'Computer Vision, OCR, LLM, Python',
           description: 'AI-powered automated grading and evaluation system that reduced educator grading turnaround times by 30%.'
         },
         {
           name: 'AgriBridge',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
+          url: 'https://github.com/candidate/AgriBridge-Trade-Platform',
           tech: 'Full-Stack Web, Node.js, Express, MongoDB',
           description: 'Global agricultural marketplace platform connecting 500+ farmers, suppliers, exporters, and international importers.'
         },
@@ -140,15 +140,15 @@ export const RESUME_ARCHETYPES = {
     defaultRole: 'Full Stack Web Developer',
     baseFile: 'FSD Resume.html',
     profile: {
-      fullName: 'SANJAY N',
+      fullName: 'JORDAN LEE',
       title: 'Full Stack Developer',
-      email: '2005sanjaynrs@gmail.com',
-      phone: '+91 93615 99018',
-      location: 'Coimbatore, Tamil Nadu',
-      portfolio: 'https://rns-forge.github.io/RNS_Professional_Profile/',
-      github: 'https://github.com/RNS-Forge',
-      linkedin: 'www.linkedin.com/in/sanjay--n',
-      summary: 'Dynamic Full Stack Developer skilled in React.js, TypeScript, Node.js, Express, and Django, building high-performance web applications with seamless AI integrations. Experienced in architecting enterprise platforms at Axodian and Nexus Horizon, integrating robust RESTful APIs, optimizing front-end performance by 40%, and cutting error rates by 30%.',
+      email: 'jordan.lee@example.com',
+      phone: '+1 (555) 345-6789',
+      location: 'Seattle, WA',
+      portfolio: 'https://jordanlee.dev',
+      github: 'https://github.com/jordanlee',
+      linkedin: 'www.linkedin.com/in/jordan-lee',
+      summary: 'Dynamic Full Stack Developer skilled in React.js, TypeScript, Node.js, Express, and Django, building high-performance web applications with seamless AI integrations. Experienced in architecting enterprise platforms across high-growth engineering teams, integrating robust RESTful APIs, optimizing front-end performance by 40%, and cutting error rates by 30%.',
       skills: [
         'React.js', 'TypeScript', 'JavaScript (ES6+)', 'HTML5', 'CSS3', 'Tailwind CSS', 'Shadcn/UI',
         'Node.js', 'Express.js', 'Python', 'Django', 'RESTful APIs',
@@ -165,9 +165,9 @@ export const RESUME_ARCHETYPES = {
         {
           id: 'fsd_exp_1',
           role: 'Software Engineer Intern (On-Site)',
-          company: 'Axodian',
+          company: 'CloudScale Technologies',
           project: 'OneCompliance, LeDoc',
-          companyUrl: 'https://www.axodian.com/',
+          companyUrl: 'https://example.com/',
           period: 'June 2026 - Present',
           location: 'Bangalore, KA (On-Site)',
           relevant: true,
@@ -211,19 +211,19 @@ export const RESUME_ARCHETYPES = {
       projects: [
         {
           name: 'Loan Eligibility Checker',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
+          url: 'https://github.com/candidate/Loan-Eligibility-Checker',
           tech: 'React, Node.js, Express, Machine Learning',
           description: 'Loan approval web system that reduced manual verification by 12% and improved screening accuracy by 15% across 2,000+ applicants.'
         },
         {
           name: 'DocuMirror',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
+          url: 'https://github.com/candidate/DocuMirror',
           tech: 'Full-Stack Web, AI Document Q&A, PDF Generation',
           description: 'AI document platform for document Q&A, image-to-HTML conversion, and editable PDF generation with 99.2% extraction precision.'
         },
         {
           name: 'AgriBridge',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
+          url: 'https://github.com/candidate/AgriBridge-Trade-Platform',
           tech: 'React, Node.js, Express, MongoDB',
           description: 'Global agricultural trade platform connecting 500+ farmers, exporters, and importers with real-time responsive dashboards.'
         },
@@ -266,13 +266,13 @@ export const RESUME_ARCHETYPES = {
     defaultRole: 'Voice Process Executive | Client Handling | Business Analyst',
     baseFile: 'Communication Resume.html',
     profile: {
-      fullName: 'SANJAY N',
+      fullName: 'TAYLOR REED',
       title: 'Business Analyst | Client Handling',
-      email: '2005sanjaynrs@gmail.com',
-      phone: '+91 93615 99018',
-      location: 'Coimbatore, Tamil Nadu',
-      portfolio: 'https://rns-forge.github.io/RNS_Professional_Profile/',
-      linkedin: 'www.linkedin.com/in/sanjay--n',
+      email: 'taylor.reed@example.com',
+      phone: '+1 (555) 456-7890',
+      location: 'Austin, TX',
+      portfolio: 'https://taylorreed.dev',
+      linkedin: 'www.linkedin.com/in/taylor-reed',
       tools: [
         'MS Office (Excel, Word, PowerPoint)', 'Basic CRM Tools',
         'Email & Chat Support Systems', 'Internet & Data Handling'
@@ -339,13 +339,13 @@ export const RESUME_ARCHETYPES = {
     defaultRole: 'Quality Checker | Quality Control & Inspection',
     baseFile: 'Manufacturing.html',
     profile: {
-      fullName: 'SANJAY N',
+      fullName: 'MORGAN CHEN',
       title: 'Quality Checker | Quality Control & Inspection | Steel Bar Components',
-      email: '2005sanjaynrs@gmail.com',
-      phone: '+91 93615 99018',
-      location: 'Coimbatore, Tamil Nadu',
-      portfolio: 'https://rns-forge.github.io/RNS_Professional_Profile/',
-      linkedin: 'www.linkedin.com/in/sanjay--n',
+      email: 'morgan.chen@example.com',
+      phone: '+1 (555) 567-8901',
+      location: 'Detroit, MI',
+      portfolio: 'https://morganchen.dev',
+      linkedin: 'www.linkedin.com/in/morgan-chen',
       summary: 'Detail-oriented Quality Checker with 6 months of hands-on experience in incoming, in-process, patrol and final inspection of CNC-turned steel bar components at Anvil Automation, an ISO 9001:2015 precision manufacturing unit running 3 shifts. Skilled in using vernier calipers, micrometers, height gauges, bore gauges and air gauges to verify close-tolerance dimensions, and in recording defects, supporting corrective actions and maintaining quality documentation. B.Tech graduate in Artificial Intelligence & Machine Learning (CGPA 8.38). Seeking a Quality Inspector / Quality Control role in a precision manufacturing company.',
       skills: [
         'Incoming & In-Process Inspection', 'Final Outgoing Inspection', 'Vernier Calipers (Digital & Dial)',
@@ -427,13 +427,13 @@ function generateManufacturingHtml(profile) {
   return `
   <div class="resume-sheet archetype-manufacturing" id="resume-document">
     <header>
-      <h1 data-editable-field="fullName">${escapeHtml(profile.fullName || 'SANJAY N')}</h1>
-      <p class="role" data-editable-field="title">${escapeHtml(profile.title)}</p>
+      <h1 data-editable-field="fullName">${escapeHtml(profile.fullName || 'Candidate')}</h1>
+      <p class="role" data-editable-field="title">${escapeHtml(profile.title || '')}</p>
       <p class="contact">
-        <span><a href="mailto:${escapeHtml(profile.email || '2005sanjaynrs@gmail.com')}" data-editable-field="email">${escapeHtml(profile.email || '2005sanjaynrs@gmail.com')}</a></span>
-        <span><a href="tel:${escapeHtml(profile.phone || '+91 93615 99018')}" data-editable-field="phone">${escapeHtml(profile.phone || '+91 93615 99018')}</a></span>
-        <span data-editable-field="location">${escapeHtml(profile.location || 'Coimbatore, Tamil Nadu')}</span>
-        <span><a href="https://${escapeHtml(profile.linkedin || 'www.linkedin.com/in/sanjay--n')}" target="_blank">linkedin.com/in/sanjay--n</a></span>
+        ${profile.email ? `<span><a href="mailto:${escapeHtml(profile.email)}" data-editable-field="email">${escapeHtml(profile.email)}</a></span>` : ''}
+        ${profile.phone ? `<span><a href="tel:${escapeHtml(profile.phone)}" data-editable-field="phone">${escapeHtml(profile.phone)}</a></span>` : ''}
+        ${profile.location ? `<span data-editable-field="location">${escapeHtml(profile.location)}</span>` : ''}
+        ${profile.linkedin ? `<span><a href="https://${escapeHtml(profile.linkedin.replace(/^https?:\/\//, ''))}" target="_blank">${escapeHtml(profile.linkedin)}</a></span>` : ''}
       </p>
     </header>
 
@@ -505,13 +505,13 @@ function generateCommunicationHtml(profile) {
   return `
   <div class="resume-sheet archetype-communication" id="resume-document">
     <header>
-      <h1 class="name" data-editable-field="fullName">${escapeHtml(profile.fullName || 'SANJAY N')}</h1>
-      <p class="role" data-editable-field="title">${escapeHtml(profile.title)}</p>
+      <h1 class="name" data-editable-field="fullName">${escapeHtml(profile.fullName || 'Candidate')}</h1>
+      <p class="role" data-editable-field="title">${escapeHtml(profile.title || '')}</p>
       <div class="rule"></div>
       <p class="contact">
-        <a href="mailto:${escapeHtml(profile.email || '2005sanjaynrs@gmail.com')}" data-editable-field="email">${escapeHtml(profile.email || '2005sanjaynrs@gmail.com')}</a> | 
-        <a href="tel:${escapeHtml(profile.phone || '+91 93615 99018')}" data-editable-field="phone">${escapeHtml(profile.phone || '+91 93615 99018')}</a> | 
-        <span data-editable-field="location">${escapeHtml(profile.location || 'Coimbatore, Tamil Nadu')}</span>
+        ${profile.email ? `<a href="mailto:${escapeHtml(profile.email)}" data-editable-field="email">${escapeHtml(profile.email)}</a> | ` : ''}
+        ${profile.phone ? `<a href="tel:${escapeHtml(profile.phone)}" data-editable-field="phone">${escapeHtml(profile.phone)}</a> | ` : ''}
+        <span data-editable-field="location">${escapeHtml(profile.location || '')}</span>
       </p>
     </header>
 
@@ -679,15 +679,15 @@ function generateDeveloperHtml(profile, archetypeId = 'developer') {
     <!-- ===== HEADER ===== -->
     <header class="head">
       <div>
-        <h1 class="name" data-editable-field="fullName"><a href="https://rns-forge.github.io/RNS_Professional_Profile/" target="_blank">${escapeHtml(profile.fullName || 'SANJAY N')}</a></h1>
-        <p class="role" data-editable-field="title">${escapeHtml(profile.title)}</p>
+        <h1 class="name" data-editable-field="fullName">${profile.portfolio ? `<a href="${escapeHtml(profile.portfolio)}" target="_blank">${escapeHtml(profile.fullName || 'Candidate')}</a>` : escapeHtml(profile.fullName || 'Candidate')}</h1>
+        <p class="role" data-editable-field="title">${escapeHtml(profile.title || '')}</p>
       </div>
       <div class="contact">
-        <div><b>City :</b> <span data-editable-field="location">${escapeHtml(profile.location || 'Coimbatore, Tamil Nadu')}</span></div>
-        <div><b>Email :</b> <a class="u" data-editable-field="email" href="mailto:${escapeHtml(profile.email || '2005sanjaynrs@gmail.com')}">${escapeHtml(profile.email || '2005sanjaynrs@gmail.com')}</a></div>
-        <div><b>Phone :</b> <span data-editable-field="phone">${escapeHtml(profile.phone || '+91 93615 99018')}</span></div>
-        <div><b>Github :</b> <a class="u" href="${escapeHtml(profile.github || 'https://github.com/RNS-Forge')}" target="_blank">${escapeHtml((profile.github || 'https://github.com/RNS-Forge').replace('https://', ''))}</a></div>
-        <div class="wide"><b>LinkedIn :</b> <a class="u" href="https://${escapeHtml(profile.linkedin || 'www.linkedin.com/in/sanjay--n')}" target="_blank">${escapeHtml(profile.linkedin || 'www.linkedin.com/in/sanjay--n')}</a></div>
+        ${profile.location ? `<div><b>City :</b> <span data-editable-field="location">${escapeHtml(profile.location)}</span></div>` : ''}
+        ${profile.email ? `<div><b>Email :</b> <a class="u" data-editable-field="email" href="mailto:${escapeHtml(profile.email)}">${escapeHtml(profile.email)}</a></div>` : ''}
+        ${profile.phone ? `<div><b>Phone :</b> <span data-editable-field="phone">${escapeHtml(profile.phone)}</span></div>` : ''}
+        ${profile.github ? `<div><b>Github :</b> <a class="u" href="${escapeHtml(profile.github)}" target="_blank">${escapeHtml(profile.github.replace(/^https?:\/\//, ''))}</a></div>` : ''}
+        ${profile.linkedin ? `<div class="wide"><b>LinkedIn :</b> <a class="u" href="https://${escapeHtml(profile.linkedin.replace(/^https?:\/\//, ''))}" target="_blank">${escapeHtml(profile.linkedin.replace(/^https?:\/\//, ''))}</a></div>` : ''}
       </div>
     </header>
 
@@ -729,11 +729,7 @@ function generateDeveloperHtml(profile, archetypeId = 'developer') {
           ${(exp.project || exp.location) ? `
             <div class="exp-row-secondary">
               <span class="exp-project">${exp.project ? `Project: <em>${escapeHtml(exp.project)}</em>` : ''}</span>
-              <span class="exp-location">${escapeHtml(
-                (exp.company && exp.company.toLowerCase().includes('axodian'))
-                  ? 'Bangalore, KA (On-Site)'
-                  : (exp.location || 'Coimbatore, TN')
-              )}</span>
+              <span class="exp-location">${escapeHtml(exp.location || '')}</span>
             </div>
           ` : ''}
           ${exp.companyNote ? `<p class="company-note">${escapeHtml(exp.companyNote)}</p>` : ''}

@@ -15,11 +15,27 @@
   <!-- Core Stylesheets -->
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/platforms.css">
+  <link rel="stylesheet" href="css/review.css">
   <link rel="stylesheet" href="css/studio.css?v=3">
   <link rel="stylesheet" href="css/resume-templates.css">
 
+  <!-- Supabase Client CDN (Pure Client-Side Sync) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <!-- HTML2PDF CDN for accurate client-side PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- PDF.js CDN for client-side PDF parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (typeof window !== 'undefined' && window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+
+  <!-- Tesseract.js CDN for client-side OCR fallback on scanned PDFs -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
   <!-- Ambient Background Canvas -->
@@ -116,8 +132,44 @@
       </h1>
 
       <p class="hero-description">
-        BioTailr AI automatically matches your real background across AI Engineering, Full Stack Web Development, Business Analysis, or Quality Control, tailors every line with role-specific keywords and action verbs, and guarantees 100% ATS compliance.
+        Upload your existing PDF resume or choose a career track. BioTailr AI extracts your dynamic background on the fly (100% client-side, zero backend), tailors every line with role-specific keywords and action verbs, and guarantees 100% ATS compliance.
       </p>
+
+      <!-- Dynamic Client-Side Resume Upload Card -->
+      <div class="resume-upload-card" id="landing-upload-card">
+        <input type="file" id="input-landing-pdf" accept="application/pdf" style="display: none;">
+        <div class="resume-dropzone-inner" id="dropzone-landing-pdf">
+          <div class="dropzone-left-content">
+            <div class="dropzone-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="12" y2="12"></line>
+                <line x1="15" y1="15" x2="12" y2="12"></line>
+              </svg>
+            </div>
+            <div class="dropzone-text-group">
+              <h4>Upload Your Resume (PDF)</h4>
+              <p>Drag &amp; drop or click to upload &bull; Pure frontend PDF.js &amp; OCR parsing (Zero backend)</p>
+            </div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-browse-landing-pdf">
+            Choose PDF
+          </button>
+        </div>
+        <div class="upload-progress-box" id="landing-upload-progress" style="display: none;">
+          <div class="upload-progress-track">
+            <div class="upload-progress-fill" id="landing-progress-fill"></div>
+          </div>
+          <span class="upload-status-text" id="landing-status-text">Parsing PDF...</span>
+        </div>
+        <div class="uploaded-status-pill" id="landing-profile-pill" style="display: none;">
+          <span class="pill-dot"></span>
+          <span id="landing-pill-text">Active Profile: Loaded</span>
+          <button type="button" class="btn-remove-uploaded" id="btn-remove-landing-pdf" title="Clear uploaded resume">&times;</button>
+        </div>
+      </div>
 
       <div class="hero-cta-group">
         <button class="btn btn-primary btn-lg btn-launch-try-now">
@@ -145,7 +197,7 @@
         <div class="badge-separator">|</div>
         <div class="badge-item">
           <span class="status-indicator"></span>
-          <span>Sanjay N Real Base Resumes</span>
+          <span>Dynamic PDF Resume Engine</span>
         </div>
         <div class="badge-separator">|</div>
         <div class="badge-item">
@@ -270,9 +322,447 @@
         </div>
       </div>
     </section>
+    <!-- Supported Job Platforms Showcase -->
+    <section class="platforms-showcase-section" id="section-platforms">
+      <div class="platforms-header-block">
+        <div class="platforms-badge-pill">
+          <span class="pulse-dot"></span>
+          <span>MULTI-PLATFORM AUTOMATION COMPATIBILITY</span>
+        </div>
+        <h2 class="platforms-title">
+          Supported <span class="gradient-text">Job Platforms</span> &amp; Portals
+        </h2>
+        <p class="platforms-subtitle">
+          BioTailr seamlessly orchestrates tailored applications, intelligent screener solving, and 100% ATS resume generation across all top career destinations.
+        </p>
+      </div>
 
-    <!-- Executive Site Footer (Zero Emojis, High Contrast) -->
-    <footer class="site-footer">
+      <!-- Infinite Scrolling Marquee Ticker -->
+      <div class="marquee-container">
+        <div class="marquee-track">
+          <!-- Marquee Item 1: LinkedIn -->
+          <div class="marquee-item">
+            <svg viewBox="0 0 24 24" fill="#0a66c2"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+            <span>LinkedIn</span>
+            <span class="status-tag">Easy Apply Modal Solver</span>
+          </div>
+
+          <!-- Marquee Item 2: Y Combinator -->
+          <div class="marquee-item">
+            <svg viewBox="0 0 24 24" fill="#ff6600"><rect width="24" height="24" rx="4" fill="#ff6600"/><path d="M7 6l4.5 7.5V19h2v-5.5L18 6h-2.2l-3.3 5.8L9.2 6H7z" fill="#ffffff"/></svg>
+            <span>Y Combinator</span>
+            <span class="status-tag">Work at a Startup</span>
+          </div>
+
+          <!-- Marquee Item 3: Naukri -->
+          <div class="marquee-item">
+            <svg viewBox="0 0 24 24" fill="#1e3a8a"><circle cx="12" cy="12" r="10" fill="#1e3a8a"/><path d="M8 8v8l8-4-8-4z" fill="#ffffff"/></svg>
+            <span>Naukri</span>
+            <span class="status-tag">Fast Apply &amp; CTC Sync</span>
+          </div>
+
+          <!-- Marquee Item 4: Indeed -->
+          <div class="marquee-item">
+            <svg viewBox="0 0 24 24" fill="#2164f3"><path d="M12.5 3c-5.2 0-9.5 4.3-9.5 9.5s4.3 9.5 9.5 9.5c5 0 9.2-3.9 9.5-8.9h-4.3c-.3 2.6-2.5 4.6-5.2 4.6-2.9 0-5.2-2.3-5.2-5.2s2.3-5.2 5.2-5.2c2.7 0 4.9 2 5.2 4.6h4.3C21.7 6.9 17.5 3 12.5 3z" fill="#2164f3"/></svg>
+            <span>Indeed</span>
+            <span class="status-tag">Assessment Solver</span>
+          </div>
+
+          <!-- Marquee Item 5: Foundit -->
+          <div class="marquee-item">
+            <svg viewBox="0 0 24 24" fill="#8b5cf6"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#8b5cf6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Foundit</span>
+            <span class="status-tag">Monster Quick Apply</span>
+          </div>
+
+          <!-- Duplicate Set for Seamless Continuous Infinite Scrolling -->
+          <div class="marquee-item">
+            <svg viewBox="0 0 24 24" fill="#0a66c2"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+            <span>LinkedIn</span>
+            <span class="status-tag">Easy Apply Modal Solver</span>
+          </div>
+          <div class="marquee-item">
+            <svg viewBox="0 0 24 24" fill="#ff6600"><rect width="24" height="24" rx="4" fill="#ff6600"/><path d="M7 6l4.5 7.5V19h2v-5.5L18 6h-2.2l-3.3 5.8L9.2 6H7z" fill="#ffffff"/></svg>
+            <span>Y Combinator</span>
+            <span class="status-tag">Work at a Startup</span>
+          </div>
+          <div class="marquee-item">
+            <svg viewBox="0 0 24 24" fill="#1e3a8a"><circle cx="12" cy="12" r="10" fill="#1e3a8a"/><path d="M8 8v8l8-4-8-4z" fill="#ffffff"/></svg>
+            <span>Naukri</span>
+            <span class="status-tag">Fast Apply &amp; CTC Sync</span>
+          </div>
+          <div class="marquee-item">
+            <svg viewBox="0 0 24 24" fill="#2164f3"><path d="M12.5 3c-5.2 0-9.5 4.3-9.5 9.5s4.3 9.5 9.5 9.5c5 0 9.2-3.9 9.5-8.9h-4.3c-.3 2.6-2.5 4.6-5.2 4.6-2.9 0-5.2-2.3-5.2-5.2s2.3-5.2 5.2-5.2c2.7 0 4.9 2 5.2 4.6h4.3C21.7 6.9 17.5 3 12.5 3z" fill="#2164f3"/></svg>
+            <span>Indeed</span>
+            <span class="status-tag">Assessment Solver</span>
+          </div>
+          <div class="marquee-item">
+            <svg viewBox="0 0 24 24" fill="#8b5cf6"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#8b5cf6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Foundit</span>
+            <span class="status-tag">Monster Quick Apply</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 Interactive Platform Feature Cards -->
+      <div class="platforms-grid">
+        <!-- 1. LinkedIn -->
+        <div class="platform-card" data-platform="linkedin">
+          <div class="platform-card-header">
+            <div class="platform-logo-wrap">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="#0a66c2"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+            </div>
+            <span class="platform-badge">Global #1</span>
+          </div>
+          <h4>LinkedIn</h4>
+          <p class="platform-tagline">Automated Easy Apply modal traversal with smart multi-step screener answering.</p>
+          <ul class="platform-features-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Full multi-page Easy Apply modal solver</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Automated phone &amp; visa authorization answering</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Instant upload of freshly tailored 100% ATS PDF</span>
+            </li>
+          </ul>
+          <div class="platform-card-footer">
+            <div class="platform-engine-status">
+              <span class="active-dot"></span>
+              <span>Online Engine</span>
+            </div>
+            <span class="platform-type-tag">Modal Solver</span>
+          </div>
+        </div>
+
+        <!-- 2. Y Combinator -->
+        <div class="platform-card" data-platform="yc">
+          <div class="platform-card-header">
+            <div class="platform-logo-wrap">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="#ff6600"><rect width="24" height="24" rx="4" fill="#ff6600"/><path d="M7 6l4.5 7.5V19h2v-5.5L18 6h-2.2l-3.3 5.8L9.2 6H7z" fill="#ffffff"/></svg>
+            </div>
+            <span class="platform-badge">YC Network</span>
+          </div>
+          <h4>Y Combinator</h4>
+          <p class="platform-tagline">Work at a Startup direct founder outreach and high-growth engineering role applications.</p>
+          <ul class="platform-features-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Automated founder personalized intro pitch generator</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Work at a Startup one-click submission</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Deep tech stack alignment to startup requirements</span>
+            </li>
+          </ul>
+          <div class="platform-card-footer">
+            <div class="platform-engine-status">
+              <span class="active-dot"></span>
+              <span>Online Engine</span>
+            </div>
+            <span class="platform-type-tag">Startup Matcher</span>
+          </div>
+        </div>
+
+        <!-- 3. Naukri -->
+        <div class="platform-card" data-platform="naukri">
+          <div class="platform-card-header">
+            <div class="platform-logo-wrap">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="#1e3a8a"><circle cx="12" cy="12" r="10" fill="#1e3a8a"/><path d="M8 8v8l8-4-8-4z" fill="#ffffff"/></svg>
+            </div>
+            <span class="platform-badge">India #1</span>
+          </div>
+          <h4>Naukri</h4>
+          <p class="platform-tagline">High-speed Fast Apply engine with automated compensation and notice period handling.</p>
+          <ul class="platform-features-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>One-click Fast Apply button execution</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Current vs Expected CTC &amp; Notice Period auto-fill</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Key skills profile synchronization</span>
+            </li>
+          </ul>
+          <div class="platform-card-footer">
+            <div class="platform-engine-status">
+              <span class="active-dot"></span>
+              <span>Online Engine</span>
+            </div>
+            <span class="platform-type-tag">Fast Apply</span>
+          </div>
+        </div>
+
+        <!-- 4. Indeed -->
+        <div class="platform-card" data-platform="indeed">
+          <div class="platform-card-header">
+            <div class="platform-logo-wrap">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="#2164f3"><path d="M12.5 3c-5.2 0-9.5 4.3-9.5 9.5s4.3 9.5 9.5 9.5c5 0 9.2-3.9 9.5-8.9h-4.3c-.3 2.6-2.5 4.6-5.2 4.6-2.9 0-5.2-2.3-5.2-5.2s2.3-5.2 5.2-5.2c2.7 0 4.9 2 5.2 4.6h4.3C21.7 6.9 17.5 3 12.5 3z" fill="#2164f3"/></svg>
+            </div>
+            <span class="platform-badge">Global Direct</span>
+          </div>
+          <h4>Indeed</h4>
+          <p class="platform-tagline">Intelligent employer assessment questionnaire answering and instant resume dispatch.</p>
+          <ul class="platform-features-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Multi-step employer screener question resolver</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Years of experience auto-calculation</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Direct application submission &amp; review</span>
+            </li>
+          </ul>
+          <div class="platform-card-footer">
+            <div class="platform-engine-status">
+              <span class="active-dot"></span>
+              <span>Online Engine</span>
+            </div>
+            <span class="platform-type-tag">Assessment Solver</span>
+          </div>
+        </div>
+
+        <!-- 5. Foundit -->
+        <div class="platform-card" data-platform="foundit">
+          <div class="platform-card-header">
+            <div class="platform-logo-wrap">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="#8b5cf6"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#8b5cf6" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="platform-badge">APAC &amp; SEA</span>
+          </div>
+          <h4>Foundit</h4>
+          <p class="platform-tagline">Next-generation Monster network Quick Apply with competency mapping and salary expectations.</p>
+          <ul class="platform-features-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Foundit / Monster Quick Apply automation</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Direct profile sync &amp; candidate skill mapping</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Immediate recruiter submission confirmation</span>
+            </li>
+          </ul>
+          <div class="platform-card-footer">
+            <div class="platform-engine-status">
+              <span class="active-dot"></span>
+              <span>Online Engine</span>
+            </div>
+            <span class="platform-type-tag">Quick Apply</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================
+       SCREEN 2.5: PROFILE CONFIRMATION & REVIEW (Post-Extraction)
+       ========================================================= -->
+  <main id="screen-review" class="view-screen">
+    <!-- Top Review Navbar -->
+    <nav class="review-nav">
+      <div class="review-nav-left">
+        <a href="#" class="brand-link btn-home-nav">
+          <img class="brand-logo-img" src="assets/logo.png" alt="BioTailr AI">
+          <div class="brand-text-logo">
+            <span class="navy">BioTailr</span><span class="teal"> AI</span>
+          </div>
+        </a>
+        <div class="review-steps-indicator">
+          <div class="review-step-item completed">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>1. PDF Extracted</span>
+          </div>
+          <span>&rarr;</span>
+          <div class="review-step-item active">
+            <span>2. Confirm Profile</span>
+          </div>
+          <span>&rarr;</span>
+          <div class="review-step-item">
+            <span>3. ATS Studio</span>
+          </div>
+        </div>
+      </div>
+      <div class="review-nav-right">
+        <div class="supabase-sync-badge" id="review-supabase-badge" title="Synced with Supabase Cloud Database">
+          <span class="sync-dot"></span>
+          <span id="review-supabase-text">Supabase Synced</span>
+        </div>
+        <button class="btn btn-outline" id="btn-review-back-top">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+          <span>Back</span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="review-container">
+      <!-- Header Information Card -->
+      <div class="review-header-card">
+        <h2>Confirm &amp; Enhance Extracted Profile</h2>
+        <p>
+          We parsed your resume directly in your browser. Review the extracted fields below. Any missing details are left blank for you to enter. Everything saves automatically to temporary local storage and syncs to Supabase.
+        </p>
+        <div class="review-privacy-notice">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>100% Client-Side Privacy: Extracted purely in your browser. Stored in local session storage and your secure Supabase project.</span>
+        </div>
+      </div>
+
+      <!-- Main Profile Review Form -->
+      <div class="review-form-card">
+        <!-- Section 1: Personal & Contact Information -->
+        <div class="review-section-title">
+          <span>Personal &amp; Contact Information</span>
+          <span class="section-badge">Contact Details</span>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="review-input-fullname">Full Name *</label>
+            <input type="text" id="review-input-fullname" class="form-control" placeholder="e.g. Alex Morgan">
+          </div>
+          <div class="form-group">
+            <label for="review-input-title">Professional Title / Target Role *</label>
+            <input type="text" id="review-input-title" class="form-control" placeholder="e.g. Senior Full Stack Engineer">
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label for="review-input-email">Email Address</label>
+            <input type="email" id="review-input-email" class="form-control" placeholder="e.g. alex.morgan@example.com">
+          </div>
+          <div class="form-group">
+            <label for="review-input-phone">Phone Number</label>
+            <input type="text" id="review-input-phone" class="form-control" placeholder="e.g. +1 (555) 019-2834">
+          </div>
+          <div class="form-group">
+            <label for="review-input-location">Location / City</label>
+            <input type="text" id="review-input-location" class="form-control" placeholder="e.g. San Francisco, CA / Remote">
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label for="review-input-linkedin">LinkedIn Profile URL</label>
+            <input type="url" id="review-input-linkedin" class="form-control" placeholder="e.g. linkedin.com/in/alexmorgan">
+          </div>
+          <div class="form-group">
+            <label for="review-input-github">GitHub / Portfolio URL</label>
+            <input type="url" id="review-input-github" class="form-control" placeholder="e.g. github.com/alexmorgan">
+          </div>
+          <div class="form-group">
+            <label for="review-input-portfolio">Personal Website</label>
+            <input type="url" id="review-input-portfolio" class="form-control" placeholder="e.g. alexmorgan.dev">
+          </div>
+        </div>
+
+        <!-- Section 2: Executive Summary -->
+        <div class="review-section-title" style="margin-top: 24px;">
+          <span>Professional Summary</span>
+          <span class="section-badge">ATS Profile Header</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="review-input-summary">Executive Summary</label>
+          <textarea id="review-input-summary" class="form-control" rows="4" placeholder="Brief executive summary highlighting years of experience, core domains, and quantifiable achievements..."></textarea>
+        </div>
+
+        <!-- Section 3: Core Skills -->
+        <div class="review-section-title" style="margin-top: 24px;">
+          <span>Core Competencies &amp; Skills</span>
+          <span class="section-badge">Keywords</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label for="review-input-skills">Key Skills &amp; Technologies (Comma Separated)</label>
+          <input type="text" id="review-input-skills" class="form-control" placeholder="e.g. React, TypeScript, Node.js, Python, PostgreSQL, AWS, Docker, REST APIs, Git">
+        </div>
+
+        <!-- Section 4: Work Experience -->
+        <div class="review-section-title" style="margin-top: 24px;">
+          <span>Work Experience</span>
+          <span class="section-badge">Career History</span>
+        </div>
+        <div id="review-experience-list" class="dynamic-items-container">
+          <!-- Dynamically populated experience cards -->
+        </div>
+        <button type="button" id="btn-review-add-exp" class="btn-add-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Add Experience Position</span>
+        </button>
+
+        <!-- Section 5: Education -->
+        <div class="review-section-title" style="margin-top: 32px;">
+          <span>Education &amp; Credentials</span>
+          <span class="section-badge">Academic History</span>
+        </div>
+        <div id="review-education-list" class="dynamic-items-container">
+          <!-- Dynamically populated education cards -->
+        </div>
+        <button type="button" id="btn-review-add-edu" class="btn-add-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Add Education Record</span>
+        </button>
+
+        <!-- Section 6: Key Projects & Certifications -->
+        <div class="review-section-title" style="margin-top: 32px;">
+          <span>Projects &amp; Certifications</span>
+          <span class="section-badge">Optional</span>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="review-input-projects">Key Projects</label>
+            <textarea id="review-input-projects" class="form-control" rows="4" placeholder="e.g. Distributed Cache System - High-throughput Redis cluster with Python and Docker..."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="review-input-certifications">Certifications &amp; Licenses</label>
+            <textarea id="review-input-certifications" class="form-control" rows="4" placeholder="e.g. AWS Certified Solutions Architect, Certified Kubernetes Administrator (CKA)..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky Review Actions Bar -->
+      <div class="review-actions-bar">
+        <div class="review-actions-left">
+          <button type="button" class="btn btn-outline" id="btn-review-back-bottom">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+            <span>Back to Upload</span>
+          </button>
+          <span class="review-status-text" id="review-status-indicator">Ready to save</span>
+        </div>
+        <div class="review-actions-right">
+          <button type="button" class="btn btn-outline" id="btn-review-save-only">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span>Save to Storage &amp; Supabase</span>
+          </button>
+          <button type="button" class="btn btn-primary" id="btn-review-proceed-studio">
+            <span>Save &amp; Continue to 100% ATS Studio &rarr;</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Executive Site Footer (Zero Emojis, High Contrast) -->
+  <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-col">
         <a href="index.html" class="brand-link" style="margin-bottom: 1rem; display: inline-flex; text-decoration: none;">
@@ -282,7 +772,7 @@
           </div>
         </a>
         <p style="font-size: 0.88rem; line-height: 1.6; color: #94a3b8; max-width: 320px; margin-top: 0.5rem;">
-          Intelligent ATS-compliant resume tailoring engine calibrated on Sanjay N's 4 authentic career profiles. Built for 100% parser compliance and zero hallucinations.
+          Intelligent ATS-compliant resume tailoring engine calibrated on dynamic career profiles. Built for 100% parser compliance and zero hallucinations.
         </p>
       </div>
 
@@ -299,7 +789,6 @@
       <div class="footer-col">
         <h4>ENGINEERING</h4>
         <ul>
-          <li><a href="https://rns-forge.github.io/RNS_Professional_Profile/" target="_blank">Candidate Portfolio</a></li>
           <li><a href="https://github.com/RNS-Forge/BioTailr-AI" target="_blank">Web App GitHub</a></li>
           <li><a href="https://github.com/RNS-Forge/BioTailr-AI-Extension" target="_blank">Extension GitHub</a></li>
           <li><a href="ats-rules.html">Parsing Architecture</a></li>
@@ -315,11 +804,10 @@
     </div>
 
     <div class="footer-bottom">
-      <div>&copy; 2026 BioTailr AI &mdash; Engineered by Sanjay N. All rights reserved.</div>
+      <div>&copy; 2026 BioTailr AI. All rights reserved.</div>
       <div>100% ATS Parsing Guarantee &bull; Manifest V3 Certified</div>
     </div>
   </footer>
-  </main>
 
   <!-- =========================================================
        SCREEN 3: TRY NOW ROLE INPUT (Focused Input & Go Button)
@@ -346,9 +834,45 @@
       <h1 class="hero-headline" style="font-size: 2.75rem; margin-bottom: 0.5rem;">
         What role are you <span class="highlight-teal">applying for?</span>
       </h1>
-      <p class="hero-description" style="margin-bottom: 2.5rem;">
-        Enter your target role. BioTailr AI automatically matches the most fitting resume from Sanjay N's 4 real career profiles, tailors every line with target role keywords and action verbs, and guarantees 100% ATS compliance.
+      <p class="hero-description" style="margin-bottom: 1.5rem;">
+        Enter your target role or upload your PDF resume. BioTailr AI automatically aligns your dynamic background, synthesizes role keywords and quantified achievements, and guarantees 100% ATS compliance.
       </p>
+
+      <!-- Try-Now Resume Source Selector / Upload Box -->
+      <div class="resume-upload-card" id="trynow-upload-card" style="margin-top: 0; margin-bottom: 1.5rem;">
+        <input type="file" id="input-trynow-pdf" accept="application/pdf" style="display: none;">
+        <div class="resume-dropzone-inner" id="dropzone-trynow-pdf">
+          <div class="dropzone-left-content">
+            <div class="dropzone-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="12" y2="12"></line>
+                <line x1="15" y1="15" x2="12" y2="12"></line>
+              </svg>
+            </div>
+            <div class="dropzone-text-group">
+              <h4>Base Resume: <span id="trynow-base-status-title">Dynamic Resume Upload</span></h4>
+              <p id="trynow-base-status-desc">Upload your PDF resume to tailor your real career history with 100% ATS score</p>
+            </div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-browse-trynow-pdf">
+            Upload PDF
+          </button>
+        </div>
+        <div class="upload-progress-box" id="trynow-upload-progress" style="display: none;">
+          <div class="upload-progress-track">
+            <div class="upload-progress-fill" id="trynow-progress-fill"></div>
+          </div>
+          <span class="upload-status-text" id="trynow-status-text">Parsing PDF...</span>
+        </div>
+        <div class="uploaded-status-pill" id="trynow-profile-pill" style="display: none;">
+          <span class="pill-dot"></span>
+          <span id="trynow-pill-text">Custom Resume Loaded</span>
+          <button type="button" class="btn-remove-uploaded" id="btn-remove-trynow-pdf" title="Clear uploaded resume">&times;</button>
+        </div>
+      </div>
 
       <div class="try-now-card">
         <div class="role-search-group">
@@ -483,8 +1007,8 @@
             <!-- Dropdown Panel -->
             <div class="raw-resumes-dropdown-panel" id="raw-resumes-panel">
               <div class="raw-dropdown-header">
-                <h4>Authentic Base Resumes (Sanjay N)</h4>
-                <p>Unedited source files with direct view &amp; download</p>
+                <h4>Industry Base Resumes</h4>
+                <p>Curated source files with direct view &amp; download</p>
               </div>
               
               <div class="raw-dropdown-list">
@@ -502,7 +1026,7 @@
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                       <span>View</span>
                     </button>
-                    <a href="resume html/Developer Resume.html" download="Sanjay_N_Software_Development_Engineer_Resume.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
+                    <a href="resume html/Developer Resume.html" download="Software_Development_Engineer_Resume.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                       <span>HTML</span>
                     </a>
@@ -527,7 +1051,7 @@
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                       <span>View</span>
                     </button>
-                    <a href="resume html/FSD Resume.html" download="Sanjay_N_Full_Stack_Web_Developer_Resume.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
+                    <a href="resume html/FSD Resume.html" download="Full_Stack_Web_Developer_Resume.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                       <span>HTML</span>
                     </a>
@@ -552,7 +1076,7 @@
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                       <span>View</span>
                     </button>
-                    <a href="resume html/Communication Resume.html" download="Sanjay_N_Voice_Process_Executive_Resume.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
+                    <a href="resume html/Communication Resume.html" download="Voice_Process_Executive_Resume.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                       <span>HTML</span>
                     </a>
@@ -577,7 +1101,7 @@
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                       <span>View</span>
                     </button>
-                    <a href="resume html/Manufacturing.html" download="Sanjay_N_Quality_Checker_Resume.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
+                    <a href="resume html/Manufacturing.html" download="Quality_Checker_Resume.html" class="btn-raw-action btn-raw-dl-html" title="Download Raw HTML file">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                       <span>HTML</span>
                     </a>
@@ -608,6 +1132,11 @@
 
         <!-- Right: Model Indicator & Export Actions -->
         <div class="studio-nav-right">
+          <input type="file" id="input-studio-pdf" accept="application/pdf" style="display: none;">
+          <button class="btn btn-outline btn-sm" id="btn-studio-upload-pdf" title="Upload or Change Base PDF Resume">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="12" y2="12"></line><line x1="15" y1="15" x2="12" y2="12"></line></svg>
+            <span id="studio-upload-btn-text">Upload PDF</span>
+          </button>
           <button class="btn btn-outline btn-sm btn-settings-icon" id="btn-studio-settings" title="API Key Settings">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             <span>Settings</span>
@@ -728,21 +1257,21 @@
                 <div class="form-row-2">
                   <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" id="edit-profile-name" class="form-input" value="SANJAY N">
+                    <input type="text" id="edit-profile-name" class="form-input" placeholder="Candidate Full Name">
                   </div>
                   <div class="form-group">
                     <label>City / Location</label>
-                    <input type="text" id="edit-profile-location" class="form-input" placeholder="Coimbatore, Tamil Nadu">
+                    <input type="text" id="edit-profile-location" class="form-input" placeholder="City, Country">
                   </div>
                 </div>
                 <div class="form-row-2">
                   <div class="form-group">
                     <label>Email</label>
-                    <input type="email" id="edit-profile-email" class="form-input" placeholder="2005sanjaynrs@gmail.com">
+                    <input type="email" id="edit-profile-email" class="form-input" placeholder="candidate@example.com">
                   </div>
                   <div class="form-group">
                     <label>Phone</label>
-                    <input type="text" id="edit-profile-phone" class="form-input" placeholder="+91 93615 99018">
+                    <input type="text" id="edit-profile-phone" class="form-input" placeholder="+1 (555) 000-0000">
                   </div>
                 </div>
               </div>

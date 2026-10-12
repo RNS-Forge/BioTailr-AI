@@ -10,20 +10,20 @@ function resolveFallbackFilename(targetElementId = 'resume-document', defaultFil
     return defaultFilename;
   }
   const el = document.getElementById(targetElementId);
-  if (!el) return defaultFilename || `Sanjay_N_Resume.${ext}`;
+  if (!el) return defaultFilename || `Resume.${ext}`;
 
   const roleEl = el.querySelector('[data-editable-field="title"]') || el.querySelector('.role');
   const nameEl = el.querySelector('[data-editable-field="fullName"]') || el.querySelector('h1');
 
   const role = roleEl?.textContent?.trim() || '';
-  const name = nameEl?.textContent?.trim() || 'Sanjay N';
+  const name = nameEl?.textContent?.trim() || 'Candidate';
 
   const cleanName = name
     .replace(/[^a-zA-Z0-9\s]/g, '')
     .trim()
     .split(/\s+/)
     .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join('_') || 'Sanjay_N';
+    .join('_') || 'Candidate';
 
   const primaryRole = role.split('|')[0].trim() || role.trim();
   const cleanRole = primaryRole
@@ -163,13 +163,13 @@ export function downloadResumeAsHtml(targetElementId = 'resume-document', filena
  * Builds a complete standalone, self-contained HTML resume document
  * with all fonts, styling, and print directives inlined.
  */
-export function buildStandaloneResumeHtml(resumeContentHtml, title = 'Sanjay N – 100% ATS Resume') {
+export function buildStandaloneResumeHtml(resumeContentHtml, title = 'Candidate – 100% ATS Resume') {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${title}</title>
+<title>${title || 'ATS Optimized Resume'}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">

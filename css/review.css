@@ -1,0 +1,353 @@
+/**
+ * BioTailr AI - Profile Confirmation & Review Screen Styles
+ * Clean, modern, glassmorphic card design with responsive form fields,
+ * dynamic item lists, and cloud sync indicators.
+ */
+
+#screen-review {
+  display: none;
+  min-height: 100vh;
+  background: radial-gradient(circle at 10% 20%, rgba(13, 148, 136, 0.05) 0%, rgba(248, 250, 252, 0.95) 90%);
+  padding-bottom: 80px;
+}
+
+#screen-review.active {
+  display: block;
+}
+
+.review-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 36px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.review-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.review-steps-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.review-step-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.review-step-item.completed {
+  color: #059669;
+}
+
+.review-step-item.active {
+  color: #0d9488;
+  font-weight: 700;
+}
+
+.review-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.supabase-sync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  color: #047857;
+  transition: all 0.25s ease;
+}
+
+.supabase-sync-badge .sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.supabase-sync-badge.syncing .sync-dot {
+  background: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
+  animation: pulse-ring 1s infinite;
+}
+
+.review-container {
+  max-width: 1060px;
+  margin: 36px auto 0;
+  padding: 0 24px;
+}
+
+.review-header-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 20px;
+  padding: 32px 36px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.review-header-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #0d9488, #3b82f6, #6366f1);
+}
+
+.review-header-card h2 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.review-header-card p {
+  color: #64748b;
+  font-size: 0.96rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.review-privacy-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 12px 18px;
+  background: rgba(13, 148, 136, 0.06);
+  border: 1px solid rgba(13, 148, 136, 0.2);
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: #0f766e;
+  font-weight: 500;
+}
+
+.review-form-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 20px;
+  padding: 32px 36px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  margin-bottom: 28px;
+}
+
+.review-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1e1b78;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1.5px solid #f1f5f9;
+}
+
+.review-section-title .section-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: 0.02em;
+}
+
+.form-control {
+  width: 100%;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  color: #0f172a;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #0d9488;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 85px;
+  line-height: 1.5;
+}
+
+/* Dynamic list items */
+.dynamic-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.dynamic-item-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px 20px;
+  position: relative;
+  transition: border-color 0.2s ease;
+}
+
+.dynamic-item-card:hover {
+  border-color: #cbd5e1;
+}
+
+.dynamic-item-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.dynamic-item-card-header h5 {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.btn-remove-item {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.btn-remove-item:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.btn-add-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(13, 148, 136, 0.08);
+  border: 1px dashed #0d9488;
+  color: #0d9488;
+  font-size: 0.84rem;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-add-item:hover {
+  background: rgba(13, 148, 136, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Sticky Action Bar at bottom */
+.review-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 18px;
+  padding: 18px 28px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  position: sticky;
+  bottom: 24px;
+  z-index: 90;
+}
+
+.review-actions-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-status-text {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .review-nav {
+    padding: 12px 18px;
+  }
+  .form-grid-2,
+  .form-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .review-actions-bar {
+    flex-direction: column;
+    gap: 14px;
+    align-items: stretch;
+  }
+  .review-actions-right {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

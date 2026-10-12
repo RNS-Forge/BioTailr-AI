@@ -179,4 +179,4 @@ Open your browser and navigate to `http://localhost:3000` to launch BioTailr AI.
 
 ## License
 
-MIT License. Designed & Developed for **BioTailr AI**. Verified career tracks & portfolio of **Sanjay N**.
+MIT License. Designed & Developed for **BioTailr AI**.

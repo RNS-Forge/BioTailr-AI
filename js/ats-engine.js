@@ -3,7 +3,7 @@
  * Codifies industry screening standards across Workday, Oracle Taleo, Phenom People,
  * SAP SuccessFactors, Textkernel/Sovren, Daxtra, Jobscan, Resume Worded, and VMock.
  * 
- * Evaluates resumes against 7 core enterprise ATS screening dimensions
+ * Evaluates resumes against enterprise ATS screening dimensions
  * and iteratively optimizes content to achieve guaranteed 100% compliance.
  */
 
@@ -312,15 +312,11 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
     });
   }
 
-  // 6. Universal Rule: Enforce verified professional locations
+  // Ensure experience preserves location
   if (optimized.experience) {
     optimized.experience.forEach(exp => {
-      if (exp.company && exp.company.toLowerCase().includes('axodian')) {
-        exp.location = 'Bangalore, KA (On-Site)';
-      } else if (exp.company && exp.company.toLowerCase().includes('nexus')) {
-        exp.location = 'Remote';
-      } else if (exp.company && exp.company.toLowerCase().includes('sns')) {
-        exp.location = 'Coimbatore, TN';
+      if (!exp.location && exp.rawLocation) {
+        exp.location = exp.rawLocation;
       }
     });
   }

@@ -8,6 +8,8 @@ import { RESUME_ARCHETYPES, generateResumeHtml } from './templates.js';
 import { tailorResumeWithAi, getStoredApiKeys, saveApiKeys, matchArchetype, fetchEnvKeys } from './ai-service.js';
 import { evaluateAtsScore, optimizeProfileFor100Ats } from './ats-engine.js';
 import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml, buildStandaloneResumeHtml } from './pdf-export.js';
+import { parsePdfResume, getSavedDynamicProfile, clearDynamicProfile } from './resume-parser.js';
+import { saveProfileToSupabase, fetchProfileFromSupabase, getSupabaseClient } from './supabase-client.js';
 
 // Application State
 const state = {
@@ -15,6 +17,7 @@ const state = {
   targetRole: 'Software Development Engineer',
   selectedArchetypeId: 'developer',
   currentProfile: null,
+  customProfile: null,
   activeModelName: 'BioTailr Dynamic AI Engine',
   atsData: null,
   liveEdit: false
@@ -32,12 +35,24 @@ function initApp() {
   bindSettingsModalEvents();
     bindEditorEvents();
   initStudioSplitter();
+  bindPdfUploadEvents();
+  bindReviewEvents();
+  bindExtensionBridge();
+  initPlatformScrollAnimations();
+  bindExtensionGuideEvents();
+
+  // Check if a dynamic custom resume was previously uploaded and stored
+  const savedProfile = getSavedDynamicProfile();
+  if (savedProfile) {
+    state.customProfile = savedProfile;
+    updateDynamicUploadUi(savedProfile);
+  }
 
   // Pre-initialize default profile & ATS data so Studio is never blank
   state.selectedArchetypeId = 'developer';
   state.targetRole = 'Software Development Engineer';
   state.viewMode = 'tailored';
-  const baseProfile = RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
+  const baseProfile = state.customProfile || RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
   state.currentProfile = optimizeProfileFor100Ats(baseProfile, state.targetRole, state.selectedArchetypeId);
   state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
   window.showView = showView;
@@ -225,7 +240,14 @@ async function initExtensionJobMode(extJobId, authKey = '') {
  */
 export function showView(viewName) {
   state.currentView = viewName;
-  const screens = ['entry', 'landing', 'try-now', 'studio'];
+  const screens = ['entry', 'landing', 'review', 'try-now', 'studio'];
+
+  if (viewName === 'review') {
+    const prof = state.customProfile || state.currentProfile;
+    if (prof) {
+      populateReviewForm(prof);
+    }
+  }
 
   if (viewName === 'studio') {
     if (!state.currentProfile) {
@@ -367,6 +389,210 @@ function bindTryNowEvents() {
 }
 
 /**
+ * Client-Side PDF Resume Upload Event Bindings (Zero Backend)
+ */
+function bindPdfUploadEvents() {
+  const landingInput = document.getElementById('input-landing-pdf');
+  const landingDropzone = document.getElementById('dropzone-landing-pdf');
+  const landingCard = document.getElementById('landing-upload-card');
+  const btnBrowseLanding = document.getElementById('btn-browse-landing-pdf');
+  const btnRemoveLanding = document.getElementById('btn-remove-landing-pdf');
+
+  const trynowInput = document.getElementById('input-trynow-pdf');
+  const trynowDropzone = document.getElementById('dropzone-trynow-pdf');
+  const trynowCard = document.getElementById('trynow-upload-card');
+  const btnBrowseTrynow = document.getElementById('btn-browse-trynow-pdf');
+  const btnRemoveTrynow = document.getElementById('btn-remove-trynow-pdf');
+
+  const studioInput = document.getElementById('input-studio-pdf');
+  const btnStudioUpload = document.getElementById('btn-studio-upload-pdf');
+
+  // Trigger file dialogs
+  btnBrowseLanding?.addEventListener('click', (e) => { e.stopPropagation(); landingInput?.click(); });
+  landingDropzone?.addEventListener('click', () => landingInput?.click());
+  landingInput?.addEventListener('change', (e) => {
+    if (e.target.files?.[0]) handleUploadedPdfFile(e.target.files[0], 'landing');
+  });
+
+  btnBrowseTrynow?.addEventListener('click', (e) => { e.stopPropagation(); trynowInput?.click(); });
+  trynowDropzone?.addEventListener('click', () => trynowInput?.click());
+  trynowInput?.addEventListener('change', (e) => {
+    if (e.target.files?.[0]) handleUploadedPdfFile(e.target.files[0], 'trynow');
+  });
+
+  btnStudioUpload?.addEventListener('click', () => studioInput?.click());
+  studioInput?.addEventListener('change', (e) => {
+    if (e.target.files?.[0]) handleUploadedPdfFile(e.target.files[0], 'studio');
+  });
+
+  // Drag & drop handlers
+  const setupDragDrop = (card, input, prefix) => {
+    if (!card) return;
+    ['dragenter', 'dragover'].forEach(name => {
+      card.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        card.classList.add('drag-over');
+      });
+    });
+    ['dragleave', 'drop'].forEach(name => {
+      card.addEventListener(name, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        card.classList.remove('drag-over');
+      });
+    });
+    card.addEventListener('drop', (e) => {
+      const file = e.dataTransfer?.files?.[0];
+      if (file && file.type === 'application/pdf') {
+        handleUploadedPdfFile(file, prefix);
+      } else {
+        alert('Please drop a valid PDF document.');
+      }
+    });
+  };
+
+  setupDragDrop(landingCard, landingInput, 'landing');
+  setupDragDrop(trynowCard, trynowInput, 'trynow');
+
+  // Clear uploaded resume buttons
+  const clearHandler = () => {
+    clearDynamicProfile();
+    state.customProfile = null;
+    const baseProfile = RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
+    state.currentProfile = optimizeProfileFor100Ats(baseProfile, state.targetRole, state.selectedArchetypeId);
+    state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
+    resetDynamicUploadUi();
+    if (state.currentView === 'studio') {
+      renderStudioWorkspace();
+    }
+  };
+
+  btnRemoveLanding?.addEventListener('click', (e) => { e.stopPropagation(); clearHandler(); });
+  btnRemoveTrynow?.addEventListener('click', (e) => { e.stopPropagation(); clearHandler(); });
+}
+
+/**
+ * Handles PDF File selection and executes pure frontend extraction
+ */
+async function handleUploadedPdfFile(file, context = 'landing') {
+  if (!file || file.type !== 'application/pdf') {
+    alert('Please select a valid PDF file.');
+    return;
+  }
+
+  // Set UI progress indicators
+  const setProgress = (text, pct) => {
+    ['landing', 'trynow'].forEach(pfx => {
+      const pBox = document.getElementById(`${pfx}-upload-progress`);
+      const pFill = document.getElementById(`${pfx}-progress-fill`);
+      const pText = document.getElementById(`${pfx}-status-text`);
+      if (pBox) pBox.style.display = 'block';
+      if (pFill) pFill.style.width = `${pct}%`;
+      if (pText) pText.textContent = text;
+    });
+  };
+
+  try {
+    const { profile, html } = await parsePdfResume(file, (msg, pct) => {
+      setProgress(msg, pct);
+    });
+
+    state.customProfile = profile;
+    state.targetRole = profile.title || state.targetRole;
+    state.currentProfile = optimizeProfileFor100Ats(profile, state.targetRole, state.selectedArchetypeId);
+    state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
+
+    // Update Try Now input if present
+    const roleInput = document.getElementById('input-target-role');
+    if (roleInput && profile.title) {
+      roleInput.value = profile.title;
+    }
+
+    updateDynamicUploadUi(profile);
+
+    // Populate review confirmation form
+    populateReviewForm(profile);
+
+    // Save profile to local temporary storage and Supabase cloud
+    saveProfileToSupabase(profile, html);
+
+    // Hide progress bars
+    setTimeout(() => {
+      ['landing', 'trynow'].forEach(pfx => {
+        const pBox = document.getElementById(`${pfx}-upload-progress`);
+        if (pBox) pBox.style.display = 'none';
+      });
+    }, 600);
+
+    // Transition candidate to confirmation and review screen
+    showView('review');
+
+  } catch (err) {
+    console.error('PDF parsing error:', err);
+    alert('Could not parse resume PDF: ' + err.message);
+    ['landing', 'trynow'].forEach(pfx => {
+      const pBox = document.getElementById(`${pfx}-upload-progress`);
+      if (pBox) pBox.style.display = 'none';
+    });
+  }
+}
+
+/**
+ * Updates UI badges and pills when a dynamic profile is active
+ */
+function updateDynamicUploadUi(profile) {
+  const name = profile.fullName || 'Candidate';
+  const role = profile.title || 'Professional';
+
+  // Landing Pill
+  const landingPill = document.getElementById('landing-profile-pill');
+  const landingText = document.getElementById('landing-pill-text');
+  if (landingPill && landingText) {
+    landingText.textContent = `Resume Loaded: ${name} (${role})`;
+    landingPill.style.display = 'inline-flex';
+  }
+
+  // Try Now Pill
+  const trynowPill = document.getElementById('trynow-profile-pill');
+  const trynowText = document.getElementById('trynow-pill-text');
+  const trynowTitle = document.getElementById('trynow-base-status-title');
+  const trynowDesc = document.getElementById('trynow-base-status-desc');
+  if (trynowPill && trynowText) {
+    trynowText.textContent = `Resume: ${name} (${profile.sourceFileName || 'PDF'})`;
+    trynowPill.style.display = 'inline-flex';
+  }
+  if (trynowTitle) trynowTitle.textContent = `${name}'s Base Resume`;
+  if (trynowDesc) trynowDesc.textContent = `Extracted from ${profile.sourceFileName || 'PDF'}. Ready for 100% ATS tailoring.`;
+
+  // Studio Upload Button text
+  const studioBtnText = document.getElementById('studio-upload-btn-text');
+  if (studioBtnText) {
+    studioBtnText.textContent = `PDF: ${profile.firstName || 'Loaded'}`;
+  }
+}
+
+/**
+ * Resets UI when dynamic resume is cleared
+ */
+function resetDynamicUploadUi() {
+  const landingPill = document.getElementById('landing-profile-pill');
+  if (landingPill) landingPill.style.display = 'none';
+
+  const trynowPill = document.getElementById('trynow-profile-pill');
+  if (trynowPill) trynowPill.style.display = 'none';
+
+  const trynowTitle = document.getElementById('trynow-base-status-title');
+  if (trynowTitle) trynowTitle.textContent = 'Dynamic Resume Upload';
+
+  const trynowDesc = document.getElementById('trynow-base-status-desc');
+  if (trynowDesc) trynowDesc.textContent = 'Upload your PDF resume to tailor your real career history with 100% ATS score';
+
+  const studioBtnText = document.getElementById('studio-upload-btn-text');
+  if (studioBtnText) studioBtnText.textContent = 'Upload PDF';
+}
+
+/**
  * AI Generation & ATS Optimization Execution Flow
  */
 async function executeTailoringFlow(targetRole, refinements = '') {
@@ -379,9 +605,9 @@ async function executeTailoringFlow(targetRole, refinements = '') {
     await delay(280);
     updateProcessingStep(1, 'completed');
 
-    // Step 2: Running AI model (Gemini ➔ Groq fallback)
+    // Step 2: Running AI model (Gemini ➔ Groq fallback) using dynamic base profile
     updateProcessingStep(2, 'in-progress');
-    const aiResult = await tailorResumeWithAi(targetRole, refinements);
+    const aiResult = await tailorResumeWithAi(targetRole, refinements, state.customProfile);
     state.selectedArchetypeId = aiResult.archetypeId;
     state.activeModelName = aiResult.modelUsed;
     updateProcessingStep(2, 'completed');
@@ -409,9 +635,10 @@ async function executeTailoringFlow(targetRole, refinements = '') {
     console.error('Tailoring flow error:', error);
     showProcessingOverlay(false);
     alert('Notice: AI generation completed using BioTailr Neural Engine.');
-    // Fallback to template profile
+    // Fallback to base or custom profile
     const fallbackArch = matchArchetype(targetRole);
-    const profile = optimizeProfileFor100Ats(RESUME_ARCHETYPES[fallbackArch].profile, targetRole, fallbackArch);
+    const baseToUse = state.customProfile || RESUME_ARCHETYPES[fallbackArch].profile;
+    const profile = optimizeProfileFor100Ats(baseToUse, targetRole, fallbackArch);
     state.currentProfile = profile;
     state.selectedArchetypeId = fallbackArch;
     state.atsData = evaluateAtsScore(profile, targetRole, fallbackArch);
@@ -547,7 +774,7 @@ function renderAtsChecklist() {
 
 /**
  * Generates a clean, professional download filename matching the candidate name & Role on the PDF.
- * Format: <Candidate_Name>_<Role>_Resume.<ext> (e.g. Sanjay_N_Software_Development_Engineer_Resume.pdf)
+ * Format: <Candidate_Name>_<Role>_Resume.<ext> (e.g. Candidate_Software_Development_Engineer_Resume.pdf)
  */
 export function getResumeDownloadFilename(extension = 'pdf', explicitArchetype = null) {
   const resumeEl = document.getElementById('resume-document');
@@ -585,15 +812,15 @@ export function getResumeDownloadFilename(extension = 'pdf', explicitArchetype =
               || resumeEl?.querySelector('h1');
   let name = nameEl?.textContent?.trim() 
           || state.currentProfile?.fullName 
-          || 'Sanjay N';
+          || 'Candidate';
 
-  // Format clean name: "SANJAY N" -> "Sanjay_N"
+  // Format clean name: "Candidate" -> "Candidate"
   const cleanName = name
     .replace(/[^a-zA-Z0-9\s]/g, '')
     .trim()
     .split(/\s+/)
     .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join('_') || 'Sanjay_N';
+    .join('_') || 'Candidate';
 
   // Extract primary role if multiple titles are separated by '|'
   let primaryRole = role.split('|')[0].trim() || role.trim();
@@ -914,16 +1141,16 @@ function populateResumeEditor() {
   if (titleInput) titleInput.value = p.title || '';
 
   const nameInput = document.getElementById('edit-profile-name');
-  if (nameInput) nameInput.value = p.fullName || 'SANJAY N';
+  if (nameInput) nameInput.value = p.fullName || '';
 
   const locInput = document.getElementById('edit-profile-location');
-  if (locInput) locInput.value = p.location || 'Coimbatore, Tamil Nadu';
+  if (locInput) locInput.value = p.location || '';
 
   const emailInput = document.getElementById('edit-profile-email');
-  if (emailInput) emailInput.value = p.email || '2005sanjaynrs@gmail.com';
+  if (emailInput) emailInput.value = p.email || '';
 
   const phoneInput = document.getElementById('edit-profile-phone');
-  if (phoneInput) phoneInput.value = p.phone || '+91 93615 99018';
+  if (phoneInput) phoneInput.value = p.phone || '';
 
   // Professional Summary
   const summaryInput = document.getElementById('edit-profile-summary');
@@ -1107,7 +1334,7 @@ function populateResumeEditor() {
           </div>
           <div class="form-group">
             <label>Location</label>
-            <input type="text" class="form-input edu-edit-location" value="${escapeHtmlApp(edu.location || 'Coimbatore, Tamil Nadu')}">
+            <input type="text" class="form-input edu-edit-location" value="${escapeHtmlApp(edu.location || '')}">
           </div>
         </div>
         <div class="form-group">
@@ -1354,16 +1581,17 @@ function setResumeViewMode(mode) {
   if (mode === 'raw') {
     btnModeTailored?.classList.remove('active');
     btnModeRaw?.classList.add('active');
-    if (roleLabel) roleLabel.textContent = RESUME_ARCHETYPES[state.selectedArchetypeId].name;
+    const sourceName = state.customProfile ? (state.customProfile.sourceFileName || 'Uploaded PDF') : RESUME_ARCHETYPES[state.selectedArchetypeId].baseFile;
+    if (roleLabel) roleLabel.textContent = state.customProfile ? (state.customProfile.title || state.customProfile.fullName) : RESUME_ARCHETYPES[state.selectedArchetypeId].name;
     if (modeStatusText) {
-      modeStatusText.innerHTML = `<span class="dot-neutral"></span><span>Viewing Original Raw Resume (${RESUME_ARCHETYPES[state.selectedArchetypeId].baseFile})</span>`;
+      modeStatusText.innerHTML = `<span class="dot-neutral"></span><span>Viewing Original Raw Resume (${sourceName})</span>`;
     }
     if (scoreValEl) scoreValEl.textContent = 'RAW';
-    if (headingEl) headingEl.textContent = 'Original Base Profile';
-    if (descEl) descEl.textContent = `Unedited source resume (${RESUME_ARCHETYPES[state.selectedArchetypeId].baseFile}). Switch to 100% ATS Tailored for role-optimized version.`;
+    if (headingEl) headingEl.textContent = state.customProfile ? 'Uploaded Base Resume' : 'Original Base Profile';
+    if (descEl) descEl.textContent = `Unedited source resume (${sourceName}). Switch to 100% ATS Tailored for role-optimized version.`;
 
     if (container) {
-      const rawProfile = RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
+      const rawProfile = state.customProfile || RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
       // All raw experiences shown
       const unedited = JSON.parse(JSON.stringify(rawProfile));
       unedited.experience = (unedited.experience || []).map(e => ({ ...e, relevant: true }));
@@ -1382,7 +1610,7 @@ function setResumeViewMode(mode) {
 
     // Preserve existing tailored profile or optimize from base if none exists yet
     if (!state.currentProfile) {
-      const baseProfile = RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
+      const baseProfile = state.customProfile || RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
       state.currentProfile = optimizeProfileFor100Ats(baseProfile, state.targetRole, state.selectedArchetypeId);
     }
     state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
@@ -1604,6 +1832,402 @@ function initStudioSplitter() {
       grid.classList.remove('is-dragging');
     }
   });
+}
+
+/**
+ * Extension Bridge Listener: responds to BIOTAILR_EXT_JOB messages sent from content-webapp.js
+ */
+function bindExtensionBridge() {
+  window.addEventListener('message', async (event) => {
+    if (event.origin !== window.location.origin) return;
+    if (!event.data || event.data.type !== 'BIOTAILR_EXT_JOB') return;
+
+    const { jobId, authKey, data } = event.data;
+    if (!jobId || !data) return;
+
+    try {
+      const targetRole = data.targetRole || data.jobTitle || 'Software Development Engineer';
+      state.targetRole = targetRole;
+
+      const baseProfile = state.customProfile || RESUME_ARCHETYPES[state.selectedArchetypeId]?.profile || RESUME_ARCHETYPES.developer.profile;
+      const aiResult = await tailorResumeWithAi(baseProfile, targetRole, state.customProfile);
+      state.currentProfile = aiResult.profile;
+      state.selectedArchetypeId = aiResult.archetypeId;
+      state.atsData = evaluateAtsScore(state.currentProfile, targetRole, state.selectedArchetypeId);
+
+      renderStudioWorkspace();
+      const resumeDoc = document.getElementById('resume-document');
+      const compiledHtml = resumeDoc ? resumeDoc.outerHTML : '';
+      const fullDocumentHtml = resumeDoc ? generateResumeHtml(state.currentProfile, state.selectedArchetypeId) : '';
+      const candidateName = state.currentProfile?.fullName || 'Candidate';
+      const filename = getResumeDownloadFilename('html');
+
+      window.postMessage({
+        type: 'BIOTAILR_EXT_RESULT',
+        jobId,
+        authKey,
+        compiledHtml,
+        fullDocumentHtml,
+        filename,
+        archetypeId: state.selectedArchetypeId,
+        targetRole,
+        atsScore: state.atsData?.score || 100,
+        candidateName
+      }, window.location.origin);
+    } catch (err) {
+      console.error('[BioTailr App] Extension bridge error:', err);
+      window.postMessage({
+        type: 'BIOTAILR_EXT_RESULT',
+        jobId,
+        authKey,
+        error: err.message || 'Failed to tailor resume for extension job.'
+      }, window.location.origin);
+    }
+  });
+}
+
+/**
+ * Observes platform cards for scroll-in fade & slide-up animations
+ */
+function initPlatformScrollAnimations() {
+  const cards = document.querySelectorAll('.platform-card');
+  if (!cards.length) return;
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, idx) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('is-visible');
+          }, idx * 100);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    cards.forEach(card => observer.observe(card));
+  } else {
+    cards.forEach(c => c.classList.add('is-visible'));
+  }
+}
+
+/**
+ * Populates the Review & Confirmation Form with extracted candidate profile
+ */
+function populateReviewForm(profile) {
+  if (!profile) return;
+
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val || '';
+  };
+
+  setVal('review-input-fullname', profile.fullName);
+  setVal('review-input-title', profile.title);
+  setVal('review-input-email', profile.email);
+  setVal('review-input-phone', profile.phone);
+  setVal('review-input-location', profile.location);
+  setVal('review-input-linkedin', profile.linkedin);
+  setVal('review-input-github', profile.github);
+  setVal('review-input-portfolio', profile.portfolio);
+  setVal('review-input-summary', profile.summary);
+
+  const skillsStr = Array.isArray(profile.skills) ? profile.skills.join(', ') : (profile.skills || '');
+  setVal('review-input-skills', skillsStr);
+
+  const projectsStr = Array.isArray(profile.projects)
+    ? profile.projects.map(p => typeof p === 'string' ? p : `${p.name || ''}: ${p.description || ''}`).join('\n\n')
+    : (profile.projects || '');
+  setVal('review-input-projects', projectsStr);
+
+  const certsStr = Array.isArray(profile.certifications)
+    ? profile.certifications.join('\n')
+    : (profile.certifications || '');
+  setVal('review-input-certifications', certsStr);
+
+  // Render Experience list
+  const expContainer = document.getElementById('review-experience-list');
+  if (expContainer) {
+    expContainer.innerHTML = '';
+    const experiences = Array.isArray(profile.experience) ? profile.experience : [];
+    if (experiences.length > 0) {
+      experiences.forEach(exp => addReviewExperienceItem(exp));
+    } else {
+      addReviewExperienceItem();
+    }
+  }
+
+  // Render Education list
+  const eduContainer = document.getElementById('review-education-list');
+  if (eduContainer) {
+    eduContainer.innerHTML = '';
+    const educations = Array.isArray(profile.education) ? profile.education : [];
+    if (educations.length > 0) {
+      educations.forEach(edu => addReviewEducationItem(edu));
+    } else {
+      addReviewEducationItem();
+    }
+  }
+
+  updateReviewSyncStatus('Extracted from PDF & ready for confirmation', false);
+}
+
+/**
+ * Appends an experience card to the review form
+ */
+function addReviewExperienceItem(item = {}) {
+  const container = document.getElementById('review-experience-list');
+  if (!container) return;
+
+  const card = document.createElement('div');
+  card.className = 'dynamic-item-card';
+
+  const highlightsText = Array.isArray(item.highlights)
+    ? item.highlights.join('\n')
+    : (item.highlights || item.description || '');
+
+  card.innerHTML = `
+    <div class="dynamic-item-card-header">
+      <h5>Position Details</h5>
+      <button type="button" class="btn-remove-item">&times; Remove</button>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label>Job Title</label>
+        <input type="text" class="form-control exp-title" value="${escapeHtml(item.title || '')}" placeholder="e.g. Senior Software Engineer">
+      </div>
+      <div class="form-group">
+        <label>Company / Organization</label>
+        <input type="text" class="form-control exp-company" value="${escapeHtml(item.company || '')}" placeholder="e.g. Acme Technologies">
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label>Location</label>
+        <input type="text" class="form-control exp-location" value="${escapeHtml(item.location || '')}" placeholder="e.g. Remote / San Francisco, CA">
+      </div>
+      <div class="form-group">
+        <label>Dates / Duration</label>
+        <input type="text" class="form-control exp-dates" value="${escapeHtml(item.dates || item.date || '')}" placeholder="e.g. Jan 2021 - Present">
+      </div>
+    </div>
+    <div class="form-group" style="margin-top: 10px;">
+      <label>Key Achievements & Responsibilities (One per line)</label>
+      <textarea class="form-control exp-highlights" rows="3" placeholder="• Scaled backend architecture to support 50k DAU...">${escapeHtml(highlightsText)}</textarea>
+    </div>
+  `;
+
+  card.querySelector('.btn-remove-item').addEventListener('click', () => {
+    card.remove();
+  });
+
+  container.appendChild(card);
+}
+
+/**
+ * Appends an education card to the review form
+ */
+function addReviewEducationItem(item = {}) {
+  const container = document.getElementById('review-education-list');
+  if (!container) return;
+
+  const card = document.createElement('div');
+  card.className = 'dynamic-item-card';
+
+  card.innerHTML = `
+    <div class="dynamic-item-card-header">
+      <h5>Education Details</h5>
+      <button type="button" class="btn-remove-item">&times; Remove</button>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label>Degree & Major</label>
+        <input type="text" class="form-control edu-degree" value="${escapeHtml(item.degree || '')}" placeholder="e.g. B.S. in Computer Science">
+      </div>
+      <div class="form-group">
+        <label>Institution / University</label>
+        <input type="text" class="form-control edu-institution" value="${escapeHtml(item.institution || item.school || '')}" placeholder="e.g. University of California, Berkeley">
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label>Graduation Year / Date</label>
+        <input type="text" class="form-control edu-year" value="${escapeHtml(item.year || item.dates || '')}" placeholder="e.g. 2020">
+      </div>
+      <div class="form-group">
+        <label>GPA / Honors / Notes (Optional)</label>
+        <input type="text" class="form-control edu-details" value="${escapeHtml(item.details || item.gpa || '')}" placeholder="e.g. Magna Cum Laude, GPA: 3.8/4.0">
+      </div>
+    </div>
+  `;
+
+  card.querySelector('.btn-remove-item').addEventListener('click', () => {
+    card.remove();
+  });
+
+  container.appendChild(card);
+}
+
+/**
+ * Collects review form inputs into a structured profile object
+ */
+function collectReviewFormData() {
+  const getVal = (id) => document.getElementById(id)?.value?.trim() || '';
+
+  const skillsRaw = getVal('review-input-skills');
+  const skillsArray = skillsRaw ? skillsRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+  const projectsRaw = getVal('review-input-projects');
+  const certsRaw = getVal('review-input-certifications');
+
+  // Collect Experience
+  const expCards = document.querySelectorAll('#review-experience-list .dynamic-item-card');
+  const experience = [];
+  expCards.forEach(card => {
+    const title = card.querySelector('.exp-title')?.value?.trim() || '';
+    const company = card.querySelector('.exp-company')?.value?.trim() || '';
+    const location = card.querySelector('.exp-location')?.value?.trim() || '';
+    const dates = card.querySelector('.exp-dates')?.value?.trim() || '';
+    const highlightsText = card.querySelector('.exp-highlights')?.value?.trim() || '';
+    const highlights = highlightsText ? highlightsText.split('\n').map(h => h.trim().replace(/^[-•*]\s*/, '')).filter(Boolean) : [];
+
+    if (title || company) {
+      experience.push({ title, company, location, dates, highlights });
+    }
+  });
+
+  // Collect Education
+  const eduCards = document.querySelectorAll('#review-education-list .dynamic-item-card');
+  const education = [];
+  eduCards.forEach(card => {
+    const degree = card.querySelector('.edu-degree')?.value?.trim() || '';
+    const institution = card.querySelector('.edu-institution')?.value?.trim() || '';
+    const year = card.querySelector('.edu-year')?.value?.trim() || '';
+    const details = card.querySelector('.edu-details')?.value?.trim() || '';
+
+    if (degree || institution) {
+      education.push({ degree, institution, year, details });
+    }
+  });
+
+  return {
+    fullName: getVal('review-input-fullname') || 'Candidate',
+    title: getVal('review-input-title') || 'Professional',
+    email: getVal('review-input-email'),
+    phone: getVal('review-input-phone'),
+    location: getVal('review-input-location'),
+    linkedin: getVal('review-input-linkedin'),
+    github: getVal('review-input-github'),
+    portfolio: getVal('review-input-portfolio'),
+    summary: getVal('review-input-summary'),
+    skills: skillsArray,
+    experience: experience.length > 0 ? experience : (state.customProfile?.experience || []),
+    education: education.length > 0 ? education : (state.customProfile?.education || []),
+    projects: projectsRaw ? projectsRaw.split('\n\n').filter(Boolean) : (state.customProfile?.projects || []),
+    certifications: certsRaw ? certsRaw.split('\n').filter(Boolean) : (state.customProfile?.certifications || []),
+    sourceFileName: state.customProfile?.sourceFileName || 'Uploaded Resume.pdf',
+    updatedAt: new Date().toISOString()
+  };
+}
+
+/**
+ * Updates the review screen sync badge and status text
+ */
+function updateReviewSyncStatus(msg, isSyncing = false) {
+  const statusEl = document.getElementById('review-status-indicator');
+  const badge = document.getElementById('review-supabase-badge');
+  const badgeText = document.getElementById('review-supabase-text');
+
+  if (statusEl) statusEl.textContent = msg;
+
+  if (badge) {
+    if (isSyncing) {
+      badge.classList.add('syncing');
+      if (badgeText) badgeText.textContent = 'Syncing...';
+    } else {
+      badge.classList.remove('syncing');
+      if (badgeText) badgeText.textContent = 'Supabase Synced';
+    }
+  }
+}
+
+/**
+ * Binds review page buttons and form actions
+ */
+function bindReviewEvents() {
+  // Back navigation buttons
+  document.getElementById('btn-review-back-top')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showView('landing');
+  });
+
+  document.getElementById('btn-review-back-bottom')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showView('landing');
+  });
+
+  // Dynamic add buttons
+  document.getElementById('btn-review-add-exp')?.addEventListener('click', () => {
+    addReviewExperienceItem();
+  });
+
+  document.getElementById('btn-review-add-edu')?.addEventListener('click', () => {
+    addReviewEducationItem();
+  });
+
+  // Save profile to storage & Supabase
+  document.getElementById('btn-review-save-only')?.addEventListener('click', async () => {
+    const updatedProfile = collectReviewFormData();
+    state.customProfile = updatedProfile;
+    state.targetRole = updatedProfile.title || state.targetRole;
+
+    updateReviewSyncStatus('Saving to temporary storage and Supabase cloud...', true);
+
+    try {
+      localStorage.setItem('biotailr_candidate_profile', JSON.stringify(updatedProfile));
+      localStorage.setItem('biotailr_dynamic_user_profile', JSON.stringify(updatedProfile));
+    } catch (e) {
+      console.warn('Storage error:', e);
+    }
+
+    await saveProfileToSupabase(updatedProfile);
+    updateDynamicUploadUi(updatedProfile);
+    updateReviewSyncStatus('✓ Profile securely saved to session storage & Supabase cloud!', false);
+  });
+
+  // Save profile and proceed to 100% ATS Studio
+  document.getElementById('btn-review-proceed-studio')?.addEventListener('click', async () => {
+    const updatedProfile = collectReviewFormData();
+    state.customProfile = updatedProfile;
+    state.targetRole = updatedProfile.title || state.targetRole;
+
+    updateReviewSyncStatus('Finalizing profile and launching ATS Studio...', true);
+
+    try {
+      localStorage.setItem('biotailr_candidate_profile', JSON.stringify(updatedProfile));
+      localStorage.setItem('biotailr_dynamic_user_profile', JSON.stringify(updatedProfile));
+    } catch (e) {}
+
+    await saveProfileToSupabase(updatedProfile);
+    updateDynamicUploadUi(updatedProfile);
+
+    // Optimize profile for target role
+    state.currentProfile = optimizeProfileFor100Ats(updatedProfile, state.targetRole, state.selectedArchetypeId);
+    state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
+
+    // Transition to Studio
+    showView('studio');
+  });
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 /**

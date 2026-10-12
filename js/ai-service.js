@@ -3,7 +3,7 @@
  * Primary: Google Gemini API (gemini-2.5-flash / gemini-1.5-flash)
  * Fallback: Groq API (llama-3.3-70b-versatile)
  * Client-Side Smart Engine: Guarantees 100% uptime on GitHub Pages
- * Tailors Sanjay N's 4 authentic resumes based on target job role.
+ * Tailors candidate resumes dynamically based on target job role.
  */
 
 import { RESUME_ARCHETYPES } from './templates.js';
@@ -55,7 +55,7 @@ export function saveApiKeys(geminiKey, groqKey) {
 }
 
 /**
- * Determine the best matching base archetype from Sanjay N's 4 real resumes:
+ * Determine the best matching base archetype:
  * 1. developer: AI Engineer & Software Engineer
  * 2. fsd: Full Stack Web Developer
  * 3. communication: Business Analyst & Client Handling
@@ -182,10 +182,10 @@ export function matchArchetype(targetRole, refinements = '') {
 /**
  * Main AI Tailor method with dynamic domain classification and automatic fallback chain
  */
-export async function tailorResumeWithAi(targetRole, userRefinements = '') {
+export async function tailorResumeWithAi(targetRole, userRefinements = '', customProfile = null) {
   // Step 1: Initial dynamic semantic domain identification
   let archetypeId = matchArchetype(targetRole, userRefinements);
-  let baseProfile = JSON.parse(JSON.stringify(RESUME_ARCHETYPES[archetypeId].profile));
+  let baseProfile = customProfile ? JSON.parse(JSON.stringify(customProfile)) : JSON.parse(JSON.stringify(RESUME_ARCHETYPES[archetypeId].profile));
   
   await fetchEnvKeys();
   const { geminiKey, groqKey } = getStoredApiKeys();
@@ -235,22 +235,14 @@ export async function tailorResumeWithAi(targetRole, userRefinements = '') {
   }
 
   // Strict Universal Rules Enforcement
-  // Rule 1: Preserve candidate's authentic identity
-  tailoredProfile.fullName = 'SANJAY N';
-  tailoredProfile.email = baseProfile.email;
-  tailoredProfile.phone = baseProfile.phone;
-  tailoredProfile.location = baseProfile.location;
-  tailoredProfile.github = baseProfile.github;
-  tailoredProfile.linkedin = baseProfile.linkedin;
-
-  // Rule 2: Enforce Axodian location is strictly Bangalore, KA (On-Site)
-  if (tailoredProfile.experience) {
-    tailoredProfile.experience.forEach(exp => {
-      if (exp.company && exp.company.toLowerCase().includes('axodian')) {
-        exp.location = 'Bangalore, KA (On-Site)';
-      }
-    });
-  }
+  // Rule 1: Preserve candidate's authentic dynamic identity
+  tailoredProfile.fullName = baseProfile.fullName || 'Candidate';
+  tailoredProfile.email = baseProfile.email || '';
+  tailoredProfile.phone = baseProfile.phone || '';
+  tailoredProfile.location = baseProfile.location || '';
+  tailoredProfile.github = baseProfile.github || '';
+  tailoredProfile.linkedin = baseProfile.linkedin || '';
+  tailoredProfile.portfolio = baseProfile.portfolio || '';
 
   // Rule 3: Universal Education Cleanse - NO coursework lines
   if (tailoredProfile.education) {
@@ -440,7 +432,7 @@ function generateLocalSmartTailoring(baseProfile, targetRole, refinements, domai
 
   // 3. Dynamic Summary Synthesis
   const companiesList = (profile.experience || []).map(e => e.company).filter(Boolean);
-  const companiesString = companiesList.length > 0 ? companiesList.join(', ') : 'Axodian, Nexus Horizon, and SNS Square';
+  const companiesString = companiesList.length > 0 ? companiesList.join(', ') : 'leading industry teams';
 
   let dynamicSummary = '';
   if (isMfg) {
@@ -648,9 +640,9 @@ function dynamicallyTransformExperience(experienceList, targetRole, isSde, isMfg
     const entry = { ...exp };
     const companyLower = (entry.company || '').toLowerCase();
 
-    // Universal Rule: Axodian location is strictly Bangalore, KA (On-Site)
-    if (companyLower.includes('axodian')) {
-      entry.location = 'Bangalore, KA (On-Site)';
+    // Ensure location is preserved or defaulted
+    if (!entry.location) {
+      entry.location = exp.location || '';
     }
 
     // Dynamic role title adaptation
@@ -730,9 +722,13 @@ function dynamicallyTransformProjects(projectsList, targetRole, isSde, isMfg, is
 }
 
 function buildPrompt(targetRole, baseProfile, refinements) {
+  const candidateName = baseProfile.fullName || 'Candidate';
+  const companiesList = (baseProfile.experience || []).map(e => e.company).filter(Boolean);
+  const companies = companiesList.length > 0 ? companiesList.join(', ') : 'prior technical organizations';
+
   return `
 You are BioTailr AI, a world-class professional resume optimization and ATS engine.
-Tailor Sanjay N's resume profile specifically for the target job role: "${targetRole}".
+Tailor ${candidateName}'s resume profile specifically for the target job role: "${targetRole}".
 
 User corrections/refinements (if any): "${refinements || 'None'}"
 
@@ -758,29 +754,25 @@ CRITICAL INSTRUCTIONS FOR 100% DYNAMIC DOMAIN DETECTION & GENERATION:
      - You MUST output BOTH "tools" (4-6 role tools, e.g. Cloud Telephony & Dialers like Vicidial/Avaya, CRM like Salesforce/Zoho, Ticketing like Zendesk/Freshdesk, MS Excel) AND "keySkills" (6-9 competencies, e.g. Inbound/Outbound Calling, First Call Resolution [FCR], SLA & AHT Adherence, Active Listening, Voice Etiquette, Escalation Handling, Requirement Gathering, Stakeholder Management).
      - Include both arrays in the output JSON.
    - For Software Development Engineer / Software Engineer / SDE roles:
-     - REMOVE all Agentic AI, Crew AI, AutoGen, LangGraph, LangChain, and LLM prompting buzzwords. Prioritize C#, Python, ASP.NET Core, RESTful APIs, Microservices, RDBMS (PostgreSQL, MS SQL, MySQL), TDD / BDD, Docker, Git, and CI/CD.
+     - Focus on scalable software, microservices, databases, CI/CD, and robust engineering.
    - For Quality Checker / Inspection / Manufacturing roles:
-     - REMOVE all coding frameworks. Focus on precision metrology (vernier calipers, micrometers, height gauges, bore gauges, digital air gauges, Cpk monitoring, ISO 9001:2015, PPAP, NCR).
+     - Focus on precision metrology, quality inspection, Cpk, and ISO standards.
    - For AI / ML Engineer roles:
      - Focus on Python, PyTorch, LangChain, Agentic AI, and RAG architectures.
    - Organize the curated skills into relevant skillCategories.
 
 4. Dynamic Work Experience:
-   - Retain authentic companies (Axodian, Nexus Horizon, SNS Square, Anvil Automation) and true date periods.
+   - Retain authentic companies (${companies}) and true date periods from candidate's base experience.
    - Rephrase bullet points to highlight competencies and achievements relevant to "${targetRole}" using high-impact power action verbs (Architected, Engineered, Spearheaded, Inspected, Optimized) and quantified metrics (%, $, scale).
-   - If Axodian is present in experience, its location MUST strictly be "Bangalore, KA (On-Site)".
 
 5. Dynamic Projects:
    - Rephrase project descriptions to highlight the technical stack, architecture, and metrics that align with "${targetRole}".
 
 6. Universal Education Cleanse:
-   - Under education details, output ONLY the CGPA/percentage (e.g. "CGPA: 8.38 / 10").
-   - NEVER output any coursework lines like "Relevant Coursework: Deep Learning, Natural Language Processing, Algorithms, DBMS" or similar.
+   - Under education details, output clean degree, institution, and period.
 
 7. STRICT REQUIREMENT - EXACTLY ONE FULL A4 PAGE DENSITY:
    - The resume content MUST ALWAYS fill 100% of a standard single A4 page from top to bottom.
-   - It must NEVER look sparse, half-page (50%), or 75% full.
-   - Generate rich, substantive content: a solid 3-4 sentence summary, 4 rich skill categories (5-8 items each), 3-4 quantified bullet points per experience, 3-4 detailed projects, and complete education/certifications.
    - Maintain high information density so the page is 100% full and visually complete.
 
 Return ONLY a valid JSON object matching the schema below:

@@ -45,7 +45,10 @@ const server = http.createServer((req, res) => {
     });
     res.end(JSON.stringify({
       geminiKey: process.env.GEMINI_API_KEY || '',
-      groqKey: process.env.GROQ_API_KEY || ''
+      groqKey: process.env.GROQ_API_KEY || '',
+      supabaseUrl: process.env.SUPABASE_URL || 'https://txgkwrealcochtwlokzk.supabase.co',
+      supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_1UmMkEcFAb8fwV3wYf0I3w_GrY5exxI',
+      supabaseSecretKey: process.env.SUPABASE_SECRET_KEY || ''
     }));
     return;
   }
