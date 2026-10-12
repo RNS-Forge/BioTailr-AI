@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal Login — BioTailr AI & RNS Solutions</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+  <main class="admin-login-wrapper">
+    <div class="admin-login-card">
+      <div class="admin-login-header">
+        <div class="admin-login-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <span>Security Gate</span>
+        </div>
+        <h1>BioTailr Admin Console</h1>
+        <p>Restricted access for RNS Solutions staff & management.</p>
+      </div>
+
+      <div class="admin-alert-banner" id="login-alert-banner"></div>
+
+      <form id="admin-login-form">
+        <div class="admin-form-group">
+          <label>Admin Email</label>
+          <input type="email" id="admin-email" class="admin-form-input" required placeholder="admin@rnssolutions.com" autocomplete="username">
+        </div>
+
+        <div class="admin-form-group">
+          <label>Admin Password</label>
+          <input type="password" id="admin-password" class="admin-form-input" required placeholder="••••••••••••••••••••" autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="admin-login-btn" id="btn-admin-submit">
+          <span>Authenticate & Access Dashboard →</span>
+        </button>
+      </form>
+
+      <div style="text-align: center; margin-top: 1.75rem;">
+        <a href="../index.html" style="font-size: 0.82rem; color: #64748b; text-decoration: none;">← Return to BioTailr Public Site</a>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { loginAdmin, getActiveAdminSession } from './js/admin-auth.js';
+
+    // If already authenticated, redirect directly
+    if (getActiveAdminSession()) {
+      window.location.href = 'dashboard.html';
+    }
+
+    const form = document.getElementById('admin-login-form');
+    const alertBox = document.getElementById('login-alert-banner');
+    const submitBtn = document.getElementById('btn-admin-submit');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertBox.style.display = 'none';
+
+      const email = document.getElementById('admin-email').value;
+      const pass = document.getElementById('admin-password').value;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>Verifying Admin Credentials...</span>';
+
+      const result = await loginAdmin(email, pass);
+
+      if (result.success) {
+        window.location.href = 'dashboard.html';
+      } else {
+        alertBox.textContent = result.error || 'Authentication failed.';
+        alertBox.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>Authenticate & Access Dashboard →</span>';
+      }
+    });
+  </script>
+</body>
+</html>

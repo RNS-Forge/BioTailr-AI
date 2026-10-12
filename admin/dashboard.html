@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — BioTailr AI & RNS Solutions</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+  <!-- Navbar -->
+  <header class="admin-navbar">
+    <div class="admin-nav-left">
+      <a href="../index.html" class="admin-brand" title="View Public Website">
+        <img src="../assets/logo.png" alt="BioTailr AI Logo">
+        <span class="admin-brand-title">BioTailr AI</span>
+      </a>
+      <span class="admin-badge-portal">Executive Admin Console</span>
+    </div>
+
+    <div class="admin-nav-right">
+      <div class="admin-user-pill">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span id="admin-user-display">admin@rnssolutions.com</span>
+      </div>
+      <a href="../index.html" style="font-size: 0.82rem; color: #475569; text-decoration: none; font-weight: 600;">Public Site ↗</a>
+      <button class="btn-admin-logout" id="btn-admin-logout">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="admin-main-container">
+
+    <!-- Metric Stats Strip -->
+    <section class="admin-stats-grid">
+      <div class="admin-stat-card">
+        <div>
+          <div class="stat-label">Total Requests</div>
+          <div class="stat-value" id="stat-total-count">0</div>
+        </div>
+        <div class="stat-icon-wrap navy">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+      </div>
+
+      <div class="admin-stat-card">
+        <div>
+          <div class="stat-label">Active Plans</div>
+          <div class="stat-value" id="stat-active-count" style="color: #10b981;">0</div>
+        </div>
+        <div class="stat-icon-wrap emerald">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="admin-stat-card">
+        <div>
+          <div class="stat-label">Pending Calls</div>
+          <div class="stat-value" id="stat-pending-count" style="color: #d97706;">0</div>
+        </div>
+        <div class="stat-icon-wrap amber">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+        </div>
+      </div>
+
+      <div class="admin-stat-card">
+        <div>
+          <div class="stat-label">Revenue Pipeline</div>
+          <div class="stat-value" id="stat-revenue-total" style="color: #00b49f;">₹0</div>
+        </div>
+        <div class="stat-icon-wrap teal">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controls, Tabs & Data Table -->
+    <div class="admin-controls-card">
+      <div class="admin-toolbar-header">
+        <!-- 5 Tabs: All, 1 Day, 1 Week, 1 Month, 1 Year -->
+        <div class="admin-plan-tabs">
+          <button class="admin-tab-btn active" data-tab="all">All Requests</button>
+          <button class="admin-tab-btn" data-tab="1_day">1 Day (₹5)</button>
+          <button class="admin-tab-btn" data-tab="1_week">1 Week (₹30)</button>
+          <button class="admin-tab-btn" data-tab="1_month">1 Month (₹115)</button>
+          <button class="admin-tab-btn" data-tab="1_year">1 Year (₹1000)</button>
+        </div>
+
+        <!-- Column Search & Filter Toolbar -->
+        <div class="admin-search-wrapper">
+          <div class="admin-search-box">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="admin-search-input" placeholder="Search name, email, phone...">
+          </div>
+
+          <select class="admin-status-filter" id="admin-status-filter">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending Call</option>
+            <option value="active">Active</option>
+            <option value="deactivated">Deactivated</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Data Table -->
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Candidate Name</th>
+              <th>Email</th>
+              <th>Phone Number</th>
+              <th>Plan Tier</th>
+              <th>Amount</th>
+              <th>Requested At</th>
+              <th>Status</th>
+              <th style="text-align: center;">Actions (3-Mode)</th>
+            </tr>
+          </thead>
+          <tbody id="subscriptions-table-body">
+            <!-- Dynamic rows will render here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Interactive Toast Notification -->
+  <div class="admin-toast" id="admin-toast">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toast-message">Action completed successfully.</span>
+  </div>
+
+  <script type="module" src="js/admin-dashboard.js"></script>
+</body>
+</html>

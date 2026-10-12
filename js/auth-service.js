@@ -438,14 +438,16 @@ export async function loginUser({ email, password }) {
         });
         if (!sErr && sData?.user) {
           const now = Date.now();
+          const userRole = sData.user.app_metadata?.role || sData.user.user_metadata?.role || (normalizedEmail === 'admin@rnssolutions.com' ? 'admin' : 'user');
           const restoredUser = {
             id: sData.user.id,
             supabaseId: sData.user.id,
-            fullName: sData.user.user_metadata?.full_name || 'Candidate',
+            fullName: sData.user.user_metadata?.full_name || (userRole === 'admin' ? 'RNS Solutions Admin' : 'Candidate'),
             email: normalizedEmail,
+            role: userRole,
             verified: true,
             createdAt: now,
-            expiresAt: now + DEMO_DURATION_MS,
+            expiresAt: userRole === 'admin' ? now + (100 * 365 * 24 * 60 * 60 * 1000) : now + DEMO_DURATION_MS,
             isActive: true
           };
           users[normalizedEmail] = restoredUser;
@@ -513,9 +515,10 @@ export async function loginUser({ email, password }) {
     };
   }
 
-  // Check 4-day demo validity
+  // Check 4-day demo validity (admins exempt)
+  const isAdmin = user.role === 'admin' || normalizedEmail === 'admin@rnssolutions.com';
   const demo = getDemoStatus(user);
-  if (demo.isExpired) {
+  if (!isAdmin && demo.isExpired) {
     user.isActive = false;
     users[normalizedEmail] = user;
     saveUsersMap(users);

@@ -1,0 +1,54 @@
+[
+  {
+    "id": "sub_1001",
+    "fullName": "Siddharth Verma",
+    "email": "siddharth.v@gmail.com",
+    "phone": "+91 98765 43210",
+    "planId": "1_month",
+    "planName": "1 Month Pro Campaign",
+    "amount": 115,
+    "status": "pending",
+    "notes": "Candidate requested priority call for LinkedIn & Naukri automated solver access.",
+    "createdAt": 1728731400000,
+    "createdFormatted": "Oct 12, 2026, 03:30 PM"
+  },
+  {
+    "id": "sub_1002",
+    "fullName": "Priya Ananth",
+    "email": "priya.ananth@outlook.com",
+    "phone": "+91 94432 10987",
+    "planId": "1_week",
+    "planName": "1 Week Sprint Pass",
+    "amount": 30,
+    "status": "active",
+    "notes": "Payment verified via UPI. Account activated for 7-day interview sprint.",
+    "createdAt": 1728724200000,
+    "createdFormatted": "Oct 12, 2026, 01:30 PM"
+  },
+  {
+    "id": "sub_1003",
+    "fullName": "Rohan Deshmukh",
+    "email": "rohan.deshmukh@techcorp.in",
+    "phone": "+91 91234 56789",
+    "planId": "1_year",
+    "planName": "1 Year Career Pass",
+    "amount": 1000,
+    "status": "pending",
+    "notes": "Annual executive pass subscriber. Call scheduled for onboarding.",
+    "createdAt": 1728717000000,
+    "createdFormatted": "Oct 12, 2026, 11:30 AM"
+  },
+  {
+    "id": "sub_1004",
+    "fullName": "Neha Sharma",
+    "email": "neha.sharma.dev@gmail.com",
+    "phone": "+91 98220 11223",
+    "planId": "1_day",
+    "planName": "1 Day Test Drive",
+    "amount": 5,
+    "status": "deactivated",
+    "notes": "1-day sprint completed.",
+    "createdAt": 1728645000000,
+    "createdFormatted": "Oct 11, 2026, 03:25 PM"
+  }
+]

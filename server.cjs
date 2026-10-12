@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 8181;
 
 // Simple .env parser without external dependencies
 function loadEnv() {
@@ -51,6 +51,107 @@ const server = http.createServer((req, res) => {
       supabaseSecretKey: process.env.SUPABASE_SECRET_KEY || ''
     }));
     return;
+  }
+
+  // API endpoints for subscriptions
+  if (reqPath === '/api/subscriptions') {
+    const subFilePath = path.join(__dirname, 'subscriptions.json');
+
+    const readSubs = () => {
+      try {
+        if (fs.existsSync(subFilePath)) {
+          return JSON.parse(fs.readFileSync(subFilePath, 'utf8'));
+        }
+      } catch (e) {}
+      return [];
+    };
+
+    const writeSubs = (data) => {
+      fs.writeFileSync(subFilePath, JSON.stringify(data, null, 2), 'utf8');
+    };
+
+    if (req.method === 'GET') {
+      res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+      res.end(JSON.stringify(readSubs()));
+      return;
+    }
+
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const newSub = JSON.parse(body);
+          const list = readSubs();
+          newSub.id = newSub.id || ('sub_' + Date.now());
+          newSub.createdAt = newSub.createdAt || Date.now();
+          newSub.createdFormatted = newSub.createdFormatted || new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+          newSub.status = newSub.status || 'pending';
+          list.unshift(newSub);
+          writeSubs(list);
+          res.writeHead(201, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+          res.end(JSON.stringify({ success: true, subscription: newSub }));
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+          res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+      });
+      return;
+    }
+
+    if (req.method === 'PUT') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const update = JSON.parse(body);
+          const list = readSubs();
+          const idx = list.findIndex(item => item.id === update.id);
+          if (idx !== -1) {
+            list[idx] = { ...list[idx], ...update };
+            writeSubs(list);
+            res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+            res.end(JSON.stringify({ success: true, subscription: list[idx] }));
+          } else {
+            res.writeHead(404, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+            res.end(JSON.stringify({ success: false, error: 'Subscription not found' }));
+          }
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+          res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+      });
+      return;
+    }
+
+    if (req.method === 'DELETE') {
+      let body = '';
+      req.on('data', chunk => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const { id } = JSON.parse(body);
+          let list = readSubs();
+          list = list.filter(item => item.id !== id);
+          writeSubs(list);
+          res.writeHead(200, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+          res.end(JSON.stringify({ success: true }));
+        } catch (err) {
+          res.writeHead(400, { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' });
+          res.end(JSON.stringify({ success: false, error: err.message }));
+        }
+      });
+      return;
+    }
+
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204, {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      });
+      res.end();
+      return;
+    }
   }
 
   if (reqPath === '/') reqPath = '/index.html';
