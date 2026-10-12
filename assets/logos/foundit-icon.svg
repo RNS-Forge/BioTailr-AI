@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="7" fill="#8b5cf6"/>
+  <!-- Crisp official Foundit stylized f and talent loop mark -->
+  <path fill="#ffffff" d="M19.5 8c-2.8 0-4.8 1.8-4.8 4.7v2.2H12v3.4h2.7v7.2h3.6v-7.2h3.2l.5-3.4h-3.7v-2c0-1 .4-1.6 1.7-1.6h2V8h-2.5z"/>
+  <circle cx="22.2" cy="8.6" r="1.6" fill="#f59e0b"/>
+</svg>

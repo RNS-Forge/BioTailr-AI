@@ -265,8 +265,8 @@ document.addEventListener('DOMContentLoaded', () => {
     viewVerify.classList.remove('active');
 
     showcaseTitle.innerHTML = 'Tailor Your Career History with <span class="teal-text">100% ATS Score.</span>';
-    showcaseDesc.textContent = 'Experience enterprise-grade automated resume tailoring. Powered by Google Gemini 2.5 Flash with Groq failover and 1-click execution across LinkedIn, Indeed, Naukri, YC, and Foundit.';
-    showcaseBadgeText.textContent = '4-Day Verified Trial';
+    showcaseDesc.textContent = 'Automated resume calibration and instant multi-platform solver across LinkedIn, Indeed, Naukri, YC, and Foundit.';
+    showcaseBadgeText.textContent = '4-Day Verified Access';
   }
 
   function setSignupMode() {
@@ -279,9 +279,9 @@ document.addEventListener('DOMContentLoaded', () => {
     viewVerify.style.display = 'none';
     viewVerify.classList.remove('active');
 
-    showcaseTitle.innerHTML = 'Unlock <span class="teal-text">4 Days Full Access</span> to BioTailr AI.';
-    showcaseDesc.textContent = 'Experience unlimited ATS resume calibrations, 1-click multi-platform job solvers, and full exports. Zero backend dependency, 100% client-side privacy.';
-    showcaseBadgeText.textContent = 'Instant 4-Day Demo';
+    showcaseTitle.innerHTML = 'Start Your Free <span class="teal-text">4-Day Full Demo.</span>';
+    showcaseDesc.textContent = 'Instant verified access to automated ATS tailoring and 1-click platform solvers with complete client-side privacy.';
+    showcaseBadgeText.textContent = 'Instant 4-Day Trial';
   }
 
   function setVerifyMode(email, otpCode) {
