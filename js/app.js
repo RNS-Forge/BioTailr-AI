@@ -12,6 +12,7 @@ import { parsePdfResume, getSavedDynamicProfile, clearDynamicProfile } from './r
 import { saveProfileToSupabase, fetchProfileFromSupabase, getSupabaseClient } from './supabase-client.js';
 import { requireActiveDemo, getActiveUser, getDemoStatus, logoutUser, getEarlyAdopterStats } from './auth-service.js';
 import { initProfileNavbar, syncPlatformDataToExtensionAndStandBy } from './profile-component.js';
+import { showSetupWizard } from './setup-wizard.js';
 
 // Application State
 const state = {
@@ -1812,6 +1813,15 @@ function bindSettingsModalEvents() {
       }
     });
   }
+
+  // Wire .btn-open-api-wizard elements to open the full setup wizard
+  document.querySelectorAll('.btn-open-api-wizard').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      modal.classList.remove('active');
+      showSetupWizard({ force: true });
+    });
+  });
 }
 
 function showProcessingOverlay(show, roleName = '') {

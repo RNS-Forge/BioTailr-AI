@@ -2,27 +2,53 @@
  * BioTailr AI - Pure Frontend Supabase Client Integration
  * Seamlessly backs up and syncs dynamic candidate profiles to Supabase.
  * Zero backend required: Runs 100% in the browser.
+ *
+ * Reads Supabase URL and key from user-provided api-config (localStorage).
+ * Falls back to placeholder values if not configured.
  */
 
+import { getSupabaseConfig as _getUserSupabaseConfig } from './api-config.js';
+
+function _resolveConfig() {
+  const userCfg = _getUserSupabaseConfig();
+  return {
+    url: userCfg.url || '',
+    publishableKey: userCfg.publishableKey || ''
+  };
+}
+
+/** @deprecated - use _resolveConfig() dynamically */
 export const SUPABASE_CONFIG = {
-  url: 'https://txgkwrealcochtwlokzk.supabase.co',
-  publishableKey: 'sb_publishable_1UmMkEcFAb8fwV3wYf0I3w_GrY5exxI',
-  secretKey: (typeof window !== 'undefined' && window.__ENV__?.SUPABASE_SECRET_KEY) || ''
+  get url() { return _resolveConfig().url; },
+  get publishableKey() { return _resolveConfig().publishableKey; }
 };
 
 let supabaseClient = null;
+let _lastUsedUrl = '';
 
 /**
- * Initialize or get the Supabase Client instance from browser window.supabase
+ * Initialize or get the Supabase Client instance from browser window.supabase.
+ * Re-initializes automatically if the user updates their Supabase config.
  */
 export function getSupabaseClient() {
+  const cfg = _resolveConfig();
+
+  // Re-init if URL changed (user updated config)
+  if (supabaseClient && cfg.url && cfg.url !== _lastUsedUrl) {
+    supabaseClient = null;
+  }
+
+  if (!cfg.url || !cfg.publishableKey) {
+    return null; // Not configured yet
+  }
+
   if (supabaseClient) return supabaseClient;
 
   if (typeof window !== 'undefined' && window.supabase && typeof window.supabase.createClient === 'function') {
     try {
       supabaseClient = window.supabase.createClient(
-        SUPABASE_CONFIG.url,
-        SUPABASE_CONFIG.publishableKey,
+        cfg.url,
+        cfg.publishableKey,
         {
           auth: {
             persistSession: true,
@@ -30,7 +56,8 @@ export function getSupabaseClient() {
           }
         }
       );
-      console.log('[Supabase] Initialized client for:', SUPABASE_CONFIG.url);
+      _lastUsedUrl = cfg.url;
+      console.log('[Supabase] Initialized client for:', cfg.url);
     } catch (e) {
       console.warn('[Supabase] Failed to initialize client:', e);
     }

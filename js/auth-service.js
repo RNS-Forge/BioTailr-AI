@@ -1,4 +1,5 @@
 import { getSupabaseClient } from './supabase-client.js';
+import { getEmailJsConfig as _getEmailJsCfg, saveUserApiConfig } from './api-config.js';
 
 const USERS_STORAGE_KEY = 'biotailr_registered_users';
 const ACTIVE_USER_STORAGE_KEY = 'biotailr_active_user';
@@ -54,25 +55,21 @@ export function sanitizeInput(str) {
 }
 
 /**
- * Returns EmailJS configuration
+ * Returns EmailJS configuration from user-provided api-config.
  */
 export function getEmailJsConfig() {
-  const saved = localStorage.getItem(EMAILJS_CONFIG_KEY);
-  if (saved) {
-    try { return JSON.parse(saved); } catch (e) {}
-  }
-  return {
-    publicKey: '7rK9sX2mP0Lw-biotailr',
-    serviceId: 'service_biotailr_auth',
-    templateId: 'template_biotailr_otp'
-  };
+  return _getEmailJsCfg();
 }
 
 /**
- * Updates EmailJS configuration
+ * Updates EmailJS configuration via user api-config.
  */
 export function saveEmailJsConfig(cfg) {
-  localStorage.setItem(EMAILJS_CONFIG_KEY, JSON.stringify(cfg));
+  saveUserApiConfig({
+    emailjsPublicKey: cfg.publicKey || '',
+    emailjsServiceId: cfg.serviceId || '',
+    emailjsTemplateId: cfg.templateId || ''
+  });
   if (window.emailjs && cfg.publicKey) {
     try { window.emailjs.init(cfg.publicKey); } catch (e) {}
   }
@@ -312,6 +309,7 @@ export async function registerUser({ fullName, email, password }) {
     };
   }
 
+  const now = Date.now();
   const otp = generateOtpCode();
   const totalRegisteredCount = Object.keys(users).length;
   const isEarlyAdopter = totalRegisteredCount < EARLY_ADOPTER_LIMIT;

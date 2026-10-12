@@ -13,6 +13,7 @@ import {
   getEarlyAdopterStats 
 } from './auth-service.js';
 import { syncPlatformDataToExtensionAndStandBy } from './profile-component.js';
+import { maybeShowSetupWizard } from './setup-wizard.js';
 
 let currentPendingEmail = '';
 
@@ -124,9 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (result.success) {
         syncPlatformDataToExtensionAndStandBy(result.user);
         showAlert(`Welcome back, ${result.user.fullName || 'Candidate'}! (${result.demo.formatted})`, 'success');
-        setTimeout(() => {
+        maybeShowSetupWizard(() => {
           window.location.href = redirectTarget;
-        }, 800);
+        });
       } else if (result.unverified) {
         currentPendingEmail = email;
         showAlert(result.error, 'warning');
@@ -182,7 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
         showAlert(result.error, 'error');
       }
     } catch (err) {
-      showAlert('Failed to create account. Please try again.', 'error');
+      console.error('[Registration Error]', err);
+      showAlert(err.message || 'Failed to create account. Please try again.', 'error');
     } finally {
       btn.innerHTML = origText;
       btn.disabled = false;
@@ -215,9 +217,9 @@ document.addEventListener('DOMContentLoaded', () => {
           syncPlatformDataToExtensionAndStandBy(result.user);
         }
         showAlert('Email verified successfully! 4-Day Demo has been activated.', 'success');
-        setTimeout(() => {
+        maybeShowSetupWizard(() => {
           window.location.href = redirectTarget;
-        }, 1000);
+        });
       } else {
         showAlert(result.error, 'error');
       }

@@ -1,57 +1,30 @@
-/**
- * BioTailr AI - Multi-Model AI Service with Gemini & Groq Fallback
- * Primary: Google Gemini API (gemini-2.5-flash / gemini-1.5-flash)
- * Fallback: Groq API (llama-3.3-70b-versatile)
- * Client-Side Smart Engine: Guarantees 100% uptime on GitHub Pages
- * Tailors candidate resumes dynamically based on target job role.
- */
-
 import { RESUME_ARCHETYPES } from './templates.js';
+import { getGeminiKey, getGroqKey, saveUserApiConfig } from './api-config.js';
 
-// Keys are loaded securely from .env via /api/keys or localStorage
+// Keys are loaded from user-provided api-config (localStorage)
 let cachedEnvKeys = null;
 
 export async function fetchEnvKeys() {
-  if (cachedEnvKeys) return cachedEnvKeys;
-  try {
-    const res = await fetch('/api/keys');
-    if (res.ok) {
-      cachedEnvKeys = await res.json();
-      return cachedEnvKeys;
-    }
-  } catch (e) {
-    // Offline or static server fallback
-  }
-  return { geminiKey: '', groqKey: '' };
+  // Always read fresh from user config
+  cachedEnvKeys = {
+    geminiKey: getGeminiKey(),
+    groqKey: getGroqKey()
+  };
+  return cachedEnvKeys;
 }
 
 export function getStoredApiKeys() {
-  const envKeys = cachedEnvKeys || {};
-  const hasStorage = typeof localStorage !== 'undefined';
   return {
-    geminiKey: (hasStorage ? localStorage.getItem('biotailr_gemini_key') : '') || envKeys.geminiKey || '',
-    groqKey: (hasStorage ? localStorage.getItem('biotailr_groq_key') : '') || envKeys.groqKey || ''
+    geminiKey: getGeminiKey(),
+    groqKey: getGroqKey()
   };
 }
 
 export function saveApiKeys(geminiKey, groqKey) {
-  if (typeof localStorage === 'undefined') return;
-  if (typeof geminiKey === 'string') {
-    const trimmed = geminiKey.trim();
-    if (trimmed) {
-      localStorage.setItem('biotailr_gemini_key', trimmed);
-    } else {
-      localStorage.removeItem('biotailr_gemini_key');
-    }
-  }
-  if (typeof groqKey === 'string') {
-    const trimmed = groqKey.trim();
-    if (trimmed) {
-      localStorage.setItem('biotailr_groq_key', trimmed);
-    } else {
-      localStorage.removeItem('biotailr_groq_key');
-    }
-  }
+  const updates = {};
+  if (typeof geminiKey === 'string') updates.geminiKey = geminiKey.trim();
+  if (typeof groqKey === 'string') updates.groqKey = groqKey.trim();
+  if (Object.keys(updates).length) saveUserApiConfig(updates);
 }
 
 /**
