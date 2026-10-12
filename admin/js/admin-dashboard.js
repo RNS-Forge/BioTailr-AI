@@ -364,33 +364,6 @@ function renderTable() {
               <span>Actions</span>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </button>
-            <div class="row-actions-floating-menu" id="menu-${item.id}">
-              <button type="button" class="row-menu-btn" data-action="activate" data-id="${item.id}">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Activate Pass</span>
-              </button>
-              <button type="button" class="row-menu-btn" data-action="deactivate" data-id="${item.id}">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
-                <span>Deactivate Pass</span>
-              </button>
-              <button type="button" class="row-menu-btn" data-action="extend" data-id="${item.id}">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                <span>Extend (+7 Days)</span>
-              </button>
-              <a href="tel:${escapeHtml(item.phone)}" class="row-menu-btn" style="text-decoration: none;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                <span>Call Candidate</span>
-              </a>
-              <a href="mailto:${escapeHtml(item.email)}?subject=BioTailr%20AI%20Pass%20Notification" class="row-menu-btn" style="text-decoration: none;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                <span>Send Email</span>
-              </a>
-              <div class="row-menu-divider"></div>
-              <button type="button" class="row-menu-btn text-delete" data-action="delete" data-id="${item.id}">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                <span>Delete Entry</span>
-              </button>
-            </div>
           </td>
         </tr>
       `;
@@ -466,72 +439,123 @@ function renderPaginationButtons(totalPages) {
 /**
  * Attach Row Actions Dropdown Toggle and Actions
  */
+let currentActionRecordId = null;
+
 function attachRowDropdownListeners() {
+  const menu = document.getElementById('global-actions-menu');
+  if (!menu) return;
+
+  const closeMenu = () => {
+    menu.classList.remove('show');
+    menu.style.display = 'none';
+    currentActionRecordId = null;
+    document.querySelectorAll('.btn-row-action-pill').forEach(b => b.classList.remove('active'));
+  };
+
   document.querySelectorAll('.btn-row-action-pill').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const id = btn.getAttribute('data-id');
-      const targetMenu = document.getElementById(`menu-${id}`);
-      
-      // Close any other open menus
-      document.querySelectorAll('.row-actions-floating-menu').forEach(m => {
-        if (m !== targetMenu) m.classList.remove('show');
-      });
-      document.querySelectorAll('.btn-row-action-pill').forEach(b => {
-        if (b !== btn) b.classList.remove('active');
-      });
-
-      const isOpen = targetMenu.classList.toggle('show');
-      btn.classList.toggle('active', isOpen);
-    });
-  });
-
-  // Close menus on click outside
-  document.addEventListener('click', () => {
-    document.querySelectorAll('.row-actions-floating-menu').forEach(m => m.classList.remove('show'));
-    document.querySelectorAll('.btn-row-action-pill').forEach(b => b.classList.remove('active'));
-  });
-
-  // Action Click Handlers
-  document.querySelectorAll('.row-menu-btn[data-action]').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      const action = btn.getAttribute('data-action');
-      const id = btn.getAttribute('data-id');
       const record = allRecords.find(r => r.id === id);
       if (!record) return;
 
-      if (action === 'activate') {
-        record.status = 'active';
-        record.validity = 'Active Unrestricted';
-        persistRecordChange(record);
-        showToast(`Pass for "${record.name}" activated!`);
-        renderTable();
-      } else if (action === 'deactivate') {
-        record.status = 'deactivated';
-        record.validity = 'Deactivated by Admin';
-        persistRecordChange(record);
-        showToast(`Pass for "${record.name}" deactivated.`);
-        renderTable();
-      } else if (action === 'extend') {
-        record.validity = 'Extended +7 Days Access';
-        record.status = 'active';
-        persistRecordChange(record);
-        showToast(`Extended 7 days access for "${record.name}".`);
-        renderTable();
-      } else if (action === 'delete') {
-        if (confirm(`Are you sure you want to delete record for "${record.name}"?`)) {
-          allRecords = allRecords.filter(r => r.id !== id);
-          deleteStoredRecord(id);
-          showToast(`Deleted record "${record.name}".`);
-          updateTopStats();
-          renderTable();
-        }
-      }
+      const isAlreadyOpen = (currentActionRecordId === id && menu.classList.contains('show'));
+      closeMenu();
 
-      document.querySelectorAll('.row-actions-floating-menu').forEach(m => m.classList.remove('show'));
+      if (!isAlreadyOpen) {
+        currentActionRecordId = id;
+        btn.classList.add('active');
+
+        // Dynamic candidate links
+        const callBtn = document.getElementById('menu-action-call');
+        if (callBtn) {
+          const hasPhone = record.phone && record.phone !== 'N/A';
+          callBtn.href = hasPhone ? `tel:${record.phone}` : '#';
+          callBtn.style.opacity = hasPhone ? '1' : '0.4';
+          callBtn.style.pointerEvents = hasPhone ? 'auto' : 'none';
+        }
+
+        const emailBtn = document.getElementById('menu-action-email');
+        if (emailBtn) {
+          emailBtn.href = record.email ? `mailto:${record.email}?subject=BioTailr%20AI%20Candidate%20Update` : '#';
+          emailBtn.style.opacity = record.email ? '1' : '0.4';
+          emailBtn.style.pointerEvents = record.email ? 'auto' : 'none';
+        }
+
+        // Measure and position globally relative to viewport
+        menu.style.display = 'block';
+        menu.style.visibility = 'hidden';
+
+        const rect = btn.getBoundingClientRect();
+        const menuHeight = menu.offsetHeight || 190;
+        const menuWidth = menu.offsetWidth || 170;
+
+        // Auto flip up if insufficient space below
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const openUpward = spaceBelow < (menuHeight + 12) && rect.top > menuHeight;
+
+        let top = openUpward ? (rect.top - menuHeight - 4) : (rect.bottom + 4);
+        let left = rect.right - menuWidth;
+
+        if (left < 10) left = 10;
+        if (top < 10) top = 10;
+
+        menu.style.top = `${Math.round(top)}px`;
+        menu.style.left = `${Math.round(left)}px`;
+        menu.style.visibility = 'visible';
+        menu.classList.add('show');
+      }
     });
   });
+
+  // Global listeners to close open dropdown
+  document.addEventListener('click', closeMenu);
+  window.addEventListener('resize', closeMenu);
+  window.addEventListener('scroll', closeMenu, { passive: true });
+  document.querySelector('.enterprise-table-scroll')?.addEventListener('scroll', closeMenu, { passive: true });
+
+  // Bind actions on the global menu once
+  if (!menu._actionsBound) {
+    menu._actionsBound = true;
+    menu.querySelectorAll('.row-menu-btn[data-action]').forEach(actionBtn => {
+      actionBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const action = actionBtn.getAttribute('data-action');
+        const id = currentActionRecordId;
+        const record = allRecords.find(r => r.id === id);
+        closeMenu();
+        if (!record) return;
+
+        if (action === 'activate') {
+          record.status = 'active';
+          record.validity = 'Active Unrestricted';
+          persistRecordChange(record);
+          showToast(`Pass for "${record.name}" activated!`);
+          renderTable();
+        } else if (action === 'deactivate') {
+          record.status = 'deactivated';
+          record.validity = 'Deactivated by Admin';
+          persistRecordChange(record);
+          showToast(`Pass for "${record.name}" deactivated.`);
+          renderTable();
+        } else if (action === 'extend') {
+          record.validity = 'Extended +7 Days Access';
+          record.status = 'active';
+          persistRecordChange(record);
+          showToast(`Extended 7 days access for "${record.name}".`);
+          renderTable();
+        } else if (action === 'delete') {
+          if (confirm(`Are you sure you want to delete record for "${record.name}"?`)) {
+            allRecords = allRecords.filter(r => r.id !== id);
+            deleteStoredRecord(id);
+            showToast(`Deleted record "${record.name}".`);
+            updateTopStats();
+            renderTable();
+          }
+        }
+      });
+    });
+  }
 }
 
 /**
