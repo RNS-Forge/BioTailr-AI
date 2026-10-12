@@ -19,6 +19,13 @@ export function initProfileNavbar(containerId = 'nav-auth-status-container') {
   injectModalsOnce();
 
   const user = getActiveUser();
+
+  // Control navbar Extension button visibility (STRICTLY ONLY SHOWN AFTER LOGIN)
+  const extButtons = document.querySelectorAll('.btn-extension-trigger, #btn-header-extension, #btn-header-extension-ats');
+  extButtons.forEach(btn => {
+    btn.style.display = user ? 'inline-flex' : 'none';
+  });
+
   if (!user) {
     // Guest view: Clean Sign In button
     container.innerHTML = `
@@ -29,6 +36,9 @@ export function initProfileNavbar(containerId = 'nav-auth-status-container') {
     `;
     return;
   }
+
+  // Active User: Sync profile data with extension and StandBy
+  syncPlatformDataToExtensionAndStandBy(user);
 
   const demo = getDemoStatus(user);
   const displayName = user.fullName || user.email.split('@')[0];
@@ -449,6 +459,9 @@ function bindModalActions() {
       console.warn('[Profile] Supabase metadata sync note:', e.message);
     }
 
+    // 3. Auto sync to Extension (via window postMessage / storage) and StandBy runner
+    syncPlatformDataToExtensionAndStandBy(user);
+
     saveBtn.disabled = false;
     saveBtn.textContent = 'Saved!';
     setTimeout(() => {
@@ -497,3 +510,55 @@ function escapeHtml(str) {
     "'": '&#39;'
   }[s]));
 }
+
+/**
+ * Universal Data Sync Bridge
+ * Bridges candidate data from BioTailr-AI main platform into:
+ * 1. Extension (via window.postMessage & localStorage chrome.storage bridge)
+ * 2. StandBy runner (via /api/standby/profile server bridge)
+ */
+export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') {
+  if (!profile || typeof profile !== 'object') return;
+
+  // 1. Web app localStorage caching
+  try {
+    localStorage.setItem('biotailr_candidate_profile', JSON.stringify(profile));
+    localStorage.setItem('biotailr_dynamic_user_profile', JSON.stringify(profile));
+    if (resumeHtml) {
+      localStorage.setItem('biotailr_dynamic_resume_html', resumeHtml);
+    }
+  } catch (e) {}
+
+  // 2. PostMessage to window: content-webapp.js catches this and relays to chrome.storage.local
+  try {
+    window.postMessage({
+      type: 'BIOTAILR_DYNAMIC_PROFILE_UPDATED',
+      profile: profile,
+      resumeHtml: resumeHtml
+    }, window.location.origin);
+  } catch (e) {}
+
+  // 3. Custom DOM Event for any connected extension HUD or scripts
+  try {
+    window.dispatchEvent(new CustomEvent('biotailr:profile-sync', {
+      detail: { profile, resumeHtml }
+    }));
+  } catch (e) {}
+
+  // 4. StandBy Desktop Runner Bridge: updates BioTailr-AI-StandBy/candidate-profile.json
+  try {
+    fetch('/api/standby/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profile)
+    })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) {
+          console.log('[BioTailr Bridge] Candidate profile synced to StandBy:', profile.fullName || 'Candidate');
+        }
+      })
+      .catch(() => {});
+  } catch (e) {}
+}
+

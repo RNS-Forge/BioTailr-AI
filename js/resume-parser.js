@@ -747,6 +747,19 @@ export function saveDynamicProfile(profile, html = '') {
   window.dispatchEvent(new CustomEvent('biotailr:profile-updated', {
     detail: { profile, candidateProfile: candidateProfileSchema }
   }));
+
+  // Automatically sync to StandBy desktop runner
+  try {
+    fetch('/api/standby/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(candidateProfileSchema)
+    }).then(r => r.json()).then(res => {
+      if (res.success) {
+        console.log('[StandBy Sync] Candidate profile synchronized to StandBy runner.');
+      }
+    }).catch(() => {});
+  } catch (e) {}
 }
 
 /**
