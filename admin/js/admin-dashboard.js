@@ -260,16 +260,6 @@ function setupToolbarButtons() {
   document.getElementById('btn-export-excel')?.addEventListener('click', () => {
     exportTableToCsv();
   });
-
-  // Add Candidate Pass
-  document.getElementById('btn-add-candidate')?.addEventListener('click', () => {
-    promptAddCandidatePass();
-  });
-
-  // Bulk Upload prompt
-  document.getElementById('btn-bulk-upload')?.addEventListener('click', () => {
-    showToast('Bulk candidate import: CSV template ready.');
-  });
 }
 
 /**
@@ -356,7 +346,7 @@ function renderTable() {
             <a href="tel:${escapeHtml(item.phone)}" style="color: inherit; text-decoration: none;">${escapeHtml(item.phone)}</a>
           </td>
           <td>
-            <span style="font-weight: 700; color: #4c2882; font-size: 0.82rem;">${escapeHtml(item.tierDisplay)}</span>
+            <span style="font-weight: 600; color: var(--brand-navy); font-size: 0.8rem;">${escapeHtml(item.tierDisplay)}</span>
           </td>
           <td class="candidate-amount-cell">
             ₹${item.amount.toLocaleString('en-IN')}.00
