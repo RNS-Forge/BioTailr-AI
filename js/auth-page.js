@@ -12,6 +12,7 @@ import {
   getDemoStatus,
   getEarlyAdopterStats 
 } from './auth-service.js';
+import { syncPlatformDataToExtensionAndStandBy } from './profile-component.js';
 
 let currentPendingEmail = '';
 
@@ -46,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check if already logged in with active demo
   const activeUser = getActiveUser();
   if (activeUser && !isExpiredNotice) {
+    syncPlatformDataToExtensionAndStandBy(activeUser);
     const demo = getDemoStatus(activeUser);
     if (!demo.isExpired) {
       // Already authenticated, proceed to target
@@ -120,6 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await loginUser({ email, password });
 
       if (result.success) {
+        syncPlatformDataToExtensionAndStandBy(result.user);
         showAlert(`Welcome back, ${result.user.fullName || 'Candidate'}! (${result.demo.formatted})`, 'success');
         setTimeout(() => {
           window.location.href = redirectTarget;
@@ -208,6 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = verifyEmailOtp(currentPendingEmail, otpInput);
 
       if (result.success) {
+        if (result.user) {
+          syncPlatformDataToExtensionAndStandBy(result.user);
+        }
         showAlert('Email verified successfully! 4-Day Demo has been activated.', 'success');
         setTimeout(() => {
           window.location.href = redirectTarget;

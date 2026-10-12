@@ -11,7 +11,7 @@ import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml, buildStan
 import { parsePdfResume, getSavedDynamicProfile, clearDynamicProfile } from './resume-parser.js';
 import { saveProfileToSupabase, fetchProfileFromSupabase, getSupabaseClient } from './supabase-client.js';
 import { requireActiveDemo, getActiveUser, getDemoStatus, logoutUser, getEarlyAdopterStats } from './auth-service.js';
-import { initProfileNavbar } from './profile-component.js';
+import { initProfileNavbar, syncPlatformDataToExtensionAndStandBy } from './profile-component.js';
 
 // Application State
 const state = {
@@ -227,6 +227,9 @@ async function initExtensionJobMode(extJobId, authKey = '') {
         atsScore: atsData?.totalScore || 100,
         modelUsed: aiResult.modelUsed
       }, window.location.origin);
+
+      // Sync updated candidate data with StandBy and Extension storage
+      syncPlatformDataToExtensionAndStandBy(optimizedProfile, compiledHtml);
 
     } catch (err) {
       console.error('[BioTailr ExtMode] Pipeline error:', err);
@@ -724,6 +727,9 @@ async function executeTailoringFlow(targetRole, refinements = '') {
     renderStudioWorkspace();
     showProcessingOverlay(false);
     showView('studio');
+
+    // Automatically sync tailored profile to StandBy and Extension
+    syncPlatformDataToExtensionAndStandBy(state.currentProfile);
 
   } catch (error) {
     console.error('Tailoring flow error:', error);
@@ -1968,6 +1974,9 @@ function bindExtensionBridge() {
         atsScore: state.atsData?.score || 100,
         candidateName
       }, window.location.origin);
+
+      // Sync updated candidate profile to StandBy and Extension storage
+      syncPlatformDataToExtensionAndStandBy(state.currentProfile, compiledHtml);
     } catch (err) {
       console.error('[BioTailr App] Extension bridge error:', err);
       window.postMessage({

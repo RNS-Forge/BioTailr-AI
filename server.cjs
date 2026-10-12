@@ -184,38 +184,55 @@ const server = http.createServer((req, res) => {
           }
 
           // Deep map incoming profile fields to StandBy schema
+          const p = incoming.personal || incoming;
+          const w = incoming.workAuth || {};
+          const exp = incoming.experience || {};
+          const edu = incoming.education || {};
+
           const mapped = {
             personal: {
               ...(current.personal || {}),
-              fullName: incoming.fullName || incoming.personal?.fullName || current.personal?.fullName || 'Candidate',
-              firstName: (incoming.fullName || incoming.personal?.fullName || '').split(' ')[0] || current.personal?.firstName || 'Candidate',
-              lastName: (incoming.fullName || incoming.personal?.fullName || '').split(' ').slice(1).join(' ') || current.personal?.lastName || '',
-              email: incoming.email || incoming.personal?.email || current.personal?.email || '',
-              phone: incoming.phone || incoming.personal?.phone || current.personal?.phone || '',
-              city: incoming.city || incoming.location?.split(',')[0]?.trim() || current.personal?.city || '',
-              location: incoming.location || current.personal?.location || '',
-              linkedinUrl: incoming.linkedinUrl || current.personal?.linkedinUrl || '',
-              githubUrl: incoming.githubUrl || current.personal?.githubUrl || '',
-              portfolioUrl: incoming.portfolioUrl || current.personal?.portfolioUrl || ''
+              fullName: p.fullName || current.personal?.fullName || 'Candidate',
+              firstName: p.firstName || (p.fullName ? p.fullName.split(' ')[0] : (current.personal?.firstName || 'Candidate')),
+              lastName: p.lastName || (p.fullName && p.fullName.split(' ').length > 1 ? p.fullName.split(' ').slice(1).join(' ') : (current.personal?.lastName || '')),
+              email: p.email || current.personal?.email || '',
+              phone: p.phone || current.personal?.phone || '',
+              city: p.city || (p.location ? p.location.split(',')[0].trim() : (current.personal?.city || '')),
+              state: p.state || current.personal?.state || 'Karnataka',
+              country: p.country || current.personal?.country || 'India',
+              postalCode: p.postalCode || current.personal?.postalCode || '560001',
+              location: p.location || current.personal?.location || 'Bangalore, Karnataka, India',
+              fullLocation: p.fullLocation || p.location || current.personal?.fullLocation || 'Bangalore, Karnataka, India',
+              address: p.address || p.location || current.personal?.address || 'Bangalore, Karnataka, India',
+              linkedinUrl: p.linkedinUrl || p.linkedin || current.personal?.linkedinUrl || 'https://www.linkedin.com/in/candidate',
+              githubUrl: p.githubUrl || p.github || current.personal?.githubUrl || 'https://github.com/candidate',
+              portfolioUrl: p.portfolioUrl || p.portfolio || current.personal?.portfolioUrl || 'https://candidate.portfolio.dev'
             },
             workAuth: {
               ...(current.workAuth || {}),
-              authorizedInCountry: incoming.workAuth?.authorizedInCountry || 'Yes',
-              needSponsorship: incoming.workAuth?.needSponsorship || 'No'
+              authorizedInCountry: w.authorizedInCountry || current.workAuth?.authorizedInCountry || 'Yes',
+              needSponsorship: w.needSponsorship || current.workAuth?.needSponsorship || 'No',
+              currentVisaStatus: w.currentVisaStatus || current.workAuth?.currentVisaStatus || 'Citizen'
             },
             experience: {
               ...(current.experience || {}),
-              totalYears: Number(incoming.totalYears || incoming.experience?.totalYears) || current.experience?.totalYears || 2,
-              noticePeriodDays: Number(incoming.noticePeriodDays || incoming.experience?.noticePeriodDays) || current.experience?.noticePeriodDays || 15,
-              currentTitle: incoming.targetRole || incoming.currentTitle || incoming.experience?.currentTitle || current.experience?.currentTitle || 'Software Development Engineer',
-              currentCompany: incoming.currentCompany || incoming.experience?.currentCompany || current.experience?.currentCompany || ''
+              totalYears: Number(exp.totalYears || incoming.totalYears) || current.experience?.totalYears || 2,
+              noticePeriodDays: Number(exp.noticePeriodDays || incoming.noticePeriodDays) || current.experience?.noticePeriodDays || 15,
+              currentTitle: incoming.targetRole || exp.currentTitle || incoming.title || current.experience?.currentTitle || 'Software Development Engineer',
+              currentCompany: exp.currentCompany || incoming.currentCompany || current.experience?.currentCompany || 'Technology Company',
+              currentSalary: String(exp.currentSalary || incoming.currentSalary || current.experience?.currentSalary || '600000'),
+              expectedSalary: String(exp.expectedSalary || incoming.expectedSalary || current.experience?.expectedSalary || '1000000'),
+              currentSalaryLpa: String(exp.currentSalaryLpa || incoming.currentSalaryLpa || current.experience?.currentSalaryLpa || '6'),
+              expectedSalaryLpa: String(exp.expectedSalaryLpa || incoming.expectedSalaryLpa || current.experience?.expectedSalaryLpa || '10')
             },
             education: {
               ...(current.education || {}),
-              degree: incoming.education?.degree || incoming.degree || current.education?.degree || 'Bachelor of Technology - BTech',
-              fieldOfStudy: incoming.education?.fieldOfStudy || current.education?.fieldOfStudy || 'Computer Science and Engineering',
-              institution: incoming.education?.institution || incoming.institution || current.education?.institution || 'University / Institute of Technology'
+              degree: edu.degree || incoming.degree || current.education?.degree || 'Bachelor of Technology - BTech',
+              fieldOfStudy: edu.fieldOfStudy || incoming.fieldOfStudy || current.education?.fieldOfStudy || 'Computer Science and Engineering',
+              institution: edu.institution || incoming.institution || current.education?.institution || 'University / Institute of Technology',
+              gradYear: String(edu.gradYear || incoming.gradYear || current.education?.gradYear || '2024')
             },
+            skills: Array.isArray(incoming.skills) ? incoming.skills : (current.skills || ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'Git', 'REST APIs']),
             settings: current.settings || {
               batchTarget: 0,
               cdpPort: 9222,

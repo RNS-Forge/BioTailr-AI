@@ -520,10 +520,76 @@ function escapeHtml(str) {
 export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') {
   if (!profile || typeof profile !== 'object') return;
 
+  // Retrieve any existing parsed resume or candidate context from localStorage
+  let cachedCandidate = {};
+  let cachedDynamic = {};
+  try {
+    const rawCand = localStorage.getItem('biotailr_candidate_profile');
+    if (rawCand) cachedCandidate = JSON.parse(rawCand);
+    const rawDyn = localStorage.getItem('biotailr_dynamic_user_profile');
+    if (rawDyn) cachedDynamic = JSON.parse(rawDyn);
+  } catch (e) {}
+
+  // Construct complete, deep candidate payload
+  const p = profile.personal || profile;
+  const fullName = p.fullName || cachedCandidate.personal?.fullName || profile.fullName || 'Candidate';
+  const nameParts = fullName.trim().split(/\s+/);
+  const firstName = p.firstName || nameParts[0] || cachedCandidate.personal?.firstName || 'Candidate';
+  const lastName = p.lastName || (nameParts.length > 1 ? nameParts.slice(1).join(' ') : (cachedCandidate.personal?.lastName || ''));
+
+  const fullPayload = {
+    personal: {
+      fullName,
+      firstName,
+      lastName,
+      email: p.email || profile.email || cachedCandidate.personal?.email || '',
+      phone: p.phone || profile.phone || cachedCandidate.personal?.phone || '',
+      city: p.city || cachedCandidate.personal?.city || (p.location ? p.location.split(',')[0].trim() : 'Coimbatore'),
+      state: p.state || cachedCandidate.personal?.state || 'Tamil Nadu',
+      country: p.country || cachedCandidate.personal?.country || 'India',
+      postalCode: p.postalCode || cachedCandidate.personal?.postalCode || '641001',
+      location: p.location || cachedCandidate.personal?.location || 'Coimbatore, Tamil Nadu, India',
+      fullLocation: p.fullLocation || p.location || cachedCandidate.personal?.fullLocation || 'Coimbatore, Tamil Nadu, India',
+      address: p.address || p.location || cachedCandidate.personal?.address || 'Coimbatore, Tamil Nadu, India',
+      linkedinUrl: p.linkedinUrl || p.linkedin || cachedCandidate.personal?.linkedinUrl || 'https://www.linkedin.com/in/candidate',
+      githubUrl: p.githubUrl || p.github || cachedCandidate.personal?.githubUrl || 'https://github.com/candidate',
+      portfolioUrl: p.portfolioUrl || p.portfolio || cachedCandidate.personal?.portfolioUrl || 'https://candidate.portfolio.dev',
+      avatar: profile.avatar || cachedCandidate.personal?.avatar || null
+    },
+    workAuth: {
+      authorizedInCountry: profile.workAuth?.authorizedInCountry || cachedCandidate.workAuth?.authorizedInCountry || 'Yes',
+      needSponsorship: profile.workAuth?.needSponsorship || cachedCandidate.workAuth?.needSponsorship || 'No',
+      currentVisaStatus: profile.workAuth?.currentVisaStatus || cachedCandidate.workAuth?.currentVisaStatus || 'Citizen'
+    },
+    experience: {
+      totalYears: Number(profile.totalYears || profile.experience?.totalYears || cachedCandidate.experience?.totalYears || 2),
+      noticePeriodDays: Number(profile.noticePeriodDays || profile.experience?.noticePeriodDays || cachedCandidate.experience?.noticePeriodDays || 15),
+      currentTitle: profile.targetRole || profile.currentTitle || profile.experience?.currentTitle || cachedCandidate.experience?.currentTitle || 'Software Development Engineer',
+      currentCompany: profile.currentCompany || profile.experience?.currentCompany || cachedCandidate.experience?.currentCompany || 'Technology Company',
+      currentSalary: String(profile.currentSalary || profile.experience?.currentSalary || cachedCandidate.experience?.currentSalary || '600000'),
+      expectedSalary: String(profile.expectedSalary || profile.experience?.expectedSalary || cachedCandidate.experience?.expectedSalary || '1000000'),
+      currentSalaryLpa: String(profile.currentSalaryLpa || profile.experience?.currentSalaryLpa || cachedCandidate.experience?.currentSalaryLpa || '6'),
+      expectedSalaryLpa: String(profile.expectedSalaryLpa || profile.experience?.expectedSalaryLpa || cachedCandidate.experience?.expectedSalaryLpa || '10')
+    },
+    education: {
+      degree: profile.education?.degree || profile.degree || cachedCandidate.education?.degree || 'Bachelor of Technology - BTech',
+      fieldOfStudy: profile.education?.fieldOfStudy || profile.fieldOfStudy || cachedCandidate.education?.fieldOfStudy || 'Computer Science and Engineering',
+      institution: profile.education?.institution || profile.institution || cachedCandidate.education?.institution || 'University / Institute of Technology',
+      gradYear: String(profile.education?.gradYear || profile.gradYear || cachedCandidate.education?.gradYear || '2024')
+    },
+    skills: profile.skills || cachedCandidate.skills || cachedDynamic.skills || ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'Git', 'REST APIs'],
+    settings: {
+      batchTarget: 0,
+      cdpPort: 9222,
+      scrollDelayMs: 750,
+      actionDelayMs: 2000
+    }
+  };
+
   // 1. Web app localStorage caching
   try {
-    localStorage.setItem('biotailr_candidate_profile', JSON.stringify(profile));
-    localStorage.setItem('biotailr_dynamic_user_profile', JSON.stringify(profile));
+    localStorage.setItem('biotailr_candidate_profile', JSON.stringify(fullPayload));
+    localStorage.setItem('biotailr_dynamic_user_profile', JSON.stringify(fullPayload));
     if (resumeHtml) {
       localStorage.setItem('biotailr_dynamic_resume_html', resumeHtml);
     }
@@ -533,7 +599,8 @@ export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') 
   try {
     window.postMessage({
       type: 'BIOTAILR_DYNAMIC_PROFILE_UPDATED',
-      profile: profile,
+      profile: fullPayload,
+      candidateProfile: fullPayload,
       resumeHtml: resumeHtml
     }, window.location.origin);
   } catch (e) {}
@@ -541,7 +608,7 @@ export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') 
   // 3. Custom DOM Event for any connected extension HUD or scripts
   try {
     window.dispatchEvent(new CustomEvent('biotailr:profile-sync', {
-      detail: { profile, resumeHtml }
+      detail: { profile: fullPayload, resumeHtml }
     }));
   } catch (e) {}
 
@@ -550,12 +617,12 @@ export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') 
     fetch('/api/standby/profile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(profile)
+      body: JSON.stringify(fullPayload)
     })
       .then(r => r.json())
       .then(res => {
         if (res.success) {
-          console.log('[BioTailr Bridge] Candidate profile synced to StandBy:', profile.fullName || 'Candidate');
+          console.log('[BioTailr Bridge] Candidate profile completely synced to StandBy:', fullPayload.personal.fullName);
         }
       })
       .catch(() => {});
