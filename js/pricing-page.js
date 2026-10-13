@@ -198,15 +198,22 @@ function setupModals() {
       localStorage.setItem('biotailr_subscription_requests', JSON.stringify(existing));
     } catch (err) {}
 
-    // 2. Synchronize to Backend Server API
-    try {
-      await fetch('/api/subscriptions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(subRequest)
-      });
-    } catch (err) {
-      console.warn('[Pricing] API sync note (stored locally):', err);
+    // 2. Synchronize to Backend Server API (when running on local server)
+    const isLocalHost = typeof window !== 'undefined' && (
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.port === '8181' ||
+      window.location.port === '3000'
+    );
+
+    if (isLocalHost) {
+      try {
+        await fetch('/api/subscriptions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(subRequest)
+        });
+      } catch (err) {}
     }
 
     // Close booking modal

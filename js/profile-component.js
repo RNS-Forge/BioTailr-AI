@@ -619,10 +619,66 @@ export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') 
     }
   };
 
+  // Construct a valid ATS Resume Profile for biotailr_dynamic_user_profile
+  // Preserving any existing experience / education arrays from parsed resume or archetype
+  const baseArchetypeExp = [
+    {
+      role: fullPayload.experience?.currentTitle || 'Software Development Engineer',
+      company: fullPayload.experience?.currentCompany || 'Technology Company',
+      period: '2022 - Present',
+      location: fullPayload.personal.location || 'Bangalore, KA',
+      relevant: true,
+      highlights: [
+        'Spearheaded development of scalable software modules and optimized core services, reducing latency by 35%.',
+        'Engineered RESTful APIs and database schemas, achieving 99.8% data integrity across high-throughput operations.',
+        'Collaborated with cross-functional technical teams to accelerate milestone velocity by 25%.'
+      ]
+    }
+  ];
+
+  const baseArchetypeEdu = [
+    {
+      degree: fullPayload.education?.degree || 'Bachelor of Technology',
+      institution: fullPayload.education?.institution || 'University / Institute of Technology',
+      year: fullPayload.education?.gradYear ? `2020 - ${fullPayload.education.gradYear}` : '2020 - 2024',
+      location: fullPayload.personal.location || '',
+      details: 'CGPA: 8.38 / 10.0 • First Class with Distinction'
+    }
+  ];
+
+  const resumeProfile = {
+    fullName: fullPayload.personal.fullName,
+    title: fullPayload.experience?.currentTitle || profile.title || 'Software Development Engineer',
+    email: fullPayload.personal.email,
+    phone: fullPayload.personal.phone,
+    location: fullPayload.personal.location,
+    city: fullPayload.personal.city,
+    state: fullPayload.personal.state,
+    country: fullPayload.personal.country,
+    linkedin: fullPayload.personal.linkedinUrl,
+    github: fullPayload.personal.githubUrl,
+    portfolio: fullPayload.personal.portfolioUrl,
+    summary: profile.summary || cachedDynamic.summary || 'Results-driven engineer with verified technical expertise, scalable microservices experience, and commitment to high-impact software delivery.',
+    skills: Array.isArray(profile.skills) ? profile.skills : (Array.isArray(cachedDynamic.skills) ? cachedDynamic.skills : fullPayload.skills),
+    skillCategories: profile.skillCategories || cachedDynamic.skillCategories || {
+      'Core Skills': (fullPayload.skills || []).join(', ')
+    },
+    experience: Array.isArray(profile.experience) ? profile.experience : (Array.isArray(cachedDynamic.experience) ? cachedDynamic.experience : baseArchetypeExp),
+    education: Array.isArray(profile.education) ? profile.education : (Array.isArray(cachedDynamic.education) ? cachedDynamic.education : baseArchetypeEdu),
+    projects: Array.isArray(profile.projects) ? profile.projects : (Array.isArray(cachedDynamic.projects) ? cachedDynamic.projects : [
+      {
+        name: 'Enterprise Cloud Platform',
+        url: 'https://github.com/candidate/cloud-platform',
+        tech: 'Python, REST APIs, PostgreSQL',
+        description: 'Scalable service platform supporting automated verification and high-throughput data processing.'
+      }
+    ])
+  };
+
   // 1. Web app localStorage caching
   try {
     localStorage.setItem('biotailr_candidate_profile', JSON.stringify(fullPayload));
-    localStorage.setItem('biotailr_dynamic_user_profile', JSON.stringify(fullPayload));
+    localStorage.setItem('biotailr_dynamic_user_profile', JSON.stringify(resumeProfile));
     if (resumeHtml) {
       localStorage.setItem('biotailr_dynamic_resume_html', resumeHtml);
     }
@@ -632,7 +688,7 @@ export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') 
   try {
     window.postMessage({
       type: 'BIOTAILR_DYNAMIC_PROFILE_UPDATED',
-      profile: fullPayload,
+      profile: resumeProfile,
       candidateProfile: fullPayload,
       resumeHtml: resumeHtml
     }, window.location.origin);
@@ -641,24 +697,37 @@ export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') 
   // 3. Custom DOM Event for any connected extension HUD or scripts
   try {
     window.dispatchEvent(new CustomEvent('biotailr:profile-sync', {
-      detail: { profile: fullPayload, resumeHtml }
+      detail: { profile: resumeProfile, candidateProfile: fullPayload, resumeHtml }
     }));
   } catch (e) {}
 
   // 4. StandBy Desktop Runner Bridge: updates BioTailr-AI-StandBy/candidate-profile.json
-  try {
-    fetch('/api/standby/profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(fullPayload)
-    })
-      .then(r => r.json())
-      .then(res => {
-        if (res.success) {
-          console.log('[BioTailr Bridge] Candidate profile completely synced to StandBy:', fullPayload.personal.fullName);
-        }
+  // Only call server endpoint on local server environments, never on static github.io
+  const isLocalHost = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.port === '8181' ||
+    window.location.port === '3000'
+  );
+
+  if (isLocalHost) {
+    try {
+      fetch('/api/standby/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fullPayload)
       })
-      .catch(() => {});
-  } catch (e) {}
+        .then(r => {
+          if (r.ok) return r.json();
+          return null;
+        })
+        .then(res => {
+          if (res?.success) {
+            console.log('[BioTailr Bridge] Candidate profile completely synced to StandBy:', fullPayload.personal.fullName);
+          }
+        })
+        .catch(() => {});
+    } catch (e) {}
+  }
 }
 

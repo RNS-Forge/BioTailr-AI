@@ -748,18 +748,30 @@ export function saveDynamicProfile(profile, html = '') {
     detail: { profile, candidateProfile: candidateProfileSchema }
   }));
 
-  // Automatically sync to StandBy desktop runner
-  try {
-    fetch('/api/standby/profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(candidateProfileSchema)
-    }).then(r => r.json()).then(res => {
-      if (res.success) {
-        console.log('[StandBy Sync] Candidate profile synchronized to StandBy runner.');
-      }
-    }).catch(() => {});
-  } catch (e) {}
+  // Automatically sync to StandBy desktop runner (local development only)
+  const isLocalHost = typeof window !== 'undefined' && (
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1' ||
+    window.location.port === '8181' ||
+    window.location.port === '3000'
+  );
+
+  if (isLocalHost) {
+    try {
+      fetch('/api/standby/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(candidateProfileSchema)
+      }).then(r => {
+        if (r.ok) return r.json();
+        return null;
+      }).then(res => {
+        if (res?.success) {
+          console.log('[StandBy Sync] Candidate profile synchronized to StandBy runner.');
+        }
+      }).catch(() => {});
+    } catch (e) {}
+  }
 }
 
 /**
