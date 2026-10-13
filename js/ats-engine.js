@@ -271,19 +271,21 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
   if (!Array.isArray(optimized.education)) {
     if (optimized.education && typeof optimized.education === 'object') {
       optimized.education = [{
-        degree: optimized.education.degree || optimized.degree || 'Bachelor of Technology',
-        institution: optimized.education.institution || optimized.institution || 'University / Institute of Technology',
-        year: optimized.education.gradYear || optimized.education.year || '2020 - 2024',
-        location: optimized.location || '',
-        details: optimized.education.details || 'CGPA: 8.38 / 10.0 • First Class with Distinction'
+        degree: optimized.education.degree || optimized.degree || '',
+        institution: optimized.education.institution || optimized.institution || '',
+        period: optimized.education.period || optimized.education.year || optimized.education.gradYear || '',
+        year: optimized.education.period || optimized.education.year || optimized.education.gradYear || '',
+        location: optimized.education.location || optimized.location || '',
+        details: optimized.education.details || ''
       }];
     } else if (typeof optimized.education === 'string' && optimized.education.trim()) {
       optimized.education = [{
         degree: optimized.education.trim(),
-        institution: 'University / Institute of Technology',
-        year: '2020 - 2024',
-        location: optimized.location || '',
-        details: 'CGPA: 8.38 / 10.0'
+        institution: '',
+        period: '',
+        year: '',
+        location: '',
+        details: ''
       }];
     } else {
       optimized.education = [];
@@ -296,16 +298,12 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
       const expObj = optimized.experience;
       if (expObj.currentTitle || expObj.currentCompany || expObj.role || expObj.company) {
         optimized.experience = [{
-          role: expObj.currentTitle || expObj.role || targetRole || 'Software Development Engineer',
-          company: expObj.currentCompany || expObj.company || 'Technology Company',
-          period: expObj.period || '2022 - Present',
-          location: expObj.location || optimized.location || 'Bangalore, KA',
+          role: expObj.currentTitle || expObj.role || targetRole || '',
+          company: expObj.currentCompany || expObj.company || '',
+          period: expObj.period || '',
+          location: expObj.location || optimized.location || '',
           relevant: true,
-          highlights: [
-            'Spearheaded development of scalable software modules and optimized core services, reducing latency by 35%.',
-            'Engineered RESTful APIs and database schemas, achieving 99.8% data integrity across high-throughput operations.',
-            'Collaborated with cross-functional technical teams to accelerate milestone velocity by 25%.'
-          ]
+          highlights: []
         }];
       } else {
         optimized.experience = [];

@@ -172,25 +172,30 @@ export function structureResumeData(rawText, sourceFileName = 'Uploaded_Resume.p
   const firstName = nameParts[0] || 'Candidate';
   const lastName = nameParts.slice(1).join(' ') || '';
 
-  // Location extraction
+  // Location extraction — try explicit label first, then bare city+state pattern
   let location = '';
   let city = '';
   let state = '';
-  let country = 'India';
+  let country = '';
 
-  const locMatch = rawText.match(/(?:Location|Address|City)?[:\s-]*([A-Z][a-zA-Z\s]+(?:,\s*[A-Z][a-zA-Z\s]+){1,2})/);
-  if (locMatch) {
-    location = locMatch[1].trim();
+  // Try labelled location
+  const locLabelMatch = rawText.match(/(?:Location|Address|City)[:\s-]+([A-Za-z][\w\s]+(?:,\s*[A-Za-z][\w\s]+){1,2})/);
+  if (locLabelMatch) {
+    location = locLabelMatch[1].trim();
     const locParts = location.split(',').map(s => s.trim());
     city = locParts[0] || '';
     state = locParts[1] || '';
     if (locParts.length > 2) country = locParts[2];
-  } else {
-    // Check for common cities
-    const cityMatch = rawText.match(/(?:Bangalore|Bengaluru|Coimbatore|Chennai|Mumbai|Delhi|Hyderabad|Pune|Kolkata|San Francisco|New York|London|Singapore|Remote)/i);
-    if (cityMatch) {
-      city = cityMatch[0];
-      location = city;
+  }
+
+  if (!location) {
+    // Try bare city,state pattern near top of document
+    const cityStateMatch = rawText.match(/(?:Bangalore|Bengaluru|Coimbatore|Chennai|Mumbai|Delhi|Hyderabad|Pune|Kolkata|Erode|Salem|Madurai|Trichy|Tirunelveli|San Francisco|New York|London|Singapore|Remote)(?:,\s*(?:Tamil Nadu|Karnataka|Maharashtra|Telangana|West Bengal|Rajasthan|UP|Gujarat|India))?/i);
+    if (cityStateMatch) {
+      const parts = cityStateMatch[0].split(',').map(s => s.trim());
+      city = parts[0] || '';
+      state = parts[1] || '';
+      location = cityStateMatch[0].trim();
     }
   }
 
@@ -242,41 +247,18 @@ export function structureResumeData(rawText, sourceFileName = 'Uploaded_Resume.p
     title: currentTitle,
     email,
     phone,
-    location: location || `${city || 'City'}, ${country}`,
-    city: city || 'City',
+    location: location || [city, state, country].filter(Boolean).join(', '),
+    city: city || '',
     state: state || '',
     country: country || '',
     linkedin: linkedinUrl,
     github: githubUrl,
     portfolio: portfolioUrl,
-    summary: summary || `Experienced ${currentTitle} with proven background in engineering scalable solutions, collaborating across cross-functional teams, and delivering measurable technical outcomes.`,
+    summary: summary || '',
     skills: skillsData.flatList,
     skillCategories: skillsData.categories,
-    experience: experienceList.length > 0 ? experienceList : [
-      {
-        id: 'exp_1',
-        role: currentTitle,
-        company: currentCompany || 'Technology Company',
-        project: 'Core Platform Systems',
-        period: '2023 - Present',
-        location: location || 'Remote',
-        relevant: true,
-        highlights: [
-          'Engineered and optimized high-throughput production systems, delivering reliable software and reducing latency by 25%.',
-          'Collaborated with engineering stakeholders to design RESTful architectures and streamlined CI/CD deployments.',
-          'Built scalable automated workflows and implemented robust testing, increasing test coverage by 30%.'
-        ]
-      }
-    ],
-    education: educationList.length > 0 ? educationList : [
-      {
-        degree: 'Bachelor of Technology / Engineering',
-        fieldOfStudy: 'Computer Science and Engineering',
-        institution: 'University / Institute of Technology',
-        location: location || 'Campus',
-        period: 'Graduated'
-      }
-    ],
+    experience: experienceList,
+    education: educationList,
     projects: projectsList,
     workAuth: {
       authorizedInCountry: 'Yes',
@@ -285,11 +267,11 @@ export function structureResumeData(rawText, sourceFileName = 'Uploaded_Resume.p
     },
     compensation: {
       totalYears,
-      noticePeriodDays: 15,
-      currentSalary: '200000',
-      expectedSalary: '450000',
-      currentSalaryLpa: '2',
-      expectedSalaryLpa: '4.5'
+      noticePeriodDays: 0,
+      currentSalary: '',
+      expectedSalary: '',
+      currentSalaryLpa: '',
+      expectedSalaryLpa: ''
     }
   };
 }
@@ -390,27 +372,34 @@ function parseSkillsSection(text) {
 function parseExperienceSection(text) {
   if (!text) return [];
 
-  const rawBlocks = text.split(/\n(?=[A-Z0-9][a-zA-Z0-9\s,\-|–—]{3,50}(?:\s*\|\s*|\s*–\s*|\s*-\s*|\s*\n\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|20\d\d)))/);
+  // Month abbreviation patterns including full and abbreviated (Sept, Sep, Jan, etc.)
+  const MONTH = '(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)';
+  const dateRegex = new RegExp(
+    `(?:${MONTH}\\s+)?(?:20\\d{2}|19\\d{2})\\s*[-–—]\\s*(?:Present|Current|${MONTH}\\s+)?(?:20\\d{2}|19\\d{2}|Present|Current)`,
+    'i'
+  );
+
+  const rawBlocks = text.split(/\n(?=[A-Z0-9][a-zA-Z0-9\s,\-|–—]{3,60}(?:\s*[|]|\s*\n\s*(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|20\d\d)))/);
   const experiences = [];
 
   rawBlocks.forEach((block, idx) => {
     const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
     if (lines.length === 0) return;
 
-    let role = lines[0] || 'Software Engineer';
+    let role = lines[0] || '';
     let company = '';
     let period = '';
     let location = '';
     let highlights = [];
-
-    // Date regex check
-    const dateRegex = /(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|May|June|July|August|September|October|November|December|\d{4})\s*[-–—]\s*(?:Present|Current|\d{4}|Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)/i;
 
     lines.forEach((line, lIdx) => {
       if (lIdx === 0 && line.includes('|')) {
         const parts = line.split('|').map(p => p.trim());
         role = parts[0];
         company = parts[1] || '';
+        // Check if period is embedded in the pipe-split line
+        const pMatch = line.match(dateRegex);
+        if (pMatch) period = pMatch[0];
       } else if (dateRegex.test(line)) {
         const dMatch = line.match(dateRegex);
         if (dMatch) period = dMatch[0];
@@ -425,25 +414,18 @@ function parseExperienceSection(text) {
       }
     });
 
-    if (highlights.length === 0) {
-      highlights = [
-        `Executed key technical initiatives for ${company || 'the engineering team'}, ensuring optimal performance and compliance.`,
-        'Built scalable features and automated workflows, reducing operational turnaround times by 20%.'
-      ];
-    }
-
     experiences.push({
       id: `parsed_exp_${idx + 1}`,
       role: role.replace(/^[•·\-*]\s*/, ''),
-      company: company || 'Engineering Organization',
-      period: period || 'Recent',
-      location: location || 'On-Site / Remote',
+      company: company || '',
+      period: period || '',
+      location: location || '',
       relevant: true,
       highlights
     });
   });
 
-  return experiences;
+  return experiences.filter(e => e.role && e.role.length > 1);
 }
 
 /**
@@ -455,29 +437,57 @@ function parseEducationSection(text) {
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   const educations = [];
 
+  // Comprehensive month+year or year-only date range pattern
+  const MONTH = '(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)';
+  const dateRangeRegex = new RegExp(
+    `(?:${MONTH}\\s+)?(?:20\\d{2}|19\\d{2})\\s*[-–—]\\s*(?:Present|Current|${MONTH}\\s+)?(?:20\\d{2}|19\\d{2}|Present|Current)`,
+    'i'
+  );
+  // single year
+  const yearRegex = /(?:20\d{2}|19\d{2})/;
+
   let currentEdu = null;
-  const degreeRegex = /(?:Bachelor|Master|B\.?Tech|B\.?E\.?|B\.?S\.?|M\.?S\.?|M\.?Tech|Diploma|Associate|Ph\.?D)/i;
+  const degreeRegex = /(?:Bachelor|Master|B\.?Tech|B\.?E\.?|B\.?S\.?|M\.?S\.?|M\.?Tech|Diploma|Associate|Ph\.?D|B\.?Sc|M\.?Sc)/i;
 
   lines.forEach(line => {
     if (degreeRegex.test(line) || /University|College|Institute|School/i.test(line)) {
       if (currentEdu) educations.push(currentEdu);
       const isDegree = degreeRegex.test(line);
-      currentEdu = {
-        degree: isDegree ? line : 'Bachelor of Engineering / Technology',
-        institution: !isDegree ? line : 'University / College',
-        location: '',
-        period: ''
-      };
 
-      const dateMatch = line.match(/20\d\d(?:\s*[-–—]\s*(?:20\d\d|Present))?/);
-      if (dateMatch) currentEdu.period = dateMatch[0];
+      // Extract period from the same line if present
+      let linePeriod = '';
+      const drMatch = line.match(dateRangeRegex);
+      if (drMatch) linePeriod = drMatch[0];
+      else {
+        const yrMatch = line.match(yearRegex);
+        if (yrMatch) linePeriod = yrMatch[0];
+      }
+
+      currentEdu = {
+        degree: isDegree ? line.replace(dateRangeRegex, '').trim() : '',
+        institution: !isDegree ? line.replace(dateRangeRegex, '').trim() : '',
+        location: '',
+        period: linePeriod
+      };
     } else if (currentEdu) {
-      if (!currentEdu.institution || currentEdu.institution === 'University / College') {
-        currentEdu.institution = line;
+      // Try to fill institution if not yet set
+      if (!currentEdu.institution && /University|College|Institute|School/i.test(line)) {
+        currentEdu.institution = line.replace(dateRangeRegex, '').trim();
+        const drMatch = line.match(dateRangeRegex);
+        if (drMatch && !currentEdu.period) currentEdu.period = drMatch[0];
       } else if (!currentEdu.period) {
-        const dateMatch = line.match(/20\d\d(?:\s*[-–—]\s*(?:20\d\d|Present))?/);
-        if (dateMatch) currentEdu.period = dateMatch[0];
-        else if (!currentEdu.location) currentEdu.location = line;
+        // Look for date range in subsequent lines
+        const drMatch = line.match(dateRangeRegex);
+        if (drMatch) {
+          currentEdu.period = drMatch[0];
+        } else if (!currentEdu.location && line.length < 60 && !degreeRegex.test(line)) {
+          // Could be location or field of study
+          if (/,/.test(line) || /\b(?:India|Tamil Nadu|Karnataka|Maharashtra|USA|UK)\b/i.test(line)) {
+            currentEdu.location = line.trim();
+          } else if (!currentEdu.fieldOfStudy) {
+            currentEdu.fieldOfStudy = line.trim();
+          }
+        }
       }
     }
   });
@@ -685,16 +695,16 @@ export function saveDynamicProfile(profile, html = '') {
 
   const candidateProfileSchema = {
     personal: {
-      fullName: profile.fullName || 'Candidate',
-      firstName: profile.firstName || 'Candidate',
+      fullName: profile.fullName || '',
+      firstName: profile.firstName || '',
       lastName: profile.lastName || '',
       email: profile.email || '',
       phone: profile.phone ? String(profile.phone).replace(/\D/g, '') : '',
       city: profile.city || '',
       state: profile.state || '',
-      country: profile.country || 'India',
-      location: profile.location || `${profile.city || ''}, ${profile.country || ''}`.trim(),
-      fullLocation: profile.location || `${profile.city || ''}, ${profile.state || ''}, ${profile.country || ''}`.trim(),
+      country: profile.country || '',
+      location: profile.location || [profile.city, profile.state, profile.country].filter(Boolean).join(', '),
+      fullLocation: profile.location || [profile.city, profile.state, profile.country].filter(Boolean).join(', '),
       address: profile.location || '',
       linkedinUrl: profile.linkedin || '',
       githubUrl: profile.github || '',
@@ -706,20 +716,20 @@ export function saveDynamicProfile(profile, html = '') {
       currentVisaStatus: 'Citizen'
     },
     experience: {
-      totalYears: profile.compensation?.totalYears || 2,
-      noticePeriodDays: profile.compensation?.noticePeriodDays || 15,
-      currentTitle: profile.title || 'Software Engineer',
+      totalYears: profile.compensation?.totalYears || 0,
+      noticePeriodDays: profile.compensation?.noticePeriodDays || 0,
+      currentTitle: profile.title || '',
       currentCompany: profile.experience?.[0]?.company || '',
-      currentSalary: profile.compensation?.currentSalary || '200000',
-      expectedSalary: profile.compensation?.expectedSalary || '450000',
-      currentSalaryLpa: profile.compensation?.currentSalaryLpa || '2',
-      expectedSalaryLpa: profile.compensation?.expectedSalaryLpa || '4.5'
+      currentSalary: profile.compensation?.currentSalary || '',
+      expectedSalary: profile.compensation?.expectedSalary || '',
+      currentSalaryLpa: profile.compensation?.currentSalaryLpa || '',
+      expectedSalaryLpa: profile.compensation?.expectedSalaryLpa || ''
     },
     education: {
-      degree: profile.education?.[0]?.degree || 'Bachelor of Engineering / Technology',
-      fieldOfStudy: profile.education?.[0]?.fieldOfStudy || 'Computer Science and Engineering',
-      institution: profile.education?.[0]?.institution || 'University',
-      gradYear: profile.education?.[0]?.period || '2024'
+      degree: profile.education?.[0]?.degree || '',
+      fieldOfStudy: profile.education?.[0]?.fieldOfStudy || '',
+      institution: profile.education?.[0]?.institution || '',
+      gradYear: profile.education?.[0]?.period || ''
     },
     skills: profile.skills || [],
     skillCategories: profile.skillCategories || {},

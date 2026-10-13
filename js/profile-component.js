@@ -314,9 +314,9 @@ function openProfileModal() {
   if (phoneInput) phoneInput.value = user.phone || '';
   if (roleInput) roleInput.value = user.targetRole || '';
   const locInput = document.getElementById('prof-input-location');
-  if (locInput) locInput.value = user.location || user.fullLocation || (user.city ? `${user.city}, ${user.state || 'Tamil Nadu'}, ${user.country || 'India'}` : 'Coimbatore, Tamil Nadu, India');
+  if (locInput) locInput.value = user.location || user.fullLocation || (user.city ? `${user.city}${user.state ? ', ' + user.state : ''}${user.country ? ', ' + user.country : ''}` : '');
   const lkdInput = document.getElementById('prof-input-linkedin');
-  if (lkdInput) lkdInput.value = user.linkedinUrl || user.linkedin || 'https://www.linkedin.com/in/candidate';
+  if (lkdInput) lkdInput.value = user.linkedinUrl || user.linkedin || '';
 
   const demo = getDemoStatus(user);
   if (tierTitle) {
@@ -565,9 +565,9 @@ export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') 
 
   // Construct complete, deep candidate payload
   const p = profile.personal || profile;
-  const fullName = p.fullName || cachedCandidate.personal?.fullName || profile.fullName || 'Candidate';
+  const fullName = p.fullName || cachedCandidate.personal?.fullName || profile.fullName || '';
   const nameParts = fullName.trim().split(/\s+/);
-  const firstName = p.firstName || nameParts[0] || cachedCandidate.personal?.firstName || 'Candidate';
+  const firstName = p.firstName || nameParts[0] || cachedCandidate.personal?.firstName || '';
   const lastName = p.lastName || (nameParts.length > 1 ? nameParts.slice(1).join(' ') : (cachedCandidate.personal?.lastName || ''));
 
   const fullPayload = {
@@ -577,16 +577,16 @@ export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') 
       lastName,
       email: p.email || profile.email || cachedCandidate.personal?.email || '',
       phone: p.phone || profile.phone || cachedCandidate.personal?.phone || '',
-      city: p.city || cachedCandidate.personal?.city || (p.location ? p.location.split(',')[0].trim() : 'Coimbatore'),
-      state: p.state || cachedCandidate.personal?.state || 'Tamil Nadu',
-      country: p.country || cachedCandidate.personal?.country || 'India',
-      postalCode: p.postalCode || cachedCandidate.personal?.postalCode || '641001',
-      location: p.location || cachedCandidate.personal?.location || 'Coimbatore, Tamil Nadu, India',
-      fullLocation: p.fullLocation || p.location || cachedCandidate.personal?.fullLocation || 'Coimbatore, Tamil Nadu, India',
-      address: p.address || p.location || cachedCandidate.personal?.address || 'Coimbatore, Tamil Nadu, India',
-      linkedinUrl: p.linkedinUrl || p.linkedin || cachedCandidate.personal?.linkedinUrl || 'https://www.linkedin.com/in/candidate',
-      githubUrl: p.githubUrl || p.github || cachedCandidate.personal?.githubUrl || 'https://github.com/candidate',
-      portfolioUrl: p.portfolioUrl || p.portfolio || cachedCandidate.personal?.portfolioUrl || 'https://candidate.portfolio.dev',
+      city: p.city || cachedCandidate.personal?.city || (p.location ? p.location.split(',')[0].trim() : ''),
+      state: p.state || cachedCandidate.personal?.state || '',
+      country: p.country || cachedCandidate.personal?.country || '',
+      postalCode: p.postalCode || cachedCandidate.personal?.postalCode || '',
+      location: p.location || cachedCandidate.personal?.location || '',
+      fullLocation: p.fullLocation || p.location || cachedCandidate.personal?.fullLocation || '',
+      address: p.address || p.location || cachedCandidate.personal?.address || '',
+      linkedinUrl: p.linkedinUrl || p.linkedin || cachedCandidate.personal?.linkedinUrl || '',
+      githubUrl: p.githubUrl || p.github || cachedCandidate.personal?.githubUrl || '',
+      portfolioUrl: p.portfolioUrl || p.portfolio || cachedCandidate.personal?.portfolioUrl || '',
       avatar: profile.avatar || cachedCandidate.personal?.avatar || null
     },
     workAuth: {
@@ -595,22 +595,22 @@ export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') 
       currentVisaStatus: profile.workAuth?.currentVisaStatus || cachedCandidate.workAuth?.currentVisaStatus || 'Citizen'
     },
     experience: {
-      totalYears: Number(profile.totalYears || profile.experience?.totalYears || cachedCandidate.experience?.totalYears || 2),
-      noticePeriodDays: Number(profile.noticePeriodDays || profile.experience?.noticePeriodDays || cachedCandidate.experience?.noticePeriodDays || 15),
-      currentTitle: profile.targetRole || profile.currentTitle || profile.experience?.currentTitle || cachedCandidate.experience?.currentTitle || 'Software Development Engineer',
-      currentCompany: profile.currentCompany || profile.experience?.currentCompany || cachedCandidate.experience?.currentCompany || 'Technology Company',
-      currentSalary: String(profile.currentSalary || profile.experience?.currentSalary || cachedCandidate.experience?.currentSalary || '600000'),
-      expectedSalary: String(profile.expectedSalary || profile.experience?.expectedSalary || cachedCandidate.experience?.expectedSalary || '1000000'),
-      currentSalaryLpa: String(profile.currentSalaryLpa || profile.experience?.currentSalaryLpa || cachedCandidate.experience?.currentSalaryLpa || '6'),
-      expectedSalaryLpa: String(profile.expectedSalaryLpa || profile.experience?.expectedSalaryLpa || cachedCandidate.experience?.expectedSalaryLpa || '10')
+      totalYears: Number(profile.totalYears || profile.experience?.totalYears || cachedCandidate.experience?.totalYears || 0),
+      noticePeriodDays: Number(profile.noticePeriodDays || profile.experience?.noticePeriodDays || cachedCandidate.experience?.noticePeriodDays || 0),
+      currentTitle: profile.targetRole || profile.currentTitle || profile.experience?.currentTitle || cachedCandidate.experience?.currentTitle || '',
+      currentCompany: profile.currentCompany || profile.experience?.currentCompany || cachedCandidate.experience?.currentCompany || '',
+      currentSalary: String(profile.currentSalary || profile.experience?.currentSalary || cachedCandidate.experience?.currentSalary || ''),
+      expectedSalary: String(profile.expectedSalary || profile.experience?.expectedSalary || cachedCandidate.experience?.expectedSalary || ''),
+      currentSalaryLpa: String(profile.currentSalaryLpa || profile.experience?.currentSalaryLpa || cachedCandidate.experience?.currentSalaryLpa || ''),
+      expectedSalaryLpa: String(profile.expectedSalaryLpa || profile.experience?.expectedSalaryLpa || cachedCandidate.experience?.expectedSalaryLpa || '')
     },
     education: {
-      degree: profile.education?.degree || profile.degree || cachedCandidate.education?.degree || 'Bachelor of Technology - BTech',
-      fieldOfStudy: profile.education?.fieldOfStudy || profile.fieldOfStudy || cachedCandidate.education?.fieldOfStudy || 'Computer Science and Engineering',
-      institution: profile.education?.institution || profile.institution || cachedCandidate.education?.institution || 'University / Institute of Technology',
-      gradYear: String(profile.education?.gradYear || profile.gradYear || cachedCandidate.education?.gradYear || '2024')
+      degree: profile.education?.degree || profile.degree || cachedCandidate.education?.degree || '',
+      fieldOfStudy: profile.education?.fieldOfStudy || profile.fieldOfStudy || cachedCandidate.education?.fieldOfStudy || '',
+      institution: profile.education?.institution || profile.institution || cachedCandidate.education?.institution || '',
+      gradYear: String(profile.education?.gradYear || profile.gradYear || cachedCandidate.education?.gradYear || '')
     },
-    skills: profile.skills || cachedCandidate.skills || cachedDynamic.skills || ['JavaScript', 'React', 'Node.js', 'Python', 'SQL', 'Git', 'REST APIs'],
+    skills: profile.skills || cachedCandidate.skills || cachedDynamic.skills || [],
     settings: {
       batchTarget: 0,
       cdpPort: 9222,
@@ -620,35 +620,9 @@ export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') 
   };
 
   // Construct a valid ATS Resume Profile for biotailr_dynamic_user_profile
-  // Preserving any existing experience / education arrays from parsed resume or archetype
-  const baseArchetypeExp = [
-    {
-      role: fullPayload.experience?.currentTitle || 'Software Development Engineer',
-      company: fullPayload.experience?.currentCompany || 'Technology Company',
-      period: '2022 - Present',
-      location: fullPayload.personal.location || 'Bangalore, KA',
-      relevant: true,
-      highlights: [
-        'Spearheaded development of scalable software modules and optimized core services, reducing latency by 35%.',
-        'Engineered RESTful APIs and database schemas, achieving 99.8% data integrity across high-throughput operations.',
-        'Collaborated with cross-functional technical teams to accelerate milestone velocity by 25%.'
-      ]
-    }
-  ];
-
-  const baseArchetypeEdu = [
-    {
-      degree: fullPayload.education?.degree || 'Bachelor of Technology',
-      institution: fullPayload.education?.institution || 'University / Institute of Technology',
-      year: fullPayload.education?.gradYear ? `2020 - ${fullPayload.education.gradYear}` : '2020 - 2024',
-      location: fullPayload.personal.location || '',
-      details: 'CGPA: 8.38 / 10.0 • First Class with Distinction'
-    }
-  ];
-
   const resumeProfile = {
     fullName: fullPayload.personal.fullName,
-    title: fullPayload.experience?.currentTitle || profile.title || 'Software Development Engineer',
+    title: fullPayload.experience?.currentTitle || profile.title || '',
     email: fullPayload.personal.email,
     phone: fullPayload.personal.phone,
     location: fullPayload.personal.location,
@@ -658,21 +632,12 @@ export function syncPlatformDataToExtensionAndStandBy(profile, resumeHtml = '') 
     linkedin: fullPayload.personal.linkedinUrl,
     github: fullPayload.personal.githubUrl,
     portfolio: fullPayload.personal.portfolioUrl,
-    summary: profile.summary || cachedDynamic.summary || 'Results-driven engineer with verified technical expertise, scalable microservices experience, and commitment to high-impact software delivery.',
-    skills: Array.isArray(profile.skills) ? profile.skills : (Array.isArray(cachedDynamic.skills) ? cachedDynamic.skills : fullPayload.skills),
-    skillCategories: profile.skillCategories || cachedDynamic.skillCategories || {
-      'Core Skills': (fullPayload.skills || []).join(', ')
-    },
-    experience: Array.isArray(profile.experience) ? profile.experience : (Array.isArray(cachedDynamic.experience) ? cachedDynamic.experience : baseArchetypeExp),
-    education: Array.isArray(profile.education) ? profile.education : (Array.isArray(cachedDynamic.education) ? cachedDynamic.education : baseArchetypeEdu),
-    projects: Array.isArray(profile.projects) ? profile.projects : (Array.isArray(cachedDynamic.projects) ? cachedDynamic.projects : [
-      {
-        name: 'Enterprise Cloud Platform',
-        url: 'https://github.com/candidate/cloud-platform',
-        tech: 'Python, REST APIs, PostgreSQL',
-        description: 'Scalable service platform supporting automated verification and high-throughput data processing.'
-      }
-    ])
+    summary: profile.summary || cachedDynamic.summary || '',
+    skills: Array.isArray(profile.skills) ? profile.skills : (Array.isArray(cachedDynamic.skills) ? cachedDynamic.skills : (fullPayload.skills || [])),
+    skillCategories: profile.skillCategories || cachedDynamic.skillCategories || {},
+    experience: Array.isArray(profile.experience) ? profile.experience : (Array.isArray(cachedDynamic.experience) ? cachedDynamic.experience : []),
+    education: Array.isArray(profile.education) ? profile.education : (Array.isArray(cachedDynamic.education) ? cachedDynamic.education : []),
+    projects: Array.isArray(profile.projects) ? profile.projects : (Array.isArray(cachedDynamic.projects) ? cachedDynamic.projects : [])
   };
 
   // 1. Web app localStorage caching
