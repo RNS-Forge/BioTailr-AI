@@ -1520,31 +1520,87 @@ async function ensurePdfCanvasLoaded() {
   if (!pdfEditor) return;
   if (state.customPdfLoaded && pdfEditor.pdfDoc) return;
 
+  // BioTailr operates strictly as a PDF editor. If no PDF is uploaded yet,
+  // render the interactive PDF Upload Prompt directly on the canvas viewport.
+  renderPdfEmptyState();
+}
+
+/**
+ * Renders the prominent in-canvas empty state when no PDF is loaded yet
+ */
+function renderPdfEmptyState() {
+  const viewport = document.getElementById('pdf-canvas-viewport');
+  if (!viewport) return;
+
+  viewport.innerHTML = `
+    <div class="pdf-empty-upload-card" id="pdf-empty-upload-card">
+      <div class="pdf-empty-badge">STRICTLY PDF RESUME EDITOR</div>
+      <div class="pdf-empty-icon-wrap">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="12" y1="18" x2="12" y2="12"></line>
+          <line x1="9" y1="15" x2="12" y2="12"></line>
+          <line x1="15" y1="15" x2="12" y2="12"></line>
+        </svg>
+      </div>
+      <h3>Upload Your Resume (PDF Only)</h3>
+      <p>BioTailr AI operates exclusively on PDF documents. No HTML templates. Upload your existing resume in PDF format to edit text directly on the canvas and verify 100% ATS score compliance.</p>
+      <div class="pdf-empty-btn-group">
+        <button type="button" class="btn btn-teal btn-lg" id="btn-empty-upload-pdf">
+          Choose PDF File (.pdf)
+        </button>
+        <button type="button" class="btn btn-outline btn-lg" id="btn-load-sample-pdf">
+          Load Sample PDF Resume
+        </button>
+      </div>
+      <span class="pdf-accept-badge">Strictly PDF files (.pdf) accepted &bull; 100% Private Client-Side Processing</span>
+    </div>
+  `;
+
+  document.getElementById('btn-empty-upload-pdf')?.addEventListener('click', () => {
+    document.getElementById('input-studio-pdf')?.click();
+  });
+
+  document.getElementById('btn-load-sample-pdf')?.addEventListener('click', async () => {
+    await loadSamplePdfResume();
+  });
+
+  setupDragAndDrop(viewport, file => handleUploadedPdfFile(file, 'studio'));
+}
+
+/**
+ * Loads a verified ATS base resume directly as a high-DPI PDF document into the PDF Canvas Editor
+ */
+async function loadSamplePdfResume() {
+  if (!pdfEditor) return;
   const container = document.getElementById('resume-render-container');
-  if (container && state.currentProfile) {
-    container.style.display = 'block';
-    container.innerHTML = generateResumeHtml(state.currentProfile, state.selectedArchetypeId);
-    autoBalanceResumeToOnePage();
+  if (!container) return;
 
-    try {
-      if (typeof window.html2pdf !== 'undefined') {
-        const worker = window.html2pdf().set({
-          margin: [0, 0, 0, 0],
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-          jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
-        }).from(container);
+  const sampleProfile = state.currentProfile || RESUME_ARCHETYPES[state.selectedArchetypeId || 'developer'].profile;
+  container.style.display = 'block';
+  container.innerHTML = generateResumeHtml(sampleProfile, state.selectedArchetypeId || 'developer');
+  autoBalanceResumeToOnePage();
 
-        const pdfArrayBuffer = await worker.outputPdf('arraybuffer');
-        container.style.display = 'none';
+  try {
+    if (typeof window.html2pdf !== 'undefined') {
+      const worker = window.html2pdf().set({
+        margin: [0, 0, 0, 0],
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+      }).from(container);
 
-        const filename = getResumeDownloadFilename('pdf');
-        await pdfEditor.loadPdf(pdfArrayBuffer, filename);
-      }
-    } catch (e) {
-      console.warn('[PDF Canvas] Could not synthesize base PDF canvas:', e);
-      container.style.display = 'block';
+      const pdfArrayBuffer = await worker.outputPdf('arraybuffer');
+      container.style.display = 'none';
+
+      state.customPdfLoaded = true;
+      const filename = `${sampleProfile.fullName.replace(/\s+/g, '_')}_Sample_Resume.pdf`;
+      await pdfEditor.loadPdf(pdfArrayBuffer, filename);
     }
+  } catch (err) {
+    console.error('Failed to synthesize sample PDF:', err);
+    container.style.display = 'none';
   }
 }
 
@@ -1552,8 +1608,17 @@ async function ensurePdfCanvasLoaded() {
  * Bind drag-and-drop and file input listeners for PDF upload
  */
 function bindPdfUploadEvents() {
-  // 1. Landing Dropzone & File Input
+  // Navigation Bar PDF upload link
+  const btnLandingNavUpload = document.getElementById('btn-landing-upload-nav');
   const landingInput = document.getElementById('input-landing-pdf');
+  if (btnLandingNavUpload && landingInput) {
+    btnLandingNavUpload.addEventListener('click', (e) => {
+      e.preventDefault();
+      landingInput.click();
+    });
+  }
+
+  // 1. Landing Dropzone & File Input
   const landingDropzone = document.getElementById('dropzone-landing-pdf');
   const btnBrowseLanding = document.getElementById('btn-browse-landing-pdf');
   const btnRemoveLanding = document.getElementById('btn-remove-landing-pdf');
@@ -1617,6 +1682,12 @@ function bindPdfUploadEvents() {
       clearCandidateResume();
     });
   }
+
+  // 3. Studio Dropzone on Canvas Viewport
+  const canvasViewport = document.getElementById('pdf-canvas-viewport');
+  if (canvasViewport) {
+    setupDragAndDrop(canvasViewport, file => handleUploadedPdfFile(file, 'studio'));
+  }
 }
 
 function setupDragAndDrop(element, onFileDrop) {
@@ -1625,6 +1696,7 @@ function setupDragAndDrop(element, onFileDrop) {
       e.preventDefault();
       e.stopPropagation();
       element.closest('.resume-upload-card')?.classList.add('drag-over');
+      element.classList.add('drag-over');
     }, false);
   });
 
@@ -1633,6 +1705,7 @@ function setupDragAndDrop(element, onFileDrop) {
       e.preventDefault();
       e.stopPropagation();
       element.closest('.resume-upload-card')?.classList.remove('drag-over');
+      element.classList.remove('drag-over');
     }, false);
   });
 
@@ -1640,7 +1713,13 @@ function setupDragAndDrop(element, onFileDrop) {
     const dt = e.dataTransfer;
     const files = dt?.files;
     if (files && files[0]) {
-      onFileDrop(files[0]);
+      const file = files[0];
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      if (!isPdf) {
+        alert('Only PDF files (.pdf) are accepted. Please upload a PDF resume.');
+        return;
+      }
+      onFileDrop(file);
     }
   }, false);
 }
@@ -1651,8 +1730,9 @@ function setupDragAndDrop(element, onFileDrop) {
 async function handleUploadedPdfFile(file, context = 'landing') {
   if (!file) return;
 
-  if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-    alert('Please select a valid PDF file.');
+  const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  if (!isPdf) {
+    alert('Only PDF files (.pdf) are accepted. Please upload a PDF resume.');
     return;
   }
 

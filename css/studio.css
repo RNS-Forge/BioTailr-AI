@@ -1660,3 +1660,110 @@ textarea.correction-textarea:focus {
   flex-shrink: 0;
 }
 
+/* Studio Nav PDF Editor Badge */
+.pdf-editor-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1e1b78;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.pdf-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00b49f;
+  animation: pulse-dot 1.8s infinite;
+}
+
+/* Empty State: Prompt to upload PDF resume */
+.pdf-empty-upload-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #ffffff;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 48px 32px;
+  max-width: 640px;
+  margin: 40px auto;
+  box-shadow: 0 4px 20px rgba(30, 27, 120, 0.04);
+  transition: all 0.2s ease;
+}
+
+.pdf-empty-upload-card:hover,
+.pdf-empty-upload-card.drag-over {
+  border-color: #00b49f;
+  background: #f0fdfa;
+  transform: translateY(-2px);
+}
+
+.pdf-empty-badge {
+  display: inline-block;
+  background: #f1f5f9;
+  color: #1e1b78;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.pdf-empty-icon-wrap {
+  width: 72px;
+  height: 72px;
+  background: #e6fffa;
+  border: 2px solid #a7f3d0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: #00b49f;
+}
+
+.pdf-empty-upload-card h3 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1e1b78;
+  margin-bottom: 8px;
+}
+
+.pdf-empty-upload-card p {
+  font-size: 0.88rem;
+  color: #64748b;
+  max-width: 480px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.pdf-empty-btn-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.pdf-accept-badge {
+  font-size: 0.74rem;
+  color: #0f766e;
+  font-weight: 600;
+  background: #f0fdfa;
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid #ccfbf1;
+}
+
+

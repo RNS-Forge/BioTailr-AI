@@ -12,6 +12,9 @@
  * @returns {Promise<{ profile: Object, rawText: string, html: string }>}
  */
 export async function parsePdfResume(file, onProgress = () => {}) {
+  if (!file || (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf'))) {
+    throw new Error('Only PDF files (.pdf) are accepted. Please upload a PDF resume.');
+  }
   onProgress('Reading PDF file buffer...', 10);
   const arrayBuffer = await file.arrayBuffer();
 
