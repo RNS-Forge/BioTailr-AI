@@ -667,6 +667,136 @@ section.ats-features-section {
   }
 }
 
+/* =========================================================
+   Resume PDF Client-Side Upload & Dynamic Status Styles
+   ========================================================= */
+.resume-upload-card {
+  width: 100%;
+  max-width: 680px;
+  margin: 1.75rem auto 1rem;
+  background: #ffffff;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(30, 27, 120, 0.04);
+  box-sizing: border-box;
+}
+
+.resume-upload-card:hover,
+.resume-upload-card.drag-over {
+  border-color: #00b49f;
+  background: #f0fdfa;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 180, 159, 0.12);
+}
+
+.resume-dropzone-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  cursor: pointer;
+}
+
+.dropzone-left-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+}
+
+.dropzone-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(0, 180, 159, 0.1);
+  color: #00b49f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dropzone-text-group h4 {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #1e1b78;
+  margin: 0 0 0.15rem 0;
+}
+
+.dropzone-text-group p {
+  font-size: 0.82rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.upload-progress-box {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.upload-progress-track {
+  width: 100%;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.35rem;
+}
+
+.upload-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #1e1b78, #00b49f);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.upload-status-text {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #00b49f;
+  display: block;
+  text-align: left;
+}
+
+.uploaded-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 999px;
+  margin-top: 0.65rem;
+  font-size: 0.82rem;
+  color: #065f46;
+  font-weight: 600;
+}
+
+.uploaded-status-pill .pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #059669;
+}
+
+.btn-remove-uploaded {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  line-height: 1;
+}
+
+.btn-remove-uploaded:hover {
+  color: #ef4444;
+}
+
 /* ---------------------------------------------------------
    6. Chrome & Edge Extension Showcase & Modal Guide Styles
    --------------------------------------------------------- */

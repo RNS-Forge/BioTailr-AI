@@ -8,6 +8,8 @@ import { RESUME_ARCHETYPES, generateResumeHtml } from './templates.js';
 import { tailorResumeWithAi, getStoredApiKeys, saveApiKeys, matchArchetype, fetchEnvKeys } from './ai-service.js';
 import { evaluateAtsScore, optimizeProfileFor100Ats } from './ats-engine.js';
 import { downloadResumeAsPdf, printResumeNative, downloadResumeAsHtml, buildStandaloneResumeHtml } from './pdf-export.js';
+import { PdfCanvasEditor } from './pdf-canvas-editor.js';
+import { parsePdfResume, saveDynamicProfile, getSavedDynamicProfile, clearDynamicProfile } from './resume-parser.js';
 
 // Application State
 const state = {
@@ -15,10 +17,14 @@ const state = {
   targetRole: 'Software Development Engineer',
   selectedArchetypeId: 'developer',
   currentProfile: null,
+  customProfile: null,
+  customPdfLoaded: false,
   activeModelName: 'BioTailr Dynamic AI Engine',
   atsData: null,
-  liveEdit: false
+  liveEdit: true
 };
+
+let pdfEditor = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   initApp();
@@ -32,6 +38,21 @@ function initApp() {
   bindSettingsModalEvents();
     bindEditorEvents();
   initStudioSplitter();
+  bindPdfUploadEvents();
+
+  // Initialize In-Browser PDF Canvas Direct Editor
+  const pdfViewport = document.getElementById('pdf-canvas-viewport');
+  if (pdfViewport) {
+    pdfEditor = new PdfCanvasEditor({
+      container: pdfViewport,
+      initialScale: 1.35,
+      onTextChange: handlePdfTextChange,
+      onStatusChange: (msg, pct) => {
+        const procSub = document.querySelector('.proc-sub');
+        if (procSub) procSub.textContent = `${msg} (${pct}%)`;
+      }
+    });
+  }
 
   // Pre-initialize default profile & ATS data so Studio is never blank
   state.selectedArchetypeId = 'developer';
@@ -41,6 +62,17 @@ function initApp() {
   state.currentProfile = optimizeProfileFor100Ats(baseProfile, state.targetRole, state.selectedArchetypeId);
   state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
   window.showView = showView;
+
+  // Restore saved dynamic profile if available from previous upload
+  const savedProfile = getSavedDynamicProfile();
+  if (savedProfile) {
+    state.customProfile = savedProfile;
+    state.targetRole = savedProfile.title || state.targetRole;
+    state.selectedArchetypeId = matchArchetype(state.targetRole);
+    state.currentProfile = optimizeProfileFor100Ats(savedProfile, state.targetRole, state.selectedArchetypeId);
+    state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
+    updateDynamicUploadUi(savedProfile);
+  }
 
   // ── Extension Communicator Mode ─────────────────────────────────────────
   // When opened by the BioTailr extension with ?extjob=<id>, we hide the normal
@@ -381,7 +413,7 @@ async function executeTailoringFlow(targetRole, refinements = '') {
 
     // Step 2: Running AI model (Gemini ➔ Groq fallback)
     updateProcessingStep(2, 'in-progress');
-    const aiResult = await tailorResumeWithAi(targetRole, refinements);
+    const aiResult = await tailorResumeWithAi(targetRole, refinements, state.customProfile);
     state.selectedArchetypeId = aiResult.archetypeId;
     state.activeModelName = aiResult.modelUsed;
     updateProcessingStep(2, 'completed');
@@ -411,7 +443,8 @@ async function executeTailoringFlow(targetRole, refinements = '') {
     alert('Notice: AI generation completed using BioTailr Neural Engine.');
     // Fallback to template profile
     const fallbackArch = matchArchetype(targetRole);
-    const profile = optimizeProfileFor100Ats(RESUME_ARCHETYPES[fallbackArch].profile, targetRole, fallbackArch);
+    const baseP = state.customProfile || RESUME_ARCHETYPES[fallbackArch].profile;
+    const profile = optimizeProfileFor100Ats(baseP, targetRole, fallbackArch);
     state.currentProfile = profile;
     state.selectedArchetypeId = fallbackArch;
     state.atsData = evaluateAtsScore(profile, targetRole, fallbackArch);
@@ -439,7 +472,7 @@ function renderStudioWorkspace() {
   // Render ATS Checklist items
   renderAtsChecklist();
 
-  // Render HTML Resume inside A4 container
+  // Render HTML Resume inside hidden container for auto-balance and fallback
   const container = document.getElementById('resume-render-container');
   if (container && state.currentProfile) {
     container.innerHTML = generateResumeHtml(state.currentProfile, state.selectedArchetypeId);
@@ -449,6 +482,17 @@ function renderStudioWorkspace() {
       if (sheet) sheet.classList.add('live-editing');
       applyLiveEditingToSheet(true);
     }
+  }
+
+  // Load and render into PDF Canvas Editor
+  ensurePdfCanvasLoaded();
+
+  // Update Live Edit button UI state
+  const btnLiveEdit = document.getElementById('btn-toggle-live-edit');
+  const btnLiveEditText = document.getElementById('live-edit-btn-text');
+  if (btnLiveEdit && btnLiveEditText) {
+    btnLiveEdit.classList.add('btn-teal');
+    btnLiveEditText.textContent = 'PDF Direct Edit: ON';
   }
 
   // If Editor panel is currently visible, refresh its inputs
@@ -621,12 +665,89 @@ export function getResumeDownloadFilename(extension = 'pdf', explicitArchetype =
  * Studio Toolbar & Correction Assistant Events
  */
 function bindStudioEvents() {
-  // Download PDF Button
+  // Download PDF Button: Direct PDF-Lib binary compilation
   const btnDownloadPdf = document.getElementById('btn-download-pdf');
-  if (btnDownloadPdf) {
-    btnDownloadPdf.addEventListener('click', () => {
-      const filename = getResumeDownloadFilename('pdf');
-      downloadResumeAsPdf('resume-document', filename);
+  const btnPdfDownloadAction = document.getElementById('btn-pdf-download-action');
+  [btnDownloadPdf, btnPdfDownloadAction].forEach(btn => {
+    if (btn) {
+      btn.addEventListener('click', async () => {
+        const filename = getResumeDownloadFilename('pdf');
+        if (pdfEditor && pdfEditor.pdfDoc) {
+          const ok = await pdfEditor.downloadCompiledPdf(filename);
+          if (ok) return;
+        }
+        // Fallback
+        downloadResumeAsPdf('resume-document', filename);
+      });
+    }
+  });
+
+  // PDF Canvas Toolbar Zoom Controls
+  const btnZoomIn = document.getElementById('btn-pdf-zoom-in');
+  const btnZoomOut = document.getElementById('btn-pdf-zoom-out');
+  const btnZoomReset = document.getElementById('btn-pdf-zoom-reset');
+  const zoomLabel = document.getElementById('pdf-zoom-level-label');
+
+  if (btnZoomIn) {
+    btnZoomIn.addEventListener('click', async () => {
+      if (pdfEditor) {
+        await pdfEditor.zoomIn();
+        if (zoomLabel) zoomLabel.textContent = `${Math.round(pdfEditor.scale * 100)}%`;
+      }
+    });
+  }
+
+  if (btnZoomOut) {
+    btnZoomOut.addEventListener('click', async () => {
+      if (pdfEditor) {
+        await pdfEditor.zoomOut();
+        if (zoomLabel) zoomLabel.textContent = `${Math.round(pdfEditor.scale * 100)}%`;
+      }
+    });
+  }
+
+  if (btnZoomReset) {
+    btnZoomReset.addEventListener('click', async () => {
+      if (pdfEditor) {
+        await pdfEditor.setScale(1.35);
+        if (zoomLabel) zoomLabel.textContent = '135%';
+      }
+    });
+  }
+
+  // PDF Page Navigation
+  const btnPrevPage = document.getElementById('btn-pdf-prev-page');
+  const btnNextPage = document.getElementById('btn-pdf-next-page');
+
+  if (btnPrevPage) {
+    btnPrevPage.addEventListener('click', async () => {
+      if (pdfEditor) await pdfEditor.prevPage();
+    });
+  }
+
+  if (btnNextPage) {
+    btnNextPage.addEventListener('click', async () => {
+      if (pdfEditor) await pdfEditor.nextPage();
+    });
+  }
+
+  // PDF Upload Triggers (from Toolbar and Nav)
+  const btnPdfUploadTrigger = document.getElementById('btn-pdf-upload-trigger');
+  const btnStudioUploadNav = document.getElementById('btn-studio-upload-pdf');
+  const inputStudioPdf = document.getElementById('input-studio-pdf');
+
+  [btnPdfUploadTrigger, btnStudioUploadNav].forEach(btn => {
+    if (btn && inputStudioPdf) {
+      btn.addEventListener('click', () => {
+        inputStudioPdf.click();
+      });
+    }
+  });
+
+  if (inputStudioPdf) {
+    inputStudioPdf.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) handleUploadedPdfFile(file, 'studio');
     });
   }
 
@@ -1300,17 +1421,44 @@ function syncLiveEditToState() {
   if (!sheet || !state.currentProfile) return;
   const p = state.currentProfile;
 
-  // Title
-  const titleEl = sheet.querySelector('.role');
+  // Name
+  const nameEl = sheet.querySelector('[data-editable-field="fullName"]') || sheet.querySelector('h1');
+  if (nameEl) p.fullName = nameEl.textContent.trim();
+
+  // Title / Role
+  const titleEl = sheet.querySelector('[data-editable-field="title"]') || sheet.querySelector('.role');
   if (titleEl) p.title = titleEl.textContent.trim();
 
+  // Contact: Email, Phone, Location
+  const emailEl = sheet.querySelector('[data-editable-field="email"]');
+  if (emailEl) p.email = emailEl.textContent.trim();
+  const phoneEl = sheet.querySelector('[data-editable-field="phone"]');
+  if (phoneEl) p.phone = phoneEl.textContent.trim();
+  const locEl = sheet.querySelector('[data-editable-field="location"]');
+  if (locEl) p.location = locEl.textContent.trim();
+
   // Summary
-  const summaryEl = sheet.querySelector('.summary');
+  const summaryEl = sheet.querySelector('[data-editable-field="summary"]') || sheet.querySelector('.summary');
   if (summaryEl) p.summary = summaryEl.textContent.trim();
+
+  // Skills
+  sheet.querySelectorAll('[data-editable-skill-cat]').forEach(el => {
+    const cat = el.getAttribute('data-editable-skill-cat');
+    if (cat && p.skillCategories) {
+      p.skillCategories[cat] = el.textContent.trim();
+    }
+  });
 
   // Experience bullets
   sheet.querySelectorAll('.exp-entry').forEach((expEl, eIdx) => {
     if (p.experience && p.experience[eIdx]) {
+      const compEl = expEl.querySelector('.exp-company, .company');
+      if (compEl) p.experience[eIdx].company = compEl.textContent.trim();
+      const roleEl = expEl.querySelector('.exp-role, .role');
+      if (roleEl) p.experience[eIdx].role = roleEl.textContent.trim();
+      const periodEl = expEl.querySelector('.exp-period, .when');
+      if (periodEl) p.experience[eIdx].period = periodEl.textContent.trim();
+
       const bullets = [];
       expEl.querySelectorAll('li[data-bullet-index], .exp-bullets li, ul li').forEach(bEl => {
         bullets.push(bEl.textContent.trim());
@@ -1319,11 +1467,314 @@ function syncLiveEditToState() {
     }
   });
 
+  // Education
+  sheet.querySelectorAll('.edu-entry').forEach((eduEl, edIdx) => {
+    if (p.education && p.education[edIdx]) {
+      const degEl = eduEl.querySelector('.edu-degree');
+      if (degEl) p.education[edIdx].degree = degEl.textContent.trim();
+      const instEl = eduEl.querySelector('.edu-institution');
+      if (instEl) p.education[edIdx].institution = instEl.textContent.trim();
+      const yrEl = eduEl.querySelector('.edu-year, .when');
+      if (yrEl) p.education[edIdx].year = yrEl.textContent.trim();
+    }
+  });
+
   // Re-evaluate score
   state.atsData = evaluateAtsScore(p, state.targetRole, state.selectedArchetypeId);
   const scoreValEl = document.getElementById('ats-gauge-value');
   if (scoreValEl) scoreValEl.textContent = `${state.atsData.totalScore}%`;
   renderAtsChecklist();
+
+  // If sidebar editor is open, refresh it
+  const panelEditor = document.getElementById('panel-sidebar-editor');
+  if (panelEditor && panelEditor.style.display !== 'none') {
+    populateResumeEditor();
+  }
+}
+
+/**
+ * Handles text updates directly from the interactive PDF Canvas Editor
+ */
+function handlePdfTextChange({ newText, fullDocumentText }) {
+  if (!state.currentProfile) return;
+
+  // Re-score ATS live as candidate types on the PDF Canvas
+  state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
+  const scoreValEl = document.getElementById('ats-gauge-value');
+  if (scoreValEl && state.atsData) {
+    scoreValEl.textContent = `${state.atsData.totalScore}%`;
+  }
+  renderAtsChecklist();
+
+  // Also sync with sidebar editor fields
+  const panelEditor = document.getElementById('panel-sidebar-editor');
+  if (panelEditor && panelEditor.style.display !== 'none') {
+    populateResumeEditor();
+  }
+}
+
+/**
+ * Ensures a high-DPI PDF document is loaded in the PDF Canvas Editor
+ */
+async function ensurePdfCanvasLoaded() {
+  if (!pdfEditor) return;
+  if (state.customPdfLoaded && pdfEditor.pdfDoc) return;
+
+  const container = document.getElementById('resume-render-container');
+  if (container && state.currentProfile) {
+    container.style.display = 'block';
+    container.innerHTML = generateResumeHtml(state.currentProfile, state.selectedArchetypeId);
+    autoBalanceResumeToOnePage();
+
+    try {
+      if (typeof window.html2pdf !== 'undefined') {
+        const worker = window.html2pdf().set({
+          margin: [0, 0, 0, 0],
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+          jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+        }).from(container);
+
+        const pdfArrayBuffer = await worker.outputPdf('arraybuffer');
+        container.style.display = 'none';
+
+        const filename = getResumeDownloadFilename('pdf');
+        await pdfEditor.loadPdf(pdfArrayBuffer, filename);
+      }
+    } catch (e) {
+      console.warn('[PDF Canvas] Could not synthesize base PDF canvas:', e);
+      container.style.display = 'block';
+    }
+  }
+}
+
+/**
+ * Bind drag-and-drop and file input listeners for PDF upload
+ */
+function bindPdfUploadEvents() {
+  // 1. Landing Dropzone & File Input
+  const landingInput = document.getElementById('input-landing-pdf');
+  const landingDropzone = document.getElementById('dropzone-landing-pdf');
+  const btnBrowseLanding = document.getElementById('btn-browse-landing-pdf');
+  const btnRemoveLanding = document.getElementById('btn-remove-landing-pdf');
+
+  if (landingDropzone && landingInput) {
+    landingDropzone.addEventListener('click', (e) => {
+      if (e.target !== btnBrowseLanding && !e.target.closest('#btn-browse-landing-pdf')) {
+        landingInput.click();
+      }
+    });
+    if (btnBrowseLanding) {
+      btnBrowseLanding.addEventListener('click', (e) => {
+        e.stopPropagation();
+        landingInput.click();
+      });
+    }
+    landingInput.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) handleUploadedPdfFile(file, 'landing');
+    });
+
+    setupDragAndDrop(landingDropzone, file => handleUploadedPdfFile(file, 'landing'));
+  }
+
+  if (btnRemoveLanding) {
+    btnRemoveLanding.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearCandidateResume();
+    });
+  }
+
+  // 2. Try-Now Dropzone & File Input
+  const trynowInput = document.getElementById('input-trynow-pdf');
+  const trynowDropzone = document.getElementById('dropzone-trynow-pdf');
+  const btnBrowseTrynow = document.getElementById('btn-browse-trynow-pdf');
+  const btnRemoveTrynow = document.getElementById('btn-remove-trynow-pdf');
+
+  if (trynowDropzone && trynowInput) {
+    trynowDropzone.addEventListener('click', (e) => {
+      if (e.target !== btnBrowseTrynow && !e.target.closest('#btn-browse-trynow-pdf')) {
+        trynowInput.click();
+      }
+    });
+    if (btnBrowseTrynow) {
+      btnBrowseTrynow.addEventListener('click', (e) => {
+        e.stopPropagation();
+        trynowInput.click();
+      });
+    }
+    trynowInput.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) handleUploadedPdfFile(file, 'trynow');
+    });
+
+    setupDragAndDrop(trynowDropzone, file => handleUploadedPdfFile(file, 'trynow'));
+  }
+
+  if (btnRemoveTrynow) {
+    btnRemoveTrynow.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearCandidateResume();
+    });
+  }
+}
+
+function setupDragAndDrop(element, onFileDrop) {
+  ['dragenter', 'dragover'].forEach(eventName => {
+    element.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      element.closest('.resume-upload-card')?.classList.add('drag-over');
+    }, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    element.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      element.closest('.resume-upload-card')?.classList.remove('drag-over');
+    }, false);
+  });
+
+  element.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt?.files;
+    if (files && files[0]) {
+      onFileDrop(files[0]);
+    }
+  }, false);
+}
+
+/**
+ * Handles PDF File selection and executes direct PDF Canvas loading and parsing
+ */
+async function handleUploadedPdfFile(file, context = 'landing') {
+  if (!file) return;
+
+  if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+    alert('Please select a valid PDF file.');
+    return;
+  }
+
+  // Set UI progress indicators
+  const setProgress = (text, pct) => {
+    ['landing', 'trynow'].forEach(pfx => {
+      const pBox = document.getElementById(`${pfx}-upload-progress`);
+      const pFill = document.getElementById(`${pfx}-progress-fill`);
+      const pText = document.getElementById(`${pfx}-status-text`);
+      if (pBox) pBox.style.display = 'block';
+      if (pFill) pFill.style.width = `${pct}%`;
+      if (pText) pText.textContent = text;
+    });
+  };
+
+  try {
+    setProgress('Loading PDF into Canvas Editor...', 25);
+    state.customPdfLoaded = true;
+
+    // Load directly into in-browser PDF Canvas Editor
+    if (pdfEditor) {
+      await pdfEditor.loadPdf(file, file.name);
+    }
+
+    setProgress('Extracting taxonomy for 100% ATS scoring...', 65);
+    const { profile, html } = await parsePdfResume(file, (msg, pct) => {
+      setProgress(msg, Math.max(25, pct));
+    });
+
+    state.customProfile = profile;
+    state.targetRole = profile.title || state.targetRole || 'Software Engineer';
+    state.selectedArchetypeId = matchArchetype(state.targetRole);
+    state.currentProfile = optimizeProfileFor100Ats(profile, state.targetRole, state.selectedArchetypeId);
+    state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
+    state.liveEdit = true;
+
+    // Update Try Now input if present
+    const roleInput = document.getElementById('input-target-role');
+    if (roleInput && profile.title) {
+      roleInput.value = profile.title;
+    }
+
+    updateDynamicUploadUi(profile);
+
+    // Save profile to local storage & broadcast
+    saveDynamicProfile(profile, html);
+
+    // Hide progress bars
+    setTimeout(() => {
+      ['landing', 'trynow'].forEach(pfx => {
+        const pBox = document.getElementById(`${pfx}-upload-progress`);
+        if (pBox) pBox.style.display = 'none';
+      });
+    }, 400);
+
+    // Render Studio Workspace and switch view
+    renderStudioWorkspace();
+    showView('studio');
+
+  } catch (err) {
+    console.error('PDF parsing error:', err);
+    alert('Could not parse resume PDF: ' + err.message);
+    ['landing', 'trynow'].forEach(pfx => {
+      const pBox = document.getElementById(`${pfx}-upload-progress`);
+      if (pBox) pBox.style.display = 'none';
+    });
+  }
+}
+
+/**
+ * Updates UI badges and pills when a dynamic profile is active
+ */
+function updateDynamicUploadUi(profile) {
+  if (!profile) return;
+  const name = profile.fullName || 'Candidate';
+  const role = profile.title || 'Professional';
+
+  // Landing Pill
+  const landingPill = document.getElementById('landing-profile-pill');
+  const landingText = document.getElementById('landing-pill-text');
+  if (landingPill && landingText) {
+    landingText.textContent = `PDF Loaded: ${name} (${role})`;
+    landingPill.style.display = 'inline-flex';
+  }
+
+  // TryNow Pill
+  const trynowPill = document.getElementById('trynow-profile-pill');
+  const trynowText = document.getElementById('trynow-pill-text');
+  if (trynowPill && trynowText) {
+    trynowText.textContent = `PDF Loaded: ${name} (${role})`;
+    trynowPill.style.display = 'inline-flex';
+  }
+
+  // Studio Upload Button text
+  const studioBtnText = document.getElementById('studio-upload-btn-text');
+  if (studioBtnText) {
+    studioBtnText.textContent = 'Change PDF';
+  }
+}
+
+/**
+ * Clears uploaded custom resume and reverts to base defaults
+ */
+function clearCandidateResume() {
+  clearDynamicProfile();
+  state.customProfile = null;
+  state.customPdfLoaded = false;
+
+  const landingPill = document.getElementById('landing-profile-pill');
+  if (landingPill) landingPill.style.display = 'none';
+
+  const trynowPill = document.getElementById('trynow-profile-pill');
+  if (trynowPill) trynowPill.style.display = 'none';
+
+  const studioBtnText = document.getElementById('studio-upload-btn-text');
+  if (studioBtnText) studioBtnText.textContent = 'Upload PDF';
+
+  // Re-initialize with default archetype
+  const baseProfile = RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
+  state.currentProfile = optimizeProfileFor100Ats(baseProfile, state.targetRole, state.selectedArchetypeId);
+  state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
+  renderStudioWorkspace();
 }
 
 function escapeHtmlApp(str) {

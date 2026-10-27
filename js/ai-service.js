@@ -182,10 +182,12 @@ export function matchArchetype(targetRole, refinements = '') {
 /**
  * Main AI Tailor method with dynamic domain classification and automatic fallback chain
  */
-export async function tailorResumeWithAi(targetRole, userRefinements = '') {
+export async function tailorResumeWithAi(targetRole, userRefinements = '', customProfile = null) {
   // Step 1: Initial dynamic semantic domain identification
   let archetypeId = matchArchetype(targetRole, userRefinements);
-  let baseProfile = JSON.parse(JSON.stringify(RESUME_ARCHETYPES[archetypeId].profile));
+  let baseProfile = customProfile 
+    ? JSON.parse(JSON.stringify(customProfile))
+    : JSON.parse(JSON.stringify(RESUME_ARCHETYPES[archetypeId].profile));
   
   await fetchEnvKeys();
   const { geminiKey, groqKey } = getStoredApiKeys();
