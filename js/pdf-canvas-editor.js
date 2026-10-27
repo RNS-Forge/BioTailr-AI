@@ -126,8 +126,16 @@ export class PdfCanvasEditor {
 
       // Extract and group text content for the interactive text layer
       const textContent = await page.getTextContent();
-      const groupedItems = this.groupTextItems(textContent.items, viewport, page.view);
+      const groupedItems = this.groupTextItems(textContent.items, viewport, page.view, textContent.styles);
       this.pageTextItems[pageNum] = groupedItems;
+
+      // Whiten canvas areas for all previously modified items on this page
+      groupedItems.forEach(item => {
+        const modKey = `${pageNum}_${item.id}`;
+        if (this.modifiedItems.has(modKey)) {
+          this.whitenCanvasArea(canvas, item);
+        }
+      });
 
       // Build interactive text layer
       this.buildInteractiveTextLayer(pageWrapper, groupedItems, viewport, pageNum);
@@ -143,14 +151,34 @@ export class PdfCanvasEditor {
   }
 
   /**
+   * Clears underlying canvas raster pixels for an item so edited text has zero ghosting
+   */
+  whitenCanvasArea(canvas, item) {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const pixelRatio = window.devicePixelRatio || 1;
+    ctx.save();
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    ctx.fillStyle = '#ffffff';
+    const padX = 2;
+    const padY = 2;
+    ctx.fillRect(
+      Math.max(0, item.vx - padX),
+      Math.max(0, item.vy - padY),
+      item.vWidth + (padX * 2),
+      item.vHeight + (padY * 2)
+    );
+    ctx.restore();
+  }
+
+  /**
    * Groups fragmented PDF glyphs/words into cohesive editable lines and sentences
    */
-  groupTextItems(rawItems, viewport, pageView) {
+  groupTextItems(rawItems, viewport, pageView, styles = {}) {
     if (!rawItems || rawItems.length === 0) return [];
 
-    // PDF coordinate height for converting to PDF-lib origin (bottom-left)
     const pdfPageHeight = pageView ? (pageView[3] - pageView[1]) : 792;
-
     const items = [];
     let currentLine = null;
 
@@ -159,19 +187,43 @@ export class PdfCanvasEditor {
       if (!str && str !== '') return;
 
       const tx = raw.transform; // [scaleX, skewY, skewX, scaleY, transX, transY]
-      const fontHeight = Math.sqrt((tx[2] * tx[2]) + (tx[3] * tx[3])) || 10;
+      const fontHeight = Math.hypot(tx[2], tx[3]) || Math.abs(tx[0]) || 10;
       
-      // Viewport coordinates (origin top-left)
-      const [vx, vy] = viewport.convertToViewportPoint(tx[4], tx[5]);
-      const vWidth = raw.width * (viewport.scale / (viewport.scale || 1)) * (tx[0] || 1);
+      // Viewport coordinates
+      const [vx, baselineVy] = viewport.convertToViewportPoint(tx[4], tx[5]);
+      const vWidth = raw.width * viewport.scale;
       const vHeight = fontHeight * viewport.scale;
+      // Align box to top of font
+      const vy = baselineVy - (vHeight * 0.88);
 
-      // Check if this item continues the previous line (same vertical baseline within tolerance)
-      const yTol = Math.max(3, vHeight * 0.4);
-      if (currentLine && Math.abs(currentLine.vy - vy) < yTol && (vx - (currentLine.vx + currentLine.vWidth)) < 35) {
-        // Append to current line
-        currentLine.text += (currentLine.text.endsWith(' ') || str.startsWith(' ') ? '' : ' ') + str;
-        currentLine.vWidth = (vx + (raw.width * viewport.scale)) - currentLine.vx;
+      // Font style analysis
+      const fontStyle = (styles && styles[raw.fontName]) || {};
+      const fontNameLower = (raw.fontName || '').toLowerCase();
+      const styleFamilyLower = (fontStyle.fontFamily || '').toLowerCase();
+
+      const isBold = fontNameLower.includes('bold') || fontNameLower.includes('black') || 
+                     fontNameLower.includes('heavy') || fontNameLower.includes('700') || 
+                     fontNameLower.includes('800') || styleFamilyLower.includes('bold');
+      const isItalic = fontNameLower.includes('italic') || fontNameLower.includes('oblique') || 
+                       styleFamilyLower.includes('italic');
+      const isSerif = styleFamilyLower.includes('serif') || fontNameLower.includes('times') || 
+                      fontNameLower.includes('georgia') || fontNameLower.includes('garamond') || 
+                      fontNameLower.includes('roman');
+
+      // Check if this item continues the previous line
+      const yTol = Math.max(3.5, vHeight * 0.35);
+      const isSameBaseline = currentLine && Math.abs(currentLine.baselineVy - baselineVy) < yTol;
+      const gap = currentLine ? (vx - (currentLine.vx + currentLine.vWidth)) : 999;
+      const isAdjacent = currentLine && gap >= -5 && gap < Math.max(32, vHeight * 1.8);
+
+      if (isSameBaseline && isAdjacent) {
+        // Append to current line with natural space separation if needed
+        const needsSpace = !currentLine.text.endsWith(' ') && !str.startsWith(' ') && gap > 1;
+        currentLine.text += (needsSpace ? ' ' : '') + str;
+        currentLine.vWidth = (vx + vWidth) - currentLine.vx;
+        currentLine.pdfWidth = (tx[4] + raw.width) - currentLine.pdfX;
+        if (isBold) currentLine.isBold = true;
+        if (isItalic) currentLine.isItalic = true;
         currentLine.rawItems.push(raw);
       } else {
         // Start a new line
@@ -183,10 +235,14 @@ export class PdfCanvasEditor {
           text: str,
           origText: str,
           vx: vx,
-          vy: vy - vHeight, // align to top
-          vWidth: Math.max(vWidth, 20),
+          vy: vy,
+          baselineVy: baselineVy,
+          vWidth: Math.max(vWidth, 18),
           vHeight: Math.max(vHeight, 14),
           fontSize: Math.round(fontHeight * viewport.scale),
+          isBold: isBold,
+          isItalic: isItalic,
+          isSerif: isSerif,
           fontName: raw.fontName || 'sans-serif',
           // Raw PDF coordinate tracking for compilation
           pdfX: tx[4],
@@ -215,6 +271,8 @@ export class PdfCanvasEditor {
       textLayer.remove();
     }
 
+    const canvas = pageWrapper.querySelector('canvas.pdf-page-canvas');
+
     textLayer = document.createElement('div');
     textLayer.className = 'pdf-text-layer-overlay';
     textLayer.style.width = `${viewport.width}px`;
@@ -230,10 +288,15 @@ export class PdfCanvasEditor {
       // Position precisely over the canvas text
       el.style.left = `${Math.max(0, item.vx)}px`;
       el.style.top = `${Math.max(0, item.vy)}px`;
-      el.style.minWidth = `${Math.max(item.vWidth, 30)}px`;
+      el.style.minWidth = `${Math.max(item.vWidth, 24)}px`;
       el.style.minHeight = `${Math.max(item.vHeight, 14)}px`;
       el.style.fontSize = `${Math.max(9, item.fontSize)}px`;
-      el.style.lineHeight = `${Math.max(item.vHeight, 14)}px`;
+      el.style.lineHeight = `${Math.max(14, Math.round(item.fontSize * 1.25))}px`;
+      el.style.fontFamily = item.isSerif 
+        ? "'Times New Roman', Times, Georgia, serif" 
+        : "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+      el.style.fontWeight = item.isBold ? '700' : '400';
+      el.style.fontStyle = item.isItalic ? 'italic' : 'normal';
 
       // Check if user already modified this item
       const modKey = `${pageNum}_${item.id}`;
@@ -241,18 +304,25 @@ export class PdfCanvasEditor {
         const mod = this.modifiedItems.get(modKey);
         el.textContent = mod.newText;
         el.classList.add('user-edited');
+        this.whitenCanvasArea(canvas, item);
       } else {
         el.textContent = item.text;
       }
 
       // Title tooltip
-      el.title = 'Click to edit text directly on PDF';
+      el.title = 'Click to edit text directly on resume';
+
+      // On focus, whiten canvas area so typing has crisp white background without ghosting
+      el.addEventListener('focus', () => {
+        this.whitenCanvasArea(canvas, item);
+      });
 
       // Event: input (while typing)
       el.addEventListener('input', () => {
         const newText = el.textContent;
         this.recordModification(pageNum, item, newText);
         el.classList.add('user-edited');
+        this.whitenCanvasArea(canvas, item);
         this.onTextChange({
           pageNum,
           item,
@@ -261,12 +331,10 @@ export class PdfCanvasEditor {
         });
       });
 
-      // Event: blur (save & balance)
-      el.addEventListener('blur', () => {
-        const newText = el.textContent.trim();
-        if (newText === item.origText.trim()) {
-          this.modifiedItems.delete(modKey);
-          el.classList.remove('user-edited');
+      // Keyboard shortcuts: Escape to finish editing
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          el.blur();
         }
       });
 
@@ -292,7 +360,10 @@ export class PdfCanvasEditor {
       pdfWidth: item.pdfWidth,
       pdfHeight: item.pdfHeight,
       pdfPageHeight: item.pdfPageHeight,
-      fontSize: item.fontSize / this.scale
+      fontSize: item.fontSize / this.scale,
+      isBold: item.isBold,
+      isItalic: item.isItalic,
+      isSerif: item.isSerif
     });
   }
 
@@ -332,8 +403,10 @@ export class PdfCanvasEditor {
       });
 
       // Embed standard clean fonts
-      const timesFont = await pdfDoc.embedFont(window.PDFLib.StandardFonts.TimesRoman);
       const helveticaFont = await pdfDoc.embedFont(window.PDFLib.StandardFonts.Helvetica);
+      const helveticaBoldFont = await pdfDoc.embedFont(window.PDFLib.StandardFonts.HelveticaBold);
+      const timesFont = await pdfDoc.embedFont(window.PDFLib.StandardFonts.TimesRoman);
+      const timesBoldFont = await pdfDoc.embedFont(window.PDFLib.StandardFonts.TimesRomanBold);
 
       const pages = pdfDoc.getPages();
 
@@ -343,32 +416,43 @@ export class PdfCanvasEditor {
         if (pageIdx < 0 || pageIdx >= pages.length) return;
 
         const page = pages[pageIdx];
-        const pageHeight = page.getHeight();
 
         // Coordinates in PDF-lib: origin is bottom-left
         const x = mod.pdfX;
         const y = mod.pdfY;
-        const width = Math.max(mod.pdfWidth * 1.5, 80);
+        const width = Math.max(mod.pdfWidth * 1.35, 60);
         const height = mod.pdfHeight * 1.35;
-        const size = Math.max(mod.fontSize, 9);
+        const size = Math.max(mod.fontSize, 8.5);
+
+        let chosenFont = helveticaFont;
+        if (mod.isSerif) {
+          chosenFont = mod.isBold ? timesBoldFont : timesFont;
+        } else {
+          chosenFont = mod.isBold ? helveticaBoldFont : helveticaFont;
+        }
 
         // 1. Draw white rectangle over old text to cleanly mask it
         page.drawRectangle({
-          x: x - 1,
-          y: y - 2,
+          x: Math.max(0, x - 2),
+          y: Math.max(0, y - 3),
           width: width + 10,
-          height: height + 3,
+          height: height + 6,
           color: window.PDFLib.rgb(1, 1, 1),
           opacity: 1
         });
 
         // 2. Draw user's new text cleanly with pure black ink (#000000)
-        page.drawText(mod.newText, {
-          x: x,
-          y: y,
-          size: size,
-          font: timesFont || helveticaFont,
-          color: window.PDFLib.rgb(0, 0, 0)
+        const lines = (mod.newText || '').split('\n');
+        lines.forEach((lineText, lIdx) => {
+          if (lineText.length === 0) return;
+          const lineY = y - (lIdx * size * 1.25);
+          page.drawText(lineText, {
+            x: x,
+            y: lineY,
+            size: size,
+            font: chosenFont,
+            color: window.PDFLib.rgb(0, 0, 0)
+          });
         });
       });
 
