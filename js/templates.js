@@ -22,38 +22,40 @@ export const RESUME_ARCHETYPES = {
       portfolio: 'https://rns-forge.github.io/RNS_Professional_Profile/',
       github: 'https://github.com/RNS-Forge',
       linkedin: 'www.linkedin.com/in/sanjay--n',
-      summary: 'Results-driven AI Engineer & Software Engineer specializing in Agentic AI, RAG architectures, LLM automation, document intelligence, and scalable enterprise systems. Proven track record across Axodian, Nexus Horizon, and SNS Square in developing high-throughput microservices, real-time banking integrations, and cutting API error rates by 30%.',
+      summary: 'AI Engineer & Software Engineer specializing in Agentic AI, RAG, LLM automation, document intelligence, and scalable enterprise systems.',
       skills: [
-        'Python', 'LangChain', 'LangGraph', 'Crew AI', 'AutoGen',
-        'TensorFlow', 'PyTorch', 'C#', 'JavaScript', 'TypeScript',
-        'Node.js', 'React.js', 'MySQL', 'MongoDB', 'RESTful APIs',
-        'Git', 'CI/CD', 'GenAI', 'Agentic AI', 'DBMS'
+        'Python', 'C#', 'JavaScript', 'HTML/CSS', 'SQL', 'Java',
+        'LangChain', 'LangGraph', 'Crew AI', 'AutoGen', 'NumPy', 'Pandas',
+        'OpenCV', 'Scikit-learn', 'TensorFlow', 'PyTorch', 'Matplotlib',
+        'Node.js', 'React js', 'Type Script', 'MySQL', 'Git', 'RESTfulAPIs',
+        'Mongo DB', 'Postman API', 'J Meter', 'Zap', 'Light House', 'n8n',
+        'GENAI', 'AgenticAI', 'DBMS', 'CI/CD', 'LLM Training', 'Fine-tuning & RAG', 'GAN'
       ],
       skillCategories: {
         'Programming Languages': 'Python, C#, JavaScript, HTML/CSS, SQL, Java',
-        'Frameworks & Libraries': 'LangChain, LangGraph, Crew AI, AutoGen, NumPy, Pandas, OpenCV, Scikit-learn, TensorFlow, PyTorch, Matplotlib, Node.js, React.js, TypeScript',
-        'Tools & Technologies': 'MySQL, Git, RESTful APIs, MongoDB, Postman API, JMeter, ZAP, Lighthouse',
-        'Core Competencies': 'Agentic AI, RAG Pipelines, Document Intelligence, CI/CD, DBMS, Microservices'
+        'Frameworks & Libraries': 'LangChain, LangGraph, Crew AI, AutoGen, NumPy, Pandas, OpenCV, Scikit-learn, TensorFlow, PyTorch, Matplotlib, Node.js, React js, Type Script',
+        'Tools & Technologies': 'MySQL, Git, RESTfulAPIs, Mongo DB, Postman API, J Meter, Zap, Light House,n8n',
+        'Additional Skills': 'GENAI, AgenticAI, DBMS, CI/CD , LLM Training, Fine-tuning & RAG, GAN'
       },
       experience: [
         {
           id: 'dev_exp_1',
           role: 'Software Engineer Intern',
           company: 'Axodian',
-          project: 'OneDoc, OneCompliance',
+          project: 'OneDoc, OneCompilance',
           companyUrl: 'https://axodian.com/',
           period: 'June 2026 - Present',
           location: 'Bangalore, KA (On-Site)',
           relevant: true,
           highlights: [
-            'Collaborated with the IBDIC team and government ecosystem to engineer enterprise trade finance solutions, processing 10,000+ import/export transactions with 99.8% compliance accuracy.',
-            'Architected multi-service architecture integrating EDPMS, IDPMS, real-time banking connectivity, SAP, and Tally, reducing manual document reconciliation cycle times by 40%.',
-            'Deployed AI-driven document intelligence for automated validation, classification, and multi-field data extraction, accelerating compliance clearance throughput by 35%.'
+            'Collaborated with the IBDIC team and government ecosystem to develop enterprise solutions for Import & Export Trade Finance, Documentation, and Compliance.',
+            'Developed multi-service architecture integrating EDPMS, IDPMS, real-time banking connectivity, SAP, and Tally for financial and document workflows.',
+            'Applied AI-driven document intelligence for document matching, validation, classification, and data extraction, improving automation across import/export and compliance processes.'
           ]
         },
         {
           id: 'dev_exp_2',
-          role: 'Front-end Developer Intern',
+          role: 'Front-end Developer',
           company: 'Nexus Horizon',
           project: 'Faculties.ai',
           companyUrl: 'https://nexushorizon.ltd/#about',
@@ -61,72 +63,62 @@ export const RESUME_ARCHETYPES = {
           location: 'Remote',
           relevant: true,
           highlights: [
-            'Architected scalable, responsive frontend interfaces for AI-driven academic workflows at Faculties.ai, serving 5,000+ active faculty members and students.',
-            'Integrated frontend client components with backend LLM microservices via REST APIs, reducing API response handling errors by 30% and decreasing latency by 25%.',
-            'Engineered responsive, accessible UI modules using React and TypeScript, achieving 95+ Google Lighthouse performance scores across all device viewports.'
+            'Developed scalable and responsive frontend interfaces for AI-driven academic workflows at Faculties.ai.',
+            'Built user-friendly web interfaces and integrated frontend components with backend and AI services, reducing API response handling errors by 30%.',
+            'Developed responsive applications using modern frontend technologies and integrated REST APIs and AI-powered features.'
           ]
         },
         {
           id: 'dev_exp_3',
           role: 'AI Developer Intern',
           company: 'SNS Square',
-          project: 'AI Exam Analyzer, Gen AI Suite, Aggregator',
+          project: 'AI Exam Analyzer, Gen AI Suite , Aggregator',
           companyUrl: 'https://www.snssquare.com/',
           period: 'Aug 2024 - Sep 2025',
           location: 'Coimbatore, TN (On-Site)',
           relevant: true,
           highlights: [
-            'Engineered full-stack modules and implemented core AI evaluation logic across 3 enterprise assessment platforms (AI Exam Analyzer, Gen AI Suite, Aggregator).',
-            'Designed, tested, and analyzed requirements for automated assessment and document processing platforms, evaluating over 15,000+ exam submissions.',
-            'Increased assessment scoring accuracy by 15% and improved project delivery milestone velocity by 10% through end-to-end automated testing.'
+            'Multiple AI-based enterprise platforms needed full-stack development and accurate requirement analysis.',
+            'Develop, test, and analyze requirements for assessment and document platforms.',
+            'Built full-stack modules, implemented AI logic, performed testing, and aligned business needs.',
+            'Increased assessment accuracy by 15% and improved project success by 10%.'
           ]
         }
       ],
       projects: [
         {
-          name: 'Loan Eligibility Checker',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
-          tech: 'Python, ML, Scikit-learn, REST API',
-          description: 'AI-based loan approval system that reduced manual verification by 12% and improved screening accuracy by 15% across 2,000+ applicants.'
+          name: 'Furry Funds AI',
+          description: 'AI-based loan approval system that reduced manual verification by 12% and improved screening accuracy by 15%.'
         },
         {
-          name: 'DocuMirror',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
-          tech: 'LLM, LangChain, Python, PDF Extraction',
-          description: 'AI document platform for document Q&A, management, image-to-HTML conversion, and editable PDF generation with 99.2% extraction precision.'
+          name: 'BioTailr AI',
+          description: 'AI-powered job platform with Web Extension, Main Platform, and Auto-Apply Standby for smart job matching, ATS resumes, and application automation.'
         },
         {
           name: 'Exam Paper Analyzer',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
-          tech: 'Computer Vision, OCR, LLM, Python',
-          description: 'AI-powered automated grading and evaluation system that reduced educator grading turnaround times by 30%.'
+          description: 'AI-powered exam evaluation system that reduced evaluation time by 30%.'
         },
         {
           name: 'AgriBridge',
-          url: 'https://github.com/RNSsanjay/Loan-Eligible-Domestic.git',
-          tech: 'Full-Stack Web, Node.js, Express, MongoDB',
-          description: 'Global agricultural marketplace platform connecting 500+ farmers, suppliers, exporters, and international importers.'
+          description: 'Global agri-trade platform connecting farmers, suppliers, exporters, and importers for international business.'
         },
         {
-          name: 'Agentium',
-          url: 'https://pypi.org/project/agentium/',
-          tech: 'Python, Agentic AI, PyPI Package',
-          description: 'Published open-source Python library for building multi-agent AI systems, reducing agent orchestration development time by 55%.'
+          name: 'Agentium(PyPi)',
+          description: 'Python library for building agentic AI systems, reducing AI development time by 55% and enabling 12k+ developers to build, integrate, and deploy intelligent AI agents efficiently.'
         }
       ],
       education: [
         {
-          degree: 'B.Tech in Artificial Intelligence & Machine Learning',
+          degree: 'B.Tech Artificial Intelligence & Machine Learning',
           institution: 'SNS College of Technology',
-          year: 'Nov 2022 - Apr 2026',
+          period: 'Nov 2022 - Apr 2026',
           location: 'Coimbatore, Tamil Nadu',
-          details: 'CGPA: 8.38 / 10.0 (First Class with Distinction) • Zero Active Backlogs'
+          details: 'CGPA: 8.38/10'
         }
       ],
       certifications: [
-        'Salesforce AI Associate and Agentforce Specialist, completed with scores above 80%.',
-        'Oracle AI Foundations Associate completed with 92% and Postman AI Student Expert certified.',
-        'NPTEL IoT 4.0 Certification, NASSCOM Digital Edge completed with a score of 81%.'
+        'Salesforce AI Associate and Agentforce Specialist, both completed with scores above 80%.',
+        'Oracle AI Foundations Associate completed with 92% and Postman AI Student Expert certified.'
       ]
     }
   },

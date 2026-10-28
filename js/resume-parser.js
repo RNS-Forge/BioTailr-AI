@@ -230,14 +230,25 @@ export function structureResumeData(rawText, sourceFileName = 'Uploaded_Resume.p
   // 7. Extract Projects
   const projectsList = parseProjectsSection(sections.projects || '');
 
+  // 8. Extract Certifications
+  const certificationsList = (sections.certifications || '')
+    .split('\n')
+    .map(l => l.replace(/^[•·\-*]\s*/, '').trim())
+    .filter(l => l.length > 5);
+
   // Derive Current Title & Total Experience
-  let currentTitle = 'Software Engineer';
-  let currentCompany = '';
-  if (experienceList.length > 0) {
-    currentTitle = experienceList[0].role || currentTitle;
-    currentCompany = experienceList[0].company || currentCompany;
-  } else if (lines.length > 1 && lines[1].length < 60 && !lines[1].includes('@')) {
-    currentTitle = lines[1];
+  let currentTitle = '';
+  for (let i = 0; i < Math.min(lines.length, 5); i++) {
+    const l = lines[i];
+    if (l !== fullName && /(?:Engineer|Developer|Architect|Scientist|Specialist|Consultant|Analyst|Lead|Manager)/i.test(l) && !/@|phone|tel|linkedin|github|city|mail/i.test(l)) {
+      currentTitle = l.replace(/^[•·|,-]\s*/, '').trim();
+      break;
+    }
+  }
+  if (!currentTitle && experienceList.length > 0) {
+    currentTitle = experienceList[0].role || 'Software Engineer';
+  } else if (!currentTitle) {
+    currentTitle = 'AI Engineer | Software Engineer';
   }
 
   const totalYears = Math.max(1, Math.min(experienceList.length * 2, 8));
@@ -263,6 +274,7 @@ export function structureResumeData(rawText, sourceFileName = 'Uploaded_Resume.p
     experience: experienceList,
     education: educationList,
     projects: projectsList,
+    certifications: certificationsList,
     workAuth: {
       authorizedInCountry: 'Yes',
       needSponsorship: 'No',
@@ -298,7 +310,7 @@ function partitionSections(lines) {
     { key: 'experience', regex: /^(work\s+experience|professional\s+experience|experience|employment\s+history|career\s+history|internships?)$/i },
     { key: 'education', regex: /^(education|academic\s+background|qualifications|academic\s+qualifications)$/i },
     { key: 'projects', regex: /^(projects|personal\s+projects|key\s+projects|technical\s+projects)$/i },
-    { key: 'certifications', regex: /^(certifications|licenses|certifications\s+&\s+courses|achievements)$/i }
+    { key: 'certifications', regex: /^(awards\s+and\s+certification|awards\s+and\s+certifications|awards|certifications|licenses|certifications\s+&\s+courses|achievements)$/i }
   ];
 
   let currentKey = null;
@@ -507,13 +519,26 @@ function parseProjectsSection(text) {
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   const projects = [];
 
-  lines.forEach((line, idx) => {
-    if (line.includes('|') || line.includes(':')) {
-      const [title, desc] = line.split(/[:|]/);
+  lines.forEach((line) => {
+    const cleanLine = line.replace(/^[•·\-*]\s*/, '').trim();
+    if (!cleanLine) return;
+
+    const dashMatch = cleanLine.match(/^([A-Za-z0-9\s()_.\-+]+?)\s*(?:[–—:]|\s-\s)\s*(.+)$/);
+    if (dashMatch) {
       projects.push({
-        name: title.replace(/^[•·\-*]\s*/, '').trim(),
-        tech: '',
-        description: desc ? desc.trim() : ''
+        name: dashMatch[1].trim(),
+        description: dashMatch[2].trim()
+      });
+    } else if (cleanLine.includes(':')) {
+      const [title, ...descParts] = cleanLine.split(':');
+      projects.push({
+        name: title.trim(),
+        description: descParts.join(':').trim()
+      });
+    } else {
+      projects.push({
+        name: cleanLine.substring(0, 30),
+        description: cleanLine
       });
     }
   });

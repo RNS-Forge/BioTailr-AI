@@ -114,190 +114,198 @@ export class PdfCanvasEditor {
     this.container.innerHTML = '';
 
     const p = this.profile || {};
-    const fullName = p.fullName || 'CANDIDATE NAME';
-    const title = p.title || 'TARGET ROLE HEADLINE';
-    const email = p.email || '';
-    const phone = p.phone || '';
-    const location = p.location || [p.city, p.state].filter(Boolean).join(', ') || '';
-    const linkedin = p.linkedin || '';
-    const github = p.github || '';
-    const portfolio = p.portfolio || '';
+    const fullName = p.fullName || 'SANJAY N';
+    const title = p.title || 'AI Engineer | Software Engineer';
+    const cityState = p.city && p.state ? `${p.city} , ${p.state}` : (p.location || 'Coimbatore , TN');
+    const email = p.email || '2005sanjaynrs@gmail.com';
+    const phone = p.phone || '+91 93615 99018';
+    const github = p.github || 'https://github.com/RNS-Forge';
+    const linkedin = p.linkedin || 'www.linkedin.com/in/sanjay--n';
 
-    // Build contact elements array
-    const contactElements = [];
-    if (phone) contactElements.push(`<span class="pdf-field pdf-field-contact" contenteditable="true" spellcheck="false" data-field="phone" title="Click to edit phone">${escapeHtml(phone)}</span>`);
-    if (email) contactElements.push(`<span class="pdf-field pdf-field-contact" contenteditable="true" spellcheck="false" data-field="email" title="Click to edit email">${escapeHtml(email)}</span>`);
-    if (location) contactElements.push(`<span class="pdf-field pdf-field-contact" contenteditable="true" spellcheck="false" data-field="location" title="Click to edit location">${escapeHtml(location)}</span>`);
-    if (linkedin) contactElements.push(`<span class="pdf-field pdf-field-contact" contenteditable="true" spellcheck="false" data-field="linkedin" title="Click to edit LinkedIn">${escapeHtml(linkedin)}</span>`);
-    if (github) contactElements.push(`<span class="pdf-field pdf-field-contact" contenteditable="true" spellcheck="false" data-field="github" title="Click to edit GitHub">${escapeHtml(github)}</span>`);
-    if (portfolio) contactElements.push(`<span class="pdf-field pdf-field-contact" contenteditable="true" spellcheck="false" data-field="portfolio" title="Click to edit portfolio">${escapeHtml(portfolio)}</span>`);
-
-    if (contactElements.length === 0) {
-      contactElements.push(`<span class="pdf-field pdf-field-contact" contenteditable="true" spellcheck="false" data-field="email">candidate@example.com</span>`);
-      contactElements.push(`<span class="pdf-field pdf-field-contact" contenteditable="true" spellcheck="false" data-field="phone">+1 (555) 019-2834</span>`);
-      contactElements.push(`<span class="pdf-field pdf-field-contact" contenteditable="true" spellcheck="false" data-field="location">San Francisco, CA</span>`);
+    // 1. Technical Skills Bullets
+    let skillsLisHtml = '';
+    const skillCats = p.skillCategories || {};
+    const catKeys = Object.keys(skillCats);
+    if (catKeys.length > 0) {
+      skillsLisHtml = catKeys.map(cat => {
+        const val = Array.isArray(skillCats[cat]) ? skillCats[cat].join(', ') : skillCats[cat];
+        return `
+          <li class="pdf-field pdf-skill-bullet" contenteditable="true" spellcheck="false" data-cat="${escapeHtml(cat)}" title="Click to edit skills line">
+            <b class="pdf-field-skill-cat">${escapeHtml(cat)} :</b> <span class="pdf-field-skill-val">${escapeHtml(val)}</span>
+          </li>
+        `;
+      }).join('');
+    } else if (Array.isArray(p.skills) && p.skills.length > 0) {
+      skillsLisHtml = `
+        <li class="pdf-field pdf-skill-bullet" contenteditable="true" spellcheck="false">
+          <b class="pdf-field-skill-cat">Core Technical Skills :</b> <span class="pdf-field-skill-val">${escapeHtml(p.skills.join(', '))}</span>
+        </li>
+      `;
     }
 
-    // Work Experience markup
+    // 2. Experience Entries
     const experiences = p.experience || [];
-    const expHtml = experiences.map((exp, expIdx) => {
+    const expEntriesHtml = experiences.map((exp, expIdx) => {
       const bullets = Array.isArray(exp.bullets) && exp.bullets.length > 0
         ? exp.bullets
         : (Array.isArray(exp.highlights) && exp.highlights.length > 0
             ? exp.highlights
             : (exp.description ? [exp.description] : []));
-      const expTitle = exp.role || exp.title || 'Role Title';
+      const expRole = exp.role || exp.title || 'Software Engineer Intern';
+      const company = exp.company || 'Axodian';
+      const period = exp.period || exp.dates || 'June 2026 - Present';
+      const project = exp.project || '';
+      const location = exp.location || '';
 
-      const bulletLis = bullets.map((bullet, bIdx) => `
-        <li class="pdf-field pdf-bullet-item" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-bullet-idx="${bIdx}" title="Click to edit bullet. Press Enter for new bullet.">${escapeHtml(bullet)}</li>
+      const bulletLis = bullets.map((b, bIdx) => `
+        <li class="pdf-field pdf-bullet-item" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-bullet-idx="${bIdx}" title="Click to edit bullet. Press Enter for new bullet.">${escapeHtml(b)}</li>
       `).join('');
 
       return `
-        <article class="pdf-experience-entry" data-exp-idx="${expIdx}">
-          <div class="pdf-entry-row-header">
-            <div class="pdf-exp-left">
-              <strong class="pdf-field pdf-exp-company" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="company" title="Click to edit company name">${escapeHtml(exp.company || 'Company Name')}</strong>
-              <span class="pdf-sep">&mdash;</span>
-              <span class="pdf-field pdf-exp-title" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="title" title="Click to edit job title">${escapeHtml(expTitle)}</span>
-            </div>
-            <div class="pdf-field pdf-exp-date" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="period" title="Click to edit date range">${escapeHtml(exp.period || exp.dates || '2023 – Present')}</div>
+        <div class="exp-entry" data-exp-idx="${expIdx}">
+          <div class="entry-head">
+            <span>
+              <strong class="pdf-field pdf-exp-company" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="company" title="Click to edit company">${escapeHtml(company)}</strong>
+              <span class="pdf-sep"> - </span>
+              <span class="pdf-field pdf-exp-role" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="role" title="Click to edit job role">${escapeHtml(expRole)}</span>
+              ${project ? `<span class="pdf-proj-label"> | Project: </span><span class="pdf-field pdf-exp-project" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="project" title="Click to edit project name">${escapeHtml(project)}</span>` : ''}
+            </span>
+            <span class="when pdf-field pdf-exp-date" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="period" title="Click to edit date range">${escapeHtml(period)}</span>
           </div>
-          ${exp.location || exp.project ? `
-            <div class="pdf-entry-subrow">
-              <span class="pdf-field pdf-exp-project" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="project">${escapeHtml(exp.project ? `Project: ${exp.project}` : (exp.location || ''))}</span>
-              ${exp.location && exp.project ? `<span class="pdf-field pdf-exp-loc" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="location">${escapeHtml(exp.location)}</span>` : ''}
+          ${location ? `
+            <div class="entry-sub">
+              <span class="pdf-field pdf-exp-loc" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="location" title="Click to edit location">${escapeHtml(location)}</span>
             </div>
           ` : ''}
-          ${bulletLis ? `
-            <ul class="pdf-bullet-list">
-              ${bulletLis}
-            </ul>
-          ` : ''}
-        </article>
+          <ul class="pdf-bullet-list">
+            ${bulletLis}
+          </ul>
+        </div>
       `;
     }).join('');
 
-    // Skills markup
-    const skillCats = p.skillCategories || {};
-    let skillsRowsHtml = '';
-    const catKeys = Object.keys(skillCats);
-    if (catKeys.length > 0) {
-      skillsRowsHtml = catKeys.map(cat => {
-        const catList = Array.isArray(skillCats[cat]) ? skillCats[cat].join(', ') : skillCats[cat];
-        return `
-          <div class="pdf-skill-row">
-            <strong class="pdf-field pdf-skill-label" contenteditable="true" spellcheck="false" title="Click to edit category">${escapeHtml(cat)}:</strong>
-            <span class="pdf-field pdf-skill-values" contenteditable="true" spellcheck="false" data-skill-cat="${escapeHtml(cat)}" title="Click to edit skills list">${escapeHtml(catList)}</span>
+    // 3. Projects Bullets
+    const projects = p.projects || [];
+    const projectsLisHtml = projects.map((proj, pIdx) => {
+      const name = proj.name || 'Project';
+      const desc = proj.description || '';
+      return `
+        <li class="pdf-field pdf-proj-bullet" contenteditable="true" spellcheck="false" data-proj-idx="${pIdx}" title="Click to edit project">
+          <strong class="pdf-field-proj-name">${escapeHtml(name)} –</strong> <span class="pdf-field-proj-desc">${escapeHtml(desc)}</span>
+        </li>
+      `;
+    }).join('');
+
+    // 4. Education Entries
+    const educations = p.education || [];
+    const eduEntriesHtml = educations.map((edu, eIdx) => {
+      const degree = edu.degree || 'B.Tech Artificial Intelligence & Machine Learning';
+      const period = edu.period || edu.year || 'Nov 2022 - Apr 2026';
+      const inst = edu.institution || 'SNS College of Technology';
+      const details = edu.details ? `, ${edu.details}` : (edu.cgpa ? `, CGPA: ${edu.cgpa}` : '');
+      return `
+        <div class="edu-entry" data-edu-idx="${eIdx}">
+          <div class="edu-head">
+            <span class="pdf-field pdf-edu-degree" contenteditable="true" spellcheck="false" data-edu-idx="${eIdx}" data-field="degree" title="Click to edit degree">${escapeHtml(degree)}</span>
+            <span class="when pdf-field pdf-edu-date" contenteditable="true" spellcheck="false" data-edu-idx="${eIdx}" data-field="period" title="Click to edit graduation year">${escapeHtml(period)}</span>
           </div>
-        `;
-      }).join('');
-    } else if (Array.isArray(p.skills) && p.skills.length > 0) {
-      skillsRowsHtml = `
-        <div class="pdf-skill-row">
-          <strong class="pdf-field pdf-skill-label" contenteditable="true" spellcheck="false">Core Competencies:</strong>
-          <span class="pdf-field pdf-skill-values" contenteditable="true" spellcheck="false" title="Click to edit skills">${escapeHtml(p.skills.join(', '))}</span>
+          <ul>
+            <li class="pdf-field pdf-edu-bullet" contenteditable="true" spellcheck="false" data-edu-idx="${eIdx}" title="Click to edit college info">
+              <strong>${escapeHtml(inst)}</strong>${escapeHtml(details)}
+            </li>
+          </ul>
         </div>
       `;
-    }
+    }).join('');
 
-    // Education markup
-    const educationList = p.education || [];
-    const eduHtml = educationList.map((edu, eduIdx) => `
-      <article class="pdf-education-entry" data-edu-idx="${eduIdx}">
-        <div class="pdf-entry-row-header">
-          <div class="pdf-edu-left">
-            <strong class="pdf-field pdf-edu-degree" contenteditable="true" spellcheck="false" data-edu-idx="${eduIdx}" data-field="degree" title="Click to edit degree">${escapeHtml(edu.degree || 'Bachelor of Science')}</strong>
-            <span class="pdf-sep">&mdash;</span>
-            <span class="pdf-field pdf-edu-institution" contenteditable="true" spellcheck="false" data-edu-idx="${eduIdx}" data-field="institution" title="Click to edit university / institution">${escapeHtml(edu.institution || 'University Name')}</span>
-          </div>
-          <div class="pdf-field pdf-edu-date" contenteditable="true" spellcheck="false" data-edu-idx="${eduIdx}" data-field="period" title="Click to edit graduation year">${escapeHtml(edu.period || edu.gradYear || '2020 – 2024')}</div>
-        </div>
-        ${edu.location ? `<div class="pdf-entry-subrow"><span class="pdf-field" contenteditable="true" spellcheck="false">${escapeHtml(edu.location)}</span></div>` : ''}
-      </article>
+    // 5. Awards & Certification Bullets
+    const certs = p.certifications || [
+      'Salesforce AI Associate and Agentforce Specialist, both completed with scores above 80%.',
+      'Oracle AI Foundations Associate completed with 92% and Postman AI Student Expert certified.'
+    ];
+    const certLisHtml = certs.map((cert, cIdx) => `
+      <li class="pdf-field pdf-cert-bullet" contenteditable="true" spellcheck="false" data-cert-idx="${cIdx}" title="Click to edit certification">${escapeHtml(cert)}</li>
     `).join('');
 
-    // Projects markup (if present)
-    const projectsList = p.projects || [];
-    const projectsHtml = projectsList.length > 0 ? `
-      <section class="pdf-section">
-        <h2 class="pdf-field pdf-section-heading" contenteditable="true" spellcheck="false">TECHNICAL PROJECTS</h2>
-        <div class="pdf-section-rule"></div>
-        ${projectsList.map((proj, pIdx) => `
-          <article class="pdf-project-entry" data-proj-idx="${pIdx}">
-            <div class="pdf-entry-row-header">
-              <div class="pdf-proj-left">
-                <strong class="pdf-field pdf-proj-name" contenteditable="true" spellcheck="false" data-proj-idx="${pIdx}" data-field="name">${escapeHtml(proj.name || 'Project Name')}</strong>
-                ${proj.tech ? `<span class="pdf-field pdf-proj-tech" contenteditable="true" spellcheck="false" data-proj-idx="${pIdx}" data-field="tech"> (${escapeHtml(proj.tech)})</span>` : ''}
-              </div>
-              ${proj.period ? `<div class="pdf-field pdf-proj-date" contenteditable="true" spellcheck="false" data-proj-idx="${pIdx}" data-field="period">${escapeHtml(proj.period)}</div>` : ''}
-            </div>
-            <p class="pdf-field pdf-proj-desc" contenteditable="true" spellcheck="false" data-proj-idx="${pIdx}" data-field="description">${escapeHtml(proj.description || '')}</p>
-          </article>
-        `).join('')}
-      </section>
-    ` : '';
-
-    // Sheet Container
+    // Wrap in A4 sheet
     const sheetWrapper = document.createElement('div');
     sheetWrapper.className = 'pdf-sheet-wrapper';
     sheetWrapper.id = 'pdf-sheet-wrapper';
-    sheetWrapper.style.transform = `scale(${this.scale})`;
+    sheetWrapper.style.transform = this.scale === 1.0 ? 'none' : `scale(${this.scale})`;
+    sheetWrapper.style.transformOrigin = 'top center';
 
     sheetWrapper.innerHTML = `
       <div class="pdf-document-sheet" id="pdf-document-sheet">
-        <!-- Header -->
-        <header class="pdf-sheet-header">
-          <h1 class="pdf-field pdf-field-name" contenteditable="true" spellcheck="false" data-field="fullName" title="Click to edit candidate name">${escapeHtml(fullName)}</h1>
-          <div class="pdf-field pdf-field-title" contenteditable="true" spellcheck="false" data-field="title" title="Click to edit target job title">${escapeHtml(title)}</div>
-          <div class="pdf-contact-row">
-            ${contactElements.join('<span class="pdf-contact-sep">|</span>')}
+
+        <!-- HEADER: Exact 2-Column Split matching uploaded resume -->
+        <header class="head">
+          <div class="head-left">
+            <h1 class="name pdf-field" contenteditable="true" spellcheck="false" data-field="fullName" title="Click to edit candidate name">${escapeHtml(fullName)}</h1>
+            <p class="role pdf-field" contenteditable="true" spellcheck="false" data-field="title" title="Click to edit role subtitle">${escapeHtml(title)}</p>
+          </div>
+          <div class="contact">
+            <div><b>City :</b> <span class="pdf-field" contenteditable="true" spellcheck="false" data-field="city">${escapeHtml(cityState)}</span></div>
+            <div><b>Email :</b> <span class="pdf-field" contenteditable="true" spellcheck="false" data-field="email">${escapeHtml(email)}</span></div>
+            <div><b>Phone :</b> <span class="pdf-field" contenteditable="true" spellcheck="false" data-field="phone">${escapeHtml(phone)}</span></div>
+            <div><b>Github :</b> <span class="pdf-field" contenteditable="true" spellcheck="false" data-field="github">${escapeHtml(github)}</span></div>
+            <div class="wide"><b>LinkedIn :</b> <span class="pdf-field" contenteditable="true" spellcheck="false" data-field="linkedin">${escapeHtml(linkedin)}</span></div>
           </div>
         </header>
 
-        <!-- Professional Summary -->
+        <!-- PROFESSIONAL SUMMARY -->
         ${p.summary ? `
-          <section class="pdf-section">
-            <h2 class="pdf-field pdf-section-heading" contenteditable="true" spellcheck="false">PROFESSIONAL SUMMARY</h2>
-            <div class="pdf-section-rule"></div>
-            <p class="pdf-field pdf-field-summary" contenteditable="true" spellcheck="false" data-field="summary" title="Click to edit professional summary">${escapeHtml(p.summary)}</p>
+          <section>
+            <h2 class="pdf-field" contenteditable="true" spellcheck="false">PROFESSIONAL SUMMARY</h2>
+            <p class="summary pdf-field" contenteditable="true" spellcheck="false" data-field="summary" title="Click to edit summary">${escapeHtml(p.summary)}</p>
           </section>
         ` : ''}
 
-        <!-- Technical Skills -->
-        ${skillsRowsHtml ? `
-          <section class="pdf-section">
-            <h2 class="pdf-field pdf-section-heading" contenteditable="true" spellcheck="false">TECHNICAL SKILLS</h2>
-            <div class="pdf-section-rule"></div>
-            <div class="pdf-skills-block">
-              ${skillsRowsHtml}
-            </div>
+        <!-- TECHNICAL SKILLS -->
+        ${skillsLisHtml ? `
+          <section>
+            <h2 class="pdf-field" contenteditable="true" spellcheck="false">TECHNICAL SKILLS</h2>
+            <ul>
+              ${skillsLisHtml}
+            </ul>
           </section>
         ` : ''}
 
-        <!-- Professional Experience -->
-        ${expHtml ? `
-          <section class="pdf-section">
-            <h2 class="pdf-field pdf-section-heading" contenteditable="true" spellcheck="false">PROFESSIONAL EXPERIENCE</h2>
-            <div class="pdf-section-rule"></div>
-            <div class="pdf-experience-list">
-              ${expHtml}
-            </div>
+        <!-- PROFESSIONAL EXPERIENCE -->
+        ${expEntriesHtml ? `
+          <section>
+            <h2 class="pdf-field" contenteditable="true" spellcheck="false">PROFESSIONAL EXPERIENCE</h2>
+            ${expEntriesHtml}
           </section>
         ` : ''}
 
-        <!-- Projects -->
-        ${projectsHtml}
-
-        <!-- Education -->
-        ${eduHtml ? `
-          <section class="pdf-section">
-            <h2 class="pdf-field pdf-section-heading" contenteditable="true" spellcheck="false">EDUCATION</h2>
-            <div class="pdf-section-rule"></div>
-            <div class="pdf-education-list">
-              ${eduHtml}
-            </div>
+        <!-- PROJECTS -->
+        ${projectsLisHtml ? `
+          <section>
+            <h2 class="pdf-field" contenteditable="true" spellcheck="false">PROJECTS</h2>
+            <ul>
+              ${projectsLisHtml}
+            </ul>
           </section>
         ` : ''}
+
+        <!-- EDUCATION -->
+        ${eduEntriesHtml ? `
+          <section>
+            <h2 class="pdf-field" contenteditable="true" spellcheck="false">EDUCATION</h2>
+            ${eduEntriesHtml}
+          </section>
+        ` : ''}
+
+        <!-- AWARDS AND CERTIFICATION -->
+        ${certLisHtml ? `
+          <section>
+            <h2 class="pdf-field" contenteditable="true" spellcheck="false">AWARDS AND CERTIFICATION</h2>
+            <ul>
+              ${certLisHtml}
+            </ul>
+          </section>
+        ` : ''}
+
       </div>
     `;
 
@@ -394,37 +402,65 @@ export class PdfCanvasEditor {
     if (!this.profile) this.profile = {};
 
     // Header fields
-    const nameEl = sheet.querySelector('.pdf-field-name');
+    const nameEl = sheet.querySelector('.name');
     if (nameEl) this.profile.fullName = nameEl.textContent.trim();
 
-    const titleEl = sheet.querySelector('.pdf-field-title');
+    const titleEl = sheet.querySelector('.role');
     if (titleEl) this.profile.title = titleEl.textContent.trim();
 
     // Summary
-    const sumEl = sheet.querySelector('.pdf-field-summary');
+    const sumEl = sheet.querySelector('.summary');
     if (sumEl) this.profile.summary = sumEl.textContent.trim();
 
     // Contact fields
-    sheet.querySelectorAll('.pdf-field-contact').forEach(el => {
+    sheet.querySelectorAll('[data-field]').forEach(el => {
       const field = el.dataset.field;
-      if (field && this.profile) {
+      if (['city', 'email', 'phone', 'github', 'linkedin', 'portfolio'].includes(field)) {
         this.profile[field] = el.textContent.trim();
       }
     });
 
+    // Skills
+    const skillCategories = {};
+    sheet.querySelectorAll('.pdf-skill-bullet').forEach(row => {
+      const labelEl = row.querySelector('.pdf-field-skill-cat') || row.querySelector('b');
+      if (labelEl) {
+        const label = labelEl.textContent.replace(/:$/, '').trim();
+        const fullText = row.textContent;
+        const valText = fullText.replace(labelEl.textContent, '').trim();
+        if (label) skillCategories[label] = valText;
+      }
+    });
+    if (Object.keys(skillCategories).length > 0) {
+      this.profile.skillCategories = skillCategories;
+      this.profile.skills = Object.values(skillCategories)
+        .flatMap(s => s.split(/[,|]/))
+        .map(s => s.trim())
+        .filter(Boolean);
+    }
+
     // Experience entries
-    sheet.querySelectorAll('.pdf-experience-entry').forEach((entryEl, eIdx) => {
+    sheet.querySelectorAll('.exp-entry').forEach((entryEl, eIdx) => {
       if (!this.profile.experience) this.profile.experience = [];
       if (!this.profile.experience[eIdx]) this.profile.experience[eIdx] = {};
 
       const compEl = entryEl.querySelector('.pdf-exp-company');
       if (compEl) this.profile.experience[eIdx].company = compEl.textContent.trim();
 
-      const roleEl = entryEl.querySelector('.pdf-exp-title');
-      if (roleEl) this.profile.experience[eIdx].title = roleEl.textContent.trim();
+      const roleEl = entryEl.querySelector('.pdf-exp-role');
+      if (roleEl) {
+        this.profile.experience[eIdx].role = roleEl.textContent.trim();
+        this.profile.experience[eIdx].title = roleEl.textContent.trim();
+      }
+
+      const projEl = entryEl.querySelector('.pdf-exp-project');
+      if (projEl) this.profile.experience[eIdx].project = projEl.textContent.trim();
 
       const dateEl = entryEl.querySelector('.pdf-exp-date');
       if (dateEl) this.profile.experience[eIdx].period = dateEl.textContent.trim();
+
+      const locEl = entryEl.querySelector('.pdf-exp-loc');
+      if (locEl) this.profile.experience[eIdx].location = locEl.textContent.trim();
 
       // Bullets
       const bullets = [];
@@ -432,40 +468,53 @@ export class PdfCanvasEditor {
         const txt = bEl.textContent.trim();
         if (txt) bullets.push(txt);
       });
+      this.profile.experience[eIdx].highlights = bullets;
       this.profile.experience[eIdx].bullets = bullets;
       this.profile.experience[eIdx].description = bullets.join(' ');
     });
 
+    // Projects entries
+    sheet.querySelectorAll('.pdf-proj-bullet').forEach((pEl, pIdx) => {
+      if (!this.profile.projects) this.profile.projects = [];
+      if (!this.profile.projects[pIdx]) this.profile.projects[pIdx] = {};
+
+      const nameEl = pEl.querySelector('.pdf-field-proj-name') || pEl.querySelector('strong') || pEl.querySelector('b');
+      const descEl = pEl.querySelector('.pdf-field-proj-desc');
+      if (nameEl) {
+        this.profile.projects[pIdx].name = nameEl.textContent.replace(/[–—:-]+$/, '').trim();
+      }
+      if (descEl) {
+        this.profile.projects[pIdx].description = descEl.textContent.trim();
+      } else if (nameEl) {
+        this.profile.projects[pIdx].description = pEl.textContent.replace(nameEl.textContent, '').trim();
+      }
+    });
+
     // Education entries
-    sheet.querySelectorAll('.pdf-education-entry').forEach((eduEl, edIdx) => {
+    sheet.querySelectorAll('.edu-entry').forEach((eduEl, edIdx) => {
       if (!this.profile.education) this.profile.education = [];
       if (!this.profile.education[edIdx]) this.profile.education[edIdx] = {};
 
       const degEl = eduEl.querySelector('.pdf-edu-degree');
       if (degEl) this.profile.education[edIdx].degree = degEl.textContent.trim();
 
-      const instEl = eduEl.querySelector('.pdf-edu-institution');
-      if (instEl) this.profile.education[edIdx].institution = instEl.textContent.trim();
-
       const dateEl = eduEl.querySelector('.pdf-edu-date');
       if (dateEl) this.profile.education[edIdx].period = dateEl.textContent.trim();
-    });
 
-    // Skills
-    const skillCategories = {};
-    sheet.querySelectorAll('.pdf-skill-row').forEach(row => {
-      const labelEl = row.querySelector('.pdf-skill-label');
-      const valEl = row.querySelector('.pdf-skill-values');
-      if (labelEl && valEl) {
-        const label = labelEl.textContent.replace(/:$/, '').trim();
-        const vals = valEl.textContent.split(',').map(s => s.trim()).filter(Boolean);
-        if (label) skillCategories[label] = vals;
+      const bulletEl = eduEl.querySelector('.pdf-edu-bullet');
+      if (bulletEl) {
+        const instEl = bulletEl.querySelector('strong') || bulletEl.querySelector('b');
+        if (instEl) this.profile.education[edIdx].institution = instEl.textContent.trim();
       }
     });
-    if (Object.keys(skillCategories).length > 0) {
-      this.profile.skillCategories = skillCategories;
-      this.profile.skills = Object.values(skillCategories).flat();
-    }
+
+    // Certifications
+    const certs = [];
+    sheet.querySelectorAll('.pdf-cert-bullet').forEach(cEl => {
+      const txt = cEl.textContent.trim();
+      if (txt) certs.push(txt);
+    });
+    if (certs.length > 0) this.profile.certifications = certs;
   }
 
   /**
@@ -547,7 +596,7 @@ export class PdfCanvasEditor {
   applyZoom() {
     const wrapper = document.getElementById('pdf-sheet-wrapper');
     if (wrapper) {
-      wrapper.style.transform = `scale(${this.scale})`;
+      wrapper.style.transform = this.scale === 1.0 ? 'none' : `scale(${this.scale})`;
     }
     const zoomLabel = document.getElementById('pdf-zoom-level-label');
     if (zoomLabel) {

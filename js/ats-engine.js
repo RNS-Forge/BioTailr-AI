@@ -259,35 +259,19 @@ export function optimizeProfileFor100Ats(profile, targetRole, archetypeId = 'dev
   else if (isMfg) targetKeywords = ROLE_KEYWORD_MAP.manufacturing;
   else if (isComm) targetKeywords = ROLE_KEYWORD_MAP.communication;
 
-  // 2. Align Professional Summary with Target Role and Core Value Proposition
+  // 2. Align Professional Summary with Target Role and Core Value Proposition (preserve existing authentic summary if present)
   const companiesString = 'Axodian, Nexus Horizon, and SNS Square';
-  if (isSde) {
-    optimized.summary = `Results-oriented ${targetRole || 'Software Development Engineer'} with demonstrated expertise in microservices architecture, scalable enterprise systems, RESTful APIs, and database engineering across ${companiesString}. Proven track record in designing high-throughput trade finance workflows, integrating banking connectivity, cutting reconciliation cycle times by 40%, and maintaining 99.8% compliance accuracy.`;
-  } else if (isFsd) {
-    optimized.summary = `Versatile ${targetRole || 'Full Stack Web Developer'} skilled in modern responsive web architecture, RESTful API integrations, React.js, TypeScript, and Node.js across ${companiesString}. Experienced in delivering high-performance user interfaces, optimizing frontend rendering speeds by 40%, and deploying scalable cross-platform solutions.`;
-  } else if (isMfg) {
-    optimized.summary = `Detail-oriented ${targetRole || 'Quality Checker & Quality Control Specialist'} with verified hands-on metrology and precision inspection experience across ${companiesString}. Proficient in operating digital vernier calipers, micrometers, height gauges, and bore gauges to verify tight-tolerance engineering specifications, ensuring zero-defect compliance, PPAP documentation, and ISO 9001:2015 standards.`;
-  } else if (isComm) {
-    optimized.summary = `High-impact ${targetRole || 'Voice Process Executive & Business Analyst'} with verified expertise in client handling, customer relationship management (CRM), requirement gathering, and SLA adherence across ${companiesString}. Adept at resolving complex customer escalations with 98%+ satisfaction and collaborating with cross-functional technical teams.`;
-  } else {
-    optimized.summary = `Results-driven ${targetRole || 'Software & AI Engineer'} specializing in enterprise software development, distributed systems, RESTful APIs, and intelligent automation across ${companiesString}. Proven track record in developing high-throughput services, real-time integrations, cutting API error rates by 30%, and delivering high-impact technical solutions.`;
-  }
-
-  // 3. Clean SDE-specific profile of irrelevant AI buzzwords if applying for core software roles
-  if (isSde) {
-    const aiTerms = ['agentic ai', 'crew ai', 'autogen', 'langgraph', 'langchain', 'rag pipelines', 'rag architectures', 'rag', 'llm', 'document intelligence', 'genai', 'tensorflow', 'opencv'];
-    if (optimized.skills) {
-      optimized.skills = optimized.skills.filter(s => !aiTerms.some(term => s.toLowerCase().includes(term)));
-    }
-    if (optimized.skillCategories) {
-      Object.keys(optimized.skillCategories).forEach(cat => {
-        const skillsList = (typeof optimized.skillCategories[cat] === 'string' ? optimized.skillCategories[cat].split(',') : [])
-          .map(s => s.trim());
-        const cleaned = skillsList.filter(s => !aiTerms.some(term => s.toLowerCase().includes(term)));
-        optimized.skillCategories[cat] = cleaned.join(', ');
-      });
-      optimized.skillCategories['Core Competencies'] = 'Object-Oriented Design (OOD), RESTful API Design, Microservices Architecture, Database Optimization, Agile / Scrum';
-      optimized.skillCategories['Frameworks & Libraries'] = 'ASP.NET Core, RESTful APIs, Microservices, TDD / BDD, React.js, Node.js';
+  if (!optimized.summary) {
+    if (isSde) {
+      optimized.summary = `Results-oriented ${targetRole || 'Software Development Engineer'} with demonstrated expertise in microservices architecture, scalable enterprise systems, RESTful APIs, and database engineering across ${companiesString}. Proven track record in designing high-throughput trade finance workflows, integrating banking connectivity, cutting reconciliation cycle times by 40%, and maintaining 99.8% compliance accuracy.`;
+    } else if (isFsd) {
+      optimized.summary = `Versatile ${targetRole || 'Full Stack Web Developer'} skilled in modern responsive web architecture, RESTful API integrations, React.js, TypeScript, and Node.js across ${companiesString}. Experienced in delivering high-performance user interfaces, optimizing frontend rendering speeds by 40%, and deploying scalable cross-platform solutions.`;
+    } else if (isMfg) {
+      optimized.summary = `Detail-oriented ${targetRole || 'Quality Checker & Quality Control Specialist'} with verified hands-on metrology and precision inspection experience across ${companiesString}. Proficient in operating digital vernier calipers, micrometers, height gauges, and bore gauges to verify tight-tolerance engineering specifications, ensuring zero-defect compliance, PPAP documentation, and ISO 9001:2015 standards.`;
+    } else if (isComm) {
+      optimized.summary = `High-impact ${targetRole || 'Voice Process Executive & Business Analyst'} with verified expertise in client handling, customer relationship management (CRM), requirement gathering, and SLA adherence across ${companiesString}. Adept at resolving complex customer escalations with 98%+ satisfaction and collaborating with cross-functional technical teams.`;
+    } else {
+      optimized.summary = `Results-driven ${targetRole || 'Software & AI Engineer'} specializing in enterprise software development, distributed systems, RESTful APIs, and intelligent automation across ${companiesString}. Proven track record in developing high-throughput services, real-time integrations, cutting API error rates by 30%, and delivering high-impact technical solutions.`;
     }
   }
 

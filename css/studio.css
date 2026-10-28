@@ -1589,19 +1589,21 @@ textarea.correction-textarea:focus {
   width: 100%;
 }
 
-/* Authentic A4 Executive PDF Document Sheet */
+/* Authentic 1-Page A4 Resume Layout Matching Uploaded Document Identity */
 .pdf-document-sheet {
   width: 210mm;
   min-height: 297mm;
+  margin: 0 auto;
+  padding: 17pt 37pt 12pt 36pt;
+  box-sizing: border-box;
   background: #ffffff;
   color: #000000 !important;
-  padding: 18mm 22mm;
-  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.14), 0 2px 8px rgba(15, 23, 42, 0.08);
-  border: 1px solid #e2e8f0;
-  border-radius: 2px;
-  font-family: 'Times New Roman', Times, 'Liberation Serif', Georgia, serif;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  font-family: 'Open Sans', 'Segoe UI', Calibri, Arial, sans-serif;
+  font-size: 10pt;
   line-height: 1.36;
-  box-sizing: border-box;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
   position: relative;
   user-select: text;
   -webkit-print-color-adjust: exact;
@@ -1615,188 +1617,155 @@ textarea.correction-textarea:focus {
 .pdf-document-sheet p,
 .pdf-document-sheet span,
 .pdf-document-sheet strong,
+.pdf-document-sheet b,
 .pdf-document-sheet li,
 .pdf-document-sheet div {
   color: #000000 !important;
 }
 
-/* Header */
-.pdf-sheet-header {
-  text-align: center;
-  margin-bottom: 12px;
-  border-bottom: 1.8px solid #000000;
-  padding-bottom: 9px;
-}
-
-.pdf-field-name {
-  font-size: 21pt;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin: 0 0 3px 0;
-  line-height: 1.15;
-}
-
-.pdf-field-title {
-  font-size: 10.5pt;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  margin-bottom: 5px;
-}
-
-.pdf-contact-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 7px;
-  font-size: 9pt;
-  line-height: 1.4;
-}
-
-.pdf-contact-sep {
-  color: #000000;
-  font-weight: normal;
-}
-
-/* Sections & Rules */
-.pdf-section {
-  margin-bottom: 11px;
-}
-
-.pdf-section-heading {
-  font-size: 10.5pt;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin: 0;
-  padding: 0;
-}
-
-.pdf-section-rule {
-  border-bottom: 1.2px solid #000000;
-  margin: 2px 0 6px 0;
-}
-
-/* Summary */
-.pdf-field-summary {
-  font-size: 9.8pt;
-  line-height: 1.42;
-  margin: 0;
-  text-align: justify;
-}
-
-/* Technical Skills */
-.pdf-skills-block {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.pdf-skill-row {
-  font-size: 9.8pt;
-  line-height: 1.38;
-}
-
-.pdf-skill-label {
-  font-weight: 700;
-}
-
-/* Work Experience & Alignment */
-.pdf-experience-entry {
-  margin-bottom: 9px;
-  page-break-inside: avoid;
-}
-
-.pdf-entry-row-header {
+/* Header: 2-Column Split matching uploaded resume */
+.pdf-document-sheet .head {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  width: 100%;
+  align-items: flex-start;
+  padding-bottom: 4pt;
+  border-bottom: 0.75pt solid #1c1c1c;
+  margin-bottom: 0;
 }
 
-.pdf-exp-left,
-.pdf-edu-left,
-.pdf-proj-left {
-  font-size: 10pt;
-  font-weight: 700;
+.pdf-document-sheet .head-left {
   flex: 1;
   min-width: 0;
-  padding-right: 12px;
 }
 
-.pdf-exp-company,
-.pdf-edu-degree,
-.pdf-proj-name {
+.pdf-document-sheet .name {
+  margin: 0;
+  font-family: 'Times New Roman', Times, 'Liberation Serif', serif;
   font-weight: 700;
+  font-size: 21pt;
+  line-height: 1.1;
+  letter-spacing: 0.2pt;
+  color: #000000;
 }
 
-.pdf-sep {
-  margin: 0 4px;
-  font-weight: normal;
+.pdf-document-sheet .role {
+  margin: 2pt 0 0;
+  font-family: 'Inter', 'Open Sans', sans-serif;
+  font-size: 10pt;
+  line-height: 1.2;
+  color: #000000;
 }
 
-.pdf-exp-title,
-.pdf-edu-institution,
-.pdf-proj-tech {
-  font-style: italic;
-  font-weight: normal;
+.pdf-document-sheet .contact {
+  display: grid;
+  grid-template-columns: 128pt auto;
+  column-gap: 0;
+  margin-top: 1pt;
+  font-family: 'Inter', 'Open Sans', sans-serif;
+  font-size: 7.6pt;
+  line-height: 1.32;
+  color: #000000;
 }
 
-/* Strictly Right-Aligned Dates */
-.pdf-exp-date,
-.pdf-edu-date,
-.pdf-proj-date {
-  margin-left: auto;
-  text-align: right;
-  white-space: nowrap;
-  font-size: 9.5pt;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  flex-shrink: 0;
+.pdf-document-sheet .contact b {
+  font-weight: 700;
+  color: #000000;
 }
 
-.pdf-entry-subrow {
+.pdf-document-sheet .contact .wide {
+  grid-column: 1 / -1;
+}
+
+/* Sections */
+.pdf-document-sheet section {
+  padding: 4pt 0 5pt;
+  border-bottom: 0.75pt solid #1c1c1c;
+}
+
+.pdf-document-sheet section:last-of-type {
+  border-bottom: 0;
+}
+
+.pdf-document-sheet h2 {
+  margin: 0 0 3pt;
+  font-size: 12pt;
+  font-weight: 700;
+  line-height: 1.25;
+  padding-left: 2pt;
+  text-transform: uppercase;
+  color: #000000;
+}
+
+.pdf-document-sheet p.summary {
+  margin: 0;
+  padding-left: 2pt;
+  line-height: 1.36;
+  text-align: justify;
+  font-size: 10pt;
+  color: #000000;
+}
+
+.pdf-document-sheet ul {
+  margin: 0;
+  padding-left: 20pt;
+  list-style: disc;
+}
+
+.pdf-document-sheet li {
+  line-height: 1.36;
+  padding-left: 0;
+  font-size: 10pt;
+  color: #000000;
+}
+
+.pdf-document-sheet li::marker {
+  font-size: 8pt;
+}
+
+.pdf-document-sheet .entry-head {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  font-size: 9.2pt;
-  font-style: italic;
-  margin: 1px 0 3px;
+  gap: 10pt;
+  margin: 3pt 0 0;
+  padding-left: 2pt;
+  font-weight: 700;
+  line-height: 1.36;
+  font-size: 10pt;
+  color: #000000;
 }
 
-/* Bullet Points with Proper Hanging Indents */
-.pdf-bullet-list {
-  margin: 2px 0 6px 18px;
-  padding: 0;
-  list-style-type: disc;
-}
-
-.pdf-bullet-item {
+.pdf-document-sheet .entry-head .when {
+  white-space: nowrap;
+  font-weight: 700;
   font-size: 9.5pt;
-  line-height: 1.38;
-  margin-bottom: 3px;
-  padding-left: 2px;
-  text-align: justify;
+  margin-left: auto;
 }
 
-/* Education */
-.pdf-education-entry {
-  margin-bottom: 6px;
-  page-break-inside: avoid;
+.pdf-document-sheet .entry-sub {
+  margin: 0 0 2pt;
+  padding-left: 2pt;
+  font-size: 9pt;
+  line-height: 1.3;
+  color: #000000;
 }
 
-/* Projects */
-.pdf-project-entry {
-  margin-bottom: 8px;
-  page-break-inside: avoid;
+.pdf-document-sheet .edu-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-left: 2pt;
+  line-height: 1.36;
+  font-size: 10pt;
+  font-weight: 700;
+  color: #000000;
 }
 
-.pdf-proj-desc {
+.pdf-document-sheet .edu-head .when {
+  font-weight: 700;
+  white-space: nowrap;
   font-size: 9.5pt;
-  line-height: 1.38;
-  margin: 2px 0 0;
+  margin-left: auto;
 }
 
 /* Click-to-Edit Visual Affordances */
@@ -1810,29 +1779,33 @@ textarea.correction-textarea:focus {
 }
 
 .pdf-field:hover {
-  outline: 1.5px dashed rgba(0, 180, 159, 0.5) !important;
-  background: rgba(0, 180, 159, 0.03);
+  outline: 1.5px dashed rgba(0, 180, 159, 0.45) !important;
+  background: rgba(0, 180, 159, 0.02);
 }
 
 .pdf-field:focus {
   outline: 2px solid #00b49f !important;
-  background: rgba(0, 180, 159, 0.06) !important;
-  box-shadow: 0 0 0 3px rgba(0, 180, 159, 0.15);
+  background: rgba(0, 180, 159, 0.05) !important;
+  box-shadow: 0 0 0 2px rgba(0, 180, 159, 0.15);
   border-radius: 2px;
 }
 
 .pdf-field.user-edited {
-  /* Subtle indicator of edited element */
+  /* Clean appearance */
 }
 
-.pdf-bullet-item.pdf-field {
+.pdf-bullet-item.pdf-field,
+.pdf-skill-bullet.pdf-field,
+.pdf-proj-bullet.pdf-field,
+.pdf-edu-bullet.pdf-field,
+.pdf-cert-bullet.pdf-field {
   display: list-item;
 }
 
-.pdf-field-name.pdf-field,
-.pdf-field-title.pdf-field,
-.pdf-field-summary.pdf-field,
-.pdf-section-heading.pdf-field {
+.pdf-document-sheet .name.pdf-field,
+.pdf-document-sheet .role.pdf-field,
+.pdf-document-sheet .summary.pdf-field,
+.pdf-document-sheet h2.pdf-field {
   display: block;
 }
 

@@ -45,7 +45,7 @@ function initApp() {
   if (pdfViewport) {
     pdfEditor = new PdfCanvasEditor({
       container: pdfViewport,
-      initialScale: 1.35,
+      initialScale: 1.0,
       onTextChange: handlePdfTextChange,
       onStatusChange: (msg, pct) => {
         const procSub = document.querySelector('.proc-sub');
@@ -56,7 +56,7 @@ function initApp() {
 
   // Pre-initialize default profile & ATS data so Studio is never blank
   state.selectedArchetypeId = 'developer';
-  state.targetRole = 'Software Development Engineer';
+  state.targetRole = 'AI Engineer | Software Engineer';
   state.viewMode = 'tailored';
   const baseProfile = RESUME_ARCHETYPES[state.selectedArchetypeId].profile;
   state.currentProfile = optimizeProfileFor100Ats(baseProfile, state.targetRole, state.selectedArchetypeId);
