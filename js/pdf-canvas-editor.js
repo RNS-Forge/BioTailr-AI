@@ -116,7 +116,9 @@ export class PdfCanvasEditor {
     const p = this.profile || {};
     const fullName = p.fullName || 'SANJAY N';
     const title = p.title || 'AI Engineer | Software Engineer';
-    const cityState = p.city && p.state ? `${p.city} , ${p.state}` : (p.location || 'Coimbatore , TN');
+    const cityState = p.city && p.state
+      ? `${p.city} , ${p.state.toLowerCase().includes('tamil') ? 'TN' : p.state}`
+      : (p.location && p.location.includes('Coimbatore') ? 'Coimbatore , TN' : (p.location || 'Coimbatore , TN'));
     const email = p.email || '2005sanjaynrs@gmail.com';
     const phone = p.phone || '+91 93615 99018';
     const github = p.github || 'https://github.com/RNS-Forge';
@@ -168,13 +170,13 @@ export class PdfCanvasEditor {
               <strong class="pdf-field pdf-exp-company" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="company" title="Click to edit company">${escapeHtml(company)}</strong>
               <span class="pdf-sep"> - </span>
               <span class="pdf-field pdf-exp-role" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="role" title="Click to edit job role">${escapeHtml(expRole)}</span>
-              ${project ? `<span class="pdf-proj-label"> | Project: </span><span class="pdf-field pdf-exp-project" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="project" title="Click to edit project name">${escapeHtml(project)}</span>` : ''}
             </span>
             <span class="when pdf-field pdf-exp-date" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="period" title="Click to edit date range">${escapeHtml(period)}</span>
           </div>
-          ${location ? `
+          ${(project || location) ? `
             <div class="entry-sub">
-              <span class="pdf-field pdf-exp-loc" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="location" title="Click to edit location">${escapeHtml(location)}</span>
+              <span class="pdf-field pdf-exp-project" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="project" title="Click to edit project name">${escapeHtml(project ? (project.toLowerCase().startsWith('project') ? project : (project.includes(',') ? 'Projects: ' : 'Project: ') + project) : '')}</span>
+              <span class="when pdf-field pdf-exp-loc" contenteditable="true" spellcheck="false" data-exp-idx="${expIdx}" data-field="location" title="Click to edit location">${escapeHtml(location)}</span>
             </div>
           ` : ''}
           <ul class="pdf-bullet-list">
