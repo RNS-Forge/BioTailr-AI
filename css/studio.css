@@ -1267,11 +1267,13 @@ textarea.correction-textarea:focus {
   flex: 1;
   min-width: 0;
   background: #f1f5f9;
-  padding: 2.25rem 2rem 4.5rem;
+  padding: 1.5rem 1.5rem 4.5rem;
   overflow-y: auto;
+  overflow-x: auto;
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   box-sizing: border-box;
 }
 
@@ -1565,73 +1567,273 @@ textarea.correction-textarea:focus {
 
 .pdf-canvas-viewport {
   width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   min-height: 800px;
-  padding: 10px 0 40px;
+  padding: 16px 20px 48px;
   box-sizing: border-box;
+  background: #f8fafc;
 }
 
-.pdf-page-wrapper {
-  position: relative;
-  background: #ffffff;
-  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.12), 0 1px 3px rgba(15, 23, 42, 0.08);
-  border: 1px solid #cbd5e1;
-  border-radius: 2px;
-  margin-bottom: 24px;
-  user-select: text;
-  box-sizing: content-box;
-}
-
-.pdf-page-canvas {
-  display: block;
+.pdf-sheet-wrapper {
+  transform-origin: top center;
+  transition: transform 0.15s ease;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
   width: 100%;
-  height: 100%;
+}
+
+/* Authentic A4 Executive PDF Document Sheet */
+.pdf-document-sheet {
+  width: 210mm;
+  min-height: 297mm;
+  background: #ffffff;
+  color: #000000 !important;
+  padding: 18mm 22mm;
+  box-shadow: 0 10px 40px rgba(15, 23, 42, 0.14), 0 2px 8px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e2e8f0;
+  border-radius: 2px;
+  font-family: 'Times New Roman', Times, 'Liberation Serif', Georgia, serif;
+  line-height: 1.36;
+  box-sizing: border-box;
+  position: relative;
+  user-select: text;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Ensure ALL text elements inside the PDF sheet stay pure ATS black */
+.pdf-document-sheet h1,
+.pdf-document-sheet h2,
+.pdf-document-sheet h3,
+.pdf-document-sheet p,
+.pdf-document-sheet span,
+.pdf-document-sheet strong,
+.pdf-document-sheet li,
+.pdf-document-sheet div {
+  color: #000000 !important;
+}
+
+/* Header */
+.pdf-sheet-header {
+  text-align: center;
+  margin-bottom: 12px;
+  border-bottom: 1.8px solid #000000;
+  padding-bottom: 9px;
+}
+
+.pdf-field-name {
+  font-size: 21pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 3px 0;
+  line-height: 1.15;
+}
+
+.pdf-field-title {
+  font-size: 10.5pt;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 5px;
+}
+
+.pdf-contact-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  font-size: 9pt;
+  line-height: 1.4;
+}
+
+.pdf-contact-sep {
+  color: #000000;
+  font-weight: normal;
+}
+
+/* Sections & Rules */
+.pdf-section {
+  margin-bottom: 11px;
+}
+
+.pdf-section-heading {
+  font-size: 10.5pt;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0;
+  padding: 0;
+}
+
+.pdf-section-rule {
+  border-bottom: 1.2px solid #000000;
+  margin: 2px 0 6px 0;
+}
+
+/* Summary */
+.pdf-field-summary {
+  font-size: 9.8pt;
+  line-height: 1.42;
+  margin: 0;
+  text-align: justify;
+}
+
+/* Technical Skills */
+.pdf-skills-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pdf-skill-row {
+  font-size: 9.8pt;
+  line-height: 1.38;
+}
+
+.pdf-skill-label {
+  font-weight: 700;
+}
+
+/* Work Experience & Alignment */
+.pdf-experience-entry {
+  margin-bottom: 9px;
+  page-break-inside: avoid;
+}
+
+.pdf-entry-row-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+}
+
+.pdf-exp-left,
+.pdf-edu-left,
+.pdf-proj-left {
+  font-size: 10pt;
+  font-weight: 700;
+  flex: 1;
+  min-width: 0;
+  padding-right: 12px;
+}
+
+.pdf-exp-company,
+.pdf-edu-degree,
+.pdf-proj-name {
+  font-weight: 700;
+}
+
+.pdf-sep {
+  margin: 0 4px;
+  font-weight: normal;
+}
+
+.pdf-exp-title,
+.pdf-edu-institution,
+.pdf-proj-tech {
+  font-style: italic;
+  font-weight: normal;
+}
+
+/* Strictly Right-Aligned Dates */
+.pdf-exp-date,
+.pdf-edu-date,
+.pdf-proj-date {
+  margin-left: auto;
+  text-align: right;
+  white-space: nowrap;
+  font-size: 9.5pt;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.pdf-entry-subrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 9.2pt;
+  font-style: italic;
+  margin: 1px 0 3px;
+}
+
+/* Bullet Points with Proper Hanging Indents */
+.pdf-bullet-list {
+  margin: 2px 0 6px 18px;
+  padding: 0;
+  list-style-type: disc;
+}
+
+.pdf-bullet-item {
+  font-size: 9.5pt;
+  line-height: 1.38;
+  margin-bottom: 3px;
+  padding-left: 2px;
+  text-align: justify;
+}
+
+/* Education */
+.pdf-education-entry {
+  margin-bottom: 6px;
+  page-break-inside: avoid;
+}
+
+/* Projects */
+.pdf-project-entry {
+  margin-bottom: 8px;
+  page-break-inside: avoid;
+}
+
+.pdf-proj-desc {
+  font-size: 9.5pt;
+  line-height: 1.38;
+  margin: 2px 0 0;
+}
+
+/* Click-to-Edit Visual Affordances */
+.pdf-field {
+  outline: 1.5px solid transparent;
+  border-radius: 2px;
+  cursor: text;
+  transition: outline 0.12s ease, background 0.12s ease;
+  min-width: 14px;
+  display: inline-block;
+}
+
+.pdf-field:hover {
+  outline: 1.5px dashed rgba(0, 180, 159, 0.5) !important;
+  background: rgba(0, 180, 159, 0.03);
+}
+
+.pdf-field:focus {
+  outline: 2px solid #00b49f !important;
+  background: rgba(0, 180, 159, 0.06) !important;
+  box-shadow: 0 0 0 3px rgba(0, 180, 159, 0.15);
   border-radius: 2px;
 }
 
-.pdf-text-layer-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  overflow: visible;
-  z-index: 2;
+.pdf-field.user-edited {
+  /* Subtle indicator of edited element */
 }
 
-.pdf-editable-text-item {
-  position: absolute;
-  pointer-events: auto;
-  cursor: text;
-  box-sizing: border-box;
-  color: transparent;
-  outline: none;
-  padding: 1px 3px;
-  border-radius: 3px;
-  transition: outline 0.1s ease, background 0.1s ease, box-shadow 0.1s ease;
-  white-space: pre-wrap;
-  word-break: break-word;
+.pdf-bullet-item.pdf-field {
+  display: list-item;
 }
 
-.pdf-editable-text-item:hover {
-  background: rgba(0, 180, 159, 0.06);
-  outline: 1.5px dashed rgba(0, 180, 159, 0.75);
-}
-
-.pdf-editable-text-item:focus {
-  background: #ffffff !important;
-  color: #000000 !important;
-  outline: 2px solid #00b49f !important;
-  box-shadow: 0 4px 16px rgba(0, 180, 159, 0.22), 0 1px 4px rgba(0, 0, 0, 0.1);
-  z-index: 50;
-}
-
-.pdf-editable-text-item.user-edited {
-  background: #ffffff;
-  color: #000000;
-  outline: 1px solid rgba(0, 180, 159, 0.45);
+.pdf-field-name.pdf-field,
+.pdf-field-title.pdf-field,
+.pdf-field-summary.pdf-field,
+.pdf-section-heading.pdf-field {
+  display: block;
 }
 
 .pdf-edit-hint-banner {

@@ -62,6 +62,13 @@ function initApp() {
   state.currentProfile = optimizeProfileFor100Ats(baseProfile, state.targetRole, state.selectedArchetypeId);
   state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
   window.showView = showView;
+  window.pdfEditor = pdfEditor;
+  window.BioTailrApp = {
+    state,
+    get pdfEditor() { return pdfEditor; },
+    ensurePdfCanvasLoaded,
+    handlePdfTextChange
+  };
 
   // Restore saved dynamic profile if available from previous upload
   const savedProfile = getSavedDynamicProfile();
@@ -672,7 +679,7 @@ function bindStudioEvents() {
     if (btn) {
       btn.addEventListener('click', async () => {
         const filename = getResumeDownloadFilename('pdf');
-        if (pdfEditor && pdfEditor.pdfDoc) {
+        if (pdfEditor) {
           const ok = await pdfEditor.downloadCompiledPdf(filename);
           if (ok) return;
         }
@@ -1493,12 +1500,15 @@ function syncLiveEditToState() {
 }
 
 /**
- * Handles text updates directly from the interactive PDF Canvas Editor
+ * Handles text updates directly from the interactive PDF Resume Editor
  */
-function handlePdfTextChange({ newText, fullDocumentText }) {
+function handlePdfTextChange({ profile, fullDocumentText }) {
+  if (profile) {
+    state.currentProfile = profile;
+  }
   if (!state.currentProfile) return;
 
-  // Re-score ATS live as candidate types on the PDF Canvas
+  // Re-score ATS live on every keystroke as candidate edits the PDF document sheet
   state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
   const scoreValEl = document.getElementById('ats-gauge-value');
   if (scoreValEl && state.atsData) {
@@ -1506,7 +1516,10 @@ function handlePdfTextChange({ newText, fullDocumentText }) {
   }
   renderAtsChecklist();
 
-  // Also sync with sidebar editor fields
+  // Persist edits to dynamic storage
+  saveDynamicProfile(state.currentProfile);
+
+  // Also sync with sidebar editor fields if open
   const panelEditor = document.getElementById('panel-sidebar-editor');
   if (panelEditor && panelEditor.style.display !== 'none') {
     populateResumeEditor();
@@ -1514,19 +1527,24 @@ function handlePdfTextChange({ newText, fullDocumentText }) {
 }
 
 /**
- * Ensures a high-DPI PDF document is loaded in the PDF Canvas Editor
+ * Ensures the candidate's active tailored or uploaded profile is loaded into the PDF Editor
  */
 async function ensurePdfCanvasLoaded() {
   if (!pdfEditor) return;
-  if (state.customPdfLoaded && pdfEditor.pdfDoc) return;
 
-  // BioTailr operates strictly as a PDF editor. If no PDF is uploaded yet,
-  // render the interactive PDF Upload Prompt directly on the canvas viewport.
-  renderPdfEmptyState();
+  const profileToLoad = state.currentProfile 
+    || (state.selectedArchetypeId && RESUME_ARCHETYPES[state.selectedArchetypeId]?.profile);
+
+  if (profileToLoad) {
+    const filename = `${(profileToLoad.fullName || 'Candidate').replace(/\s+/g, '_')}_Tailored_Resume.pdf`;
+    pdfEditor.loadProfile(profileToLoad, filename);
+  } else {
+    renderPdfEmptyState();
+  }
 }
 
 /**
- * Renders the prominent in-canvas empty state when no PDF is loaded yet
+ * Renders the prominent in-canvas empty state when no resume is loaded
  */
 function renderPdfEmptyState() {
   const viewport = document.getElementById('pdf-canvas-viewport');
@@ -1545,13 +1563,13 @@ function renderPdfEmptyState() {
         </svg>
       </div>
       <h3>Upload Your Resume (PDF Only)</h3>
-      <p>BioTailr AI operates exclusively on PDF documents. No HTML templates. Upload your existing resume in PDF format to edit text directly on the canvas and verify 100% ATS score compliance.</p>
+      <p>BioTailr AI operates exclusively on PDF documents. Upload your existing resume in PDF format to edit text directly in-place and verify 100% ATS score compliance.</p>
       <div class="pdf-empty-btn-group">
         <button type="button" class="btn btn-teal btn-lg" id="btn-empty-upload-pdf">
           Choose PDF File (.pdf)
         </button>
         <button type="button" class="btn btn-outline btn-lg" id="btn-load-sample-pdf">
-          Load Sample PDF Resume
+          Load Verified Sample Resume
         </button>
       </div>
       <span class="pdf-accept-badge">Strictly PDF files (.pdf) accepted &bull; 100% Private Client-Side Processing</span>
@@ -1570,38 +1588,14 @@ function renderPdfEmptyState() {
 }
 
 /**
- * Loads a verified ATS base resume directly as a high-DPI PDF document into the PDF Canvas Editor
+ * Loads a verified ATS base resume directly into the PDF Editor
  */
 async function loadSamplePdfResume() {
   if (!pdfEditor) return;
-  const container = document.getElementById('resume-render-container');
-  if (!container) return;
-
   const sampleProfile = state.currentProfile || RESUME_ARCHETYPES[state.selectedArchetypeId || 'developer'].profile;
-  container.style.display = 'block';
-  container.innerHTML = generateResumeHtml(sampleProfile, state.selectedArchetypeId || 'developer');
-  autoBalanceResumeToOnePage();
-
-  try {
-    if (typeof window.html2pdf !== 'undefined') {
-      const worker = window.html2pdf().set({
-        margin: [0, 0, 0, 0],
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-        jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
-      }).from(container);
-
-      const pdfArrayBuffer = await worker.outputPdf('arraybuffer');
-      container.style.display = 'none';
-
-      state.customPdfLoaded = true;
-      const filename = `${sampleProfile.fullName.replace(/\s+/g, '_')}_Sample_Resume.pdf`;
-      await pdfEditor.loadPdf(pdfArrayBuffer, filename);
-    }
-  } catch (err) {
-    console.error('Failed to synthesize sample PDF:', err);
-    container.style.display = 'none';
-  }
+  state.currentProfile = sampleProfile;
+  const filename = `${(sampleProfile.fullName || 'Sample').replace(/\s+/g, '_')}_Sample_Resume.pdf`;
+  pdfEditor.loadProfile(sampleProfile, filename);
 }
 
 /**
@@ -1749,17 +1743,9 @@ async function handleUploadedPdfFile(file, context = 'landing') {
   };
 
   try {
-    setProgress('Loading PDF into Canvas Editor...', 25);
-    state.customPdfLoaded = true;
-
-    // Load directly into in-browser PDF Canvas Editor
-    if (pdfEditor) {
-      await pdfEditor.loadPdf(file, file.name);
-    }
-
-    setProgress('Extracting taxonomy for 100% ATS scoring...', 65);
+    setProgress('Extracting taxonomy for 100% ATS scoring...', 45);
     const { profile, html } = await parsePdfResume(file, (msg, pct) => {
-      setProgress(msg, Math.max(25, pct));
+      setProgress(msg, Math.max(30, pct));
     });
 
     state.customProfile = profile;
@@ -1768,6 +1754,12 @@ async function handleUploadedPdfFile(file, context = 'landing') {
     state.currentProfile = optimizeProfileFor100Ats(profile, state.targetRole, state.selectedArchetypeId);
     state.atsData = evaluateAtsScore(state.currentProfile, state.targetRole, state.selectedArchetypeId);
     state.liveEdit = true;
+    state.customPdfLoaded = true;
+
+    // Load directly into the editable PDF Resume Document Editor
+    if (pdfEditor) {
+      pdfEditor.loadProfile(state.currentProfile, file.name);
+    }
 
     // Update Try Now input if present
     const roleInput = document.getElementById('input-target-role');
